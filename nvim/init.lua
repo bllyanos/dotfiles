@@ -26,6 +26,11 @@ require('packer').startup(function(use)
     },
   }
 
+  use {
+    "williamboman/mason.nvim",
+    "jose-elias-alvarez/null-ls.nvim",
+    "jay-babu/mason-null-ls.nvim",
+  }
   use { -- Autocompletion
     'hrsh7th/nvim-cmp',
     requires = { 'hrsh7th/cmp-nvim-lsp', 'L3MON4D3/LuaSnip', 'saadparwaiz1/cmp_luasnip' },
@@ -424,5 +429,15 @@ cmp.setup {
   },
 }
 
+local null_ls = require("null-ls")
+null_ls.setup({
+  sources = {
+    null_ls.builtins.formatting.prettier.with({
+      filetypes = {
+        "javascript","typescript","css","scss","html","json","yaml","markdown","graphql","md","txt",
+      }
+    })
+  }
+})
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
