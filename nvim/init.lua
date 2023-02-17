@@ -160,7 +160,7 @@ vim.api.nvim_create_autocmd('TextYankPost', {
 -- See `:help lualine.txt`
 require('lualine').setup {
   options = {
-    icons_enabled = false,
+    icons_enabled = true,
     theme = 'onedark',
     component_separators = '|',
     section_separators = '',
@@ -226,7 +226,7 @@ vim.keymap.set('n', '<leader>sd', require('telescope.builtin').diagnostics, { de
 -- See `:help nvim-treesitter`
 require('nvim-treesitter.configs').setup {
   -- Add languages to be installed here that you want installed for treesitter
-  ensure_installed = { 'c', 'cpp', 'go', 'lua', 'python', 'rust', 'typescript', 'help', 'vim' },
+  ensure_installed = { 'c', 'cpp', 'go', 'lua', 'python', 'rust', 'typescript', 'help', 'vim', 'graphql' },
 
   highlight = { enable = true },
   indent = { enable = true, disable = { 'python' } },
@@ -336,6 +336,16 @@ local on_attach = function(_, bufnr)
   end, { desc = 'Format current buffer with LSP' })
 end
 
+local function organize_imports()
+  local param = {
+    command = '_typescript.organizeImports',
+    arguments = { vim.api.nvim_buf_get_name(0) },
+    title = ''
+  }
+  
+  vim.lsp.buf.execute_command(param)
+end
+
 -- Enable the following language servers
 --  Feel free to add/remove any LSPs that you want here. They will automatically be installed.
 --
@@ -346,8 +356,11 @@ local servers = {
   -- gopls = {},
   -- pyright = {},
   -- rust_analyzer = {},
-  -- tsserver = {},
-
+  tsserver = {
+    filetypes = {
+      "typescript", "typescriptreact", "typescript.tsx",
+    }
+  },
   sumneko_lua = {
     Lua = {
       workspace = { checkThirdParty = false },
@@ -375,12 +388,30 @@ mason_lspconfig.setup {
 
 mason_lspconfig.setup_handlers {
   function(server_name)
-    require('lspconfig')[server_name].setup {
-      capabilities = capabilities,
-      on_attach = on_attach,
-      settings = servers[server_name],
-    }
+    if server_name == 'tsserver' then
+      local commands = {}
+      commands.OrganizeImports = {
+        organize_imports, 
+        description = 'Organize Imports'
+      }
+      require('lspconfig')[server_name].setup {
+        capabilities = capabilities,
+        on_attach = on_attach,
+        commands = commands,
+        settings = servers[server_name],
+      }
+    else
+      require('lspconfig')[server_name].setup {
+        capabilities = capabilities,
+        on_attach = on_attach,
+        settings = servers[server_name],
+      }
+    end
   end,
+}
+
+require('lspconfig').graphql.setup {
+  filetypes = { 'graphql', 'gql', 'typescript', 'typescriptreact' },
 }
 
 -- Turn on lsp status information
@@ -441,3 +472,7 @@ null_ls.setup({
 })
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
+
+-- Custom Remap
+vim.keymap.set('n', '<leader>fo', ':OrganizeImports<cr>')
+vim.keymap.set('n', '<leader>ff', ':Format<cr>')
