@@ -48,6 +48,13 @@ require('packer').startup(function(use)
     after = 'nvim-treesitter',
   }
 
+  use {
+    'nvim-tree/nvim-tree.lua',
+    requires = {
+      'nvim-tree/nvim-web-devicons',
+    }
+  }
+
   -- Git related plugins
   use 'tpope/vim-fugitive'
   use 'tpope/vim-rhubarb'
@@ -176,6 +183,30 @@ require('indent_blankline').setup {
   char = '┊',
   show_trailing_blankline_indent = false,
 }
+
+vim.g.loaded_netrw = 1
+vim.g.loaded_netrwPlugin = 1
+
+vim.opt.termguicolors = true
+
+local tree_cb = require'nvim-tree.config'.nvim_tree_callback
+
+require('nvim-tree').setup({
+  view = {
+    width = 50,
+    mappings = {
+      list = {
+        { key = '<C-t>', cb = tree_cb('tabnew') },
+      }
+    }
+  }
+})
+
+local function open_nvim_tree()
+  require('nvim-tree.api').tree.open()
+end
+
+vim.api.nvim_create_autocmd({ "VimEnter" }, { callback = open_nvim_tree })
 
 -- Gitsigns
 -- See `:help gitsigns.txt`
@@ -474,12 +505,16 @@ null_ls.setup({
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
 
+-- Run some commands
+vim.cmd([[
+set nu rnu
+]])
+
 -- Custom Remap
 vim.keymap.set('n', '<leader>fo', ':OrganizeImports<cr>')
 vim.keymap.set('n', '<leader>ff', ':Format<cr>')
-vim.keymap.set('n', '<leader>ee', ':Explore<cr>')
-vim.keymap.set('n', '<leader>ev', ':Vexplore<cr>')
-vim.keymap.set('n', '<leader>et', ':Texplore<cr>')
+vim.keymap.set('n', '<leader>er', ':NvimTreeToggle<cr>')
+vim.keymap.set('n', '<leader>et', ':tabnew<cr>:NvimTreeToggle<cr>')
 vim.keymap.set('n', '<leader>n', ':tabp<cr>')
 vim.keymap.set('n', '<leader>m', ':tabn<cr>')
 vim.keymap.set('n', '<leader>tc', ':tabc<cr>')
