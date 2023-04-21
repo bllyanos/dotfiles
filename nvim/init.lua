@@ -497,11 +497,12 @@ null_ls.setup({
   sources = {
     null_ls.builtins.formatting.prettier.with({
       filetypes = {
-        "javascript","typescript","css","scss","html","json","yaml","markdown","graphql","md","txt",
+        "javascript","typescript", "typescriptreact", "javascriptreact","css","scss","html","json","yaml","markdown","graphql","md","txt",
       }
     })
   }
 })
+
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
 
