@@ -257,7 +257,7 @@ vim.keymap.set('n', '<leader>sd', require('telescope.builtin').diagnostics, { de
 -- See `:help nvim-treesitter`
 require('nvim-treesitter.configs').setup {
   -- Add languages to be installed here that you want installed for treesitter
-  ensure_installed = { 'c', 'cpp', 'go', 'lua', 'python', 'rust', 'typescript', 'help', 'vim', 'graphql', 'prisma' },
+  ensure_installed = { 'go', 'python', 'rust', 'typescript', 'graphql', 'prisma' },
 
   highlight = { enable = true },
   indent = { enable = true, disable = { 'python' } },
@@ -317,10 +317,10 @@ require('nvim-treesitter.configs').setup {
 }
 
 -- Diagnostic keymaps
-vim.keymap.set('n', '[d', vim.diagnostic.goto_prev)
-vim.keymap.set('n', ']d', vim.diagnostic.goto_next)
-vim.keymap.set('n', '<leader>e', vim.diagnostic.open_float)
-vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist)
+vim.keymap.set('n', '<leader>[d', vim.diagnostic.goto_prev)
+vim.keymap.set('n', '<leader>]d', vim.diagnostic.goto_next)
+vim.keymap.set('n', '<leader>de', vim.diagnostic.open_float)
+vim.keymap.set('n', '<leader>dq', vim.diagnostic.setloclist)
 
 -- LSP settings.
 --  This function gets run when an LSP connects to a particular buffer.
@@ -387,6 +387,7 @@ local servers = {
   -- gopls = {},
   -- pyright = {},
   rust_analyzer = {},
+  denols = {},
   tsserver = {
     filetypes = {
       "typescript", "typescriptreact", "typescript.tsx",
@@ -430,7 +431,18 @@ mason_lspconfig.setup_handlers {
         capabilities = capabilities,
         on_attach = on_attach,
         commands = commands,
+        root_dir = require('lspconfig').util.root_pattern('package.json'),
+        single_file_support = false,
         settings = servers[server_name],
+      }
+    elseif server_name == 'denols' then
+      require('lspconfig')[server_name].setup {
+        on_attach = on_attach,
+        init_options = {
+          enable = true,
+          unstable = true,
+        },
+        root_dir = require('lspconfig').util.root_pattern('deno.json', 'deno.jsonc')
       }
     else
       require('lspconfig')[server_name].setup {
@@ -497,7 +509,7 @@ null_ls.setup({
   sources = {
     null_ls.builtins.formatting.prettier.with({
       filetypes = {
-        "javascript","typescript","css","scss","html","json","yaml","markdown","graphql","md","txt",
+        "javascript","typescript","typescriptreact","javascriptreact","css","scss","html","json","yaml","markdown","graphql","md","txt",
       }
     })
   }
