@@ -133,7 +133,7 @@ vim.wo.signcolumn = 'yes'
 
 -- Set colorscheme
 vim.o.termguicolors = true
-vim.cmd [[colorscheme gruvbox]]
+vim.cmd [[colorscheme onedark]]
 
 -- Set completeopt to have a better completion experience
 vim.o.completeopt = 'menuone,noselect'
@@ -169,7 +169,7 @@ vim.api.nvim_create_autocmd('TextYankPost', {
 require('lualine').setup {
   options = {
     icons_enabled = true,
-    theme = 'gruvbox',
+    theme = 'onedark',
     component_separators = '|',
     section_separators = '',
   },
@@ -509,6 +509,11 @@ local null_ls = require("null-ls")
 null_ls.setup({
   sources = {
     null_ls.builtins.formatting.prettier.with({
+      filetypes = {
+        "javascript","typescript","typescriptreact","javascriptreact","css","scss","html","json","yaml","markdown","graphql","md","txt",
+      }
+    }),
+    null_ls.builtins.code_actions.eslint_d.with({
       filetypes = {
         "javascript","typescript","typescriptreact","javascriptreact","css","scss","html","json","yaml","markdown","graphql","md","txt",
       }
