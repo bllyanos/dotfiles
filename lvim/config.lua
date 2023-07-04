@@ -9,7 +9,9 @@ vim.list_extend(lvim.lsp.automatic_configuration.skipped_servers, { "tsserver" }
 
 lvim.plugins = {
   { 'ray-x/lsp_signature.nvim' },
-  { 'navarasu/onedark.nvim' }
+  { 'navarasu/onedark.nvim' },
+  { 'ellisonleao/gruvbox.nvim' },
+  { 'luisiacc/gruvbox-baby' }
 }
 
 -- toggle LSP Signature
@@ -28,6 +30,9 @@ formatters.setup {
     filetypes = { "typescript", "typescriptreact" },
   },
 }
+
+lvim.builtin.lualine.options.theme = "gruvbox"
+lvim.colorscheme = "gruvbox-baby"
 
 vim.cmd([[
 set nu rnu
