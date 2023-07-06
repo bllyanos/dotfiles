@@ -5,7 +5,7 @@
 
 -- lvim.lang.typescript.formatters = { { exe = "prettierd" } }
 
-vim.list_extend(lvim.lsp.automatic_configuration.skipped_servers, { "tsserver" })
+vim.list_extend(lvim.lsp.automatic_configuration.skipped_servers, { "tsserver", "denols" })
 
 lvim.plugins = {
   { 'ray-x/lsp_signature.nvim' },
@@ -37,4 +37,3 @@ lvim.colorscheme = "gruvbox-baby"
 vim.cmd([[
 set nu rnu
 ]])
-

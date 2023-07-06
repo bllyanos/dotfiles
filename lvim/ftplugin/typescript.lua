@@ -14,6 +14,14 @@ local opts = {
       organize_imports,
       description = "Organize the imports"
     }
-  }
+  },
+  root_dir = require("lspconfig").util.root_pattern("package.json"),
+  single_file_support = false
 }
+
+local deno_opts = {
+  root_dir = require("lspconfig").util.root_pattern("deno.json", "deno.jsonc")
+}
+
+require("lvim.lsp.manager").setup("denols", deno_opts)
 require("lvim.lsp.manager").setup("tsserver", opts)
