@@ -52,6 +52,29 @@ null_ls.setup {
   root_dir = require("null-ls.utils").root_pattern("package.json", ".null-ls-root", "Makefile", ".git")
 }
 
+require("lvim.lsp.manager").setup("cssls", {
+  settings = {
+    css = {
+      validate = true,
+      lint = {
+        unknownAtRules = "ignore"
+      }
+    },
+    scss = {
+      validate = true,
+      lint = {
+        unknownAtRules = "ignore"
+      }
+    },
+    less = {
+      validate = true,
+      lint = {
+        unknownAtRules = "ignore"
+      }
+    },
+  },
+})
+
 local linters = require "lvim.lsp.null-ls.linters"
 linters.setup {
   {
