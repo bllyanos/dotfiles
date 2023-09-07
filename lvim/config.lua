@@ -15,7 +15,44 @@ lvim.plugins = {
   { 'rebelot/kanagawa.nvim' },
   { 'folke/tokyonight.nvim' },
   { 'mxsdev/nvim-dap-vscode-js' },
-  { 'leoluz/nvim-dap-go' }
+  { 'leoluz/nvim-dap-go' },
+  {
+    "nacro90/numb.nvim",
+    event = "BufRead",
+    config = function()
+      require("numb").setup {
+        show_numbers = true,    -- Enable 'number' for the window while peeking
+        show_cursorline = true, -- Enable 'cursorline' for the window while peeking
+      }
+    end,
+  },
+  {
+    "f-person/git-blame.nvim",
+    event = "BufRead",
+    config = function()
+      vim.cmd "highlight default link gitblame SpecialComment"
+      require("gitblame").setup { enabled = false }
+    end,
+  },
+  {
+    "tpope/vim-fugitive",
+    cmd = {
+      "G",
+      "Git",
+      "Gdiffsplit",
+      "Gread",
+      "Gwrite",
+      "Ggrep",
+      "GMove",
+      "GDelete",
+      "GBrowse",
+      "GRemove",
+      "GRename",
+      "Glgrep",
+      "Gedit"
+    },
+    ft = { "fugitive" }
+  },
 }
 
 lvim.builtin.dap.active = true
