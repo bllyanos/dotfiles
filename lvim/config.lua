@@ -40,6 +40,17 @@ lvim.plugins = {
   },
 }
 
+-- which-key mappings
+lvim.builtin.which_key.mappings["g"]["d"] = {
+  "<cmd>DiffviewOpen<CR>", "Diff View Open"
+}
+
+lvim.builtin.which_key.mappings["g"]["x"] = {
+  "<cmd>DiffviewClose<CR>", "Diff View Close"
+}
+
+
+-- dap configurations
 lvim.builtin.dap.active = true
 local dap = require "dap"
 
