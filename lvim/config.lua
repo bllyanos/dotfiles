@@ -53,6 +53,10 @@ lvim.plugins = {
     },
     ft = { "fugitive" }
   },
+  {
+    "sindrets/diffview.nvim",
+    event = "BufRead",
+  },
 }
 
 lvim.builtin.dap.active = true
