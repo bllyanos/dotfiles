@@ -103,6 +103,10 @@ lvim.builtin.which_key.mappings["b"]["m"] = {
   "<cmd>lua require('harpoon.mark').add_file()<cr>", "Mark file Harpoon"
 }
 
+lvim.builtin.which_key.mappings["l"]["o"] = {
+  "<cmd>SymbolsOutline<cr>", "Symbols Outline"
+}
+
 
 -- dap configurations
 lvim.builtin.dap.active = true
