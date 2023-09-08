@@ -235,4 +235,5 @@ lvim.colorscheme = "kanagawa-wave"
 
 vim.cmd([[
 set nu rnu
+set undodir=/lvim-undo
 ]])
