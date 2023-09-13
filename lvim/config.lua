@@ -46,7 +46,7 @@ lvim.plugins = {
         throttle = true, -- Throttles plugin updates (may improve performance)
         max_lines = 0,   -- How many lines the window should span. Values <= 0 mean no limit.
         patterns = {
-                         -- Match patterns for TS nodes. These get wrapped to match at word boundaries.
+          -- Match patterns for TS nodes. These get wrapped to match at word boundaries.
           -- For all filetypes
           -- Note that setting an entry here replaces all other patterns for this entry.
           -- By setting the 'default' entry below, you can control which nodes you want to
@@ -86,6 +86,7 @@ require("harpoon").setup({
     width = vim.api.nvim_win_get_width(0) - 4,
   }
 })
+require("telescope").load_extension("harpoon")
 
 -- which-key mappings
 lvim.builtin.which_key.mappings["g"]["d"] = {
