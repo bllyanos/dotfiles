@@ -88,6 +88,7 @@ require("harpoon").setup({
     width = vim.api.nvim_win_get_width(0) - 4,
   }
 })
+require("telescope").load_extension("harpoon")
 
 -- which-key mappings
 lvim.builtin.which_key.mappings["g"]["d"] = {
