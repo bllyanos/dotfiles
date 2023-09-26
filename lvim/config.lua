@@ -7,6 +7,8 @@
 
 vim.list_extend(lvim.lsp.automatic_configuration.skipped_servers, { "tsserver", "denols" })
 
+lvim.builtin.nvimtree.setup.view.width = "25%"
+
 lvim.plugins = {
   { 'ray-x/lsp_signature.nvim' },
   { 'navarasu/onedark.nvim' },
@@ -46,7 +48,7 @@ lvim.plugins = {
         throttle = true, -- Throttles plugin updates (may improve performance)
         max_lines = 0,   -- How many lines the window should span. Values <= 0 mean no limit.
         patterns = {
-                         -- Match patterns for TS nodes. These get wrapped to match at word boundaries.
+          -- Match patterns for TS nodes. These get wrapped to match at word boundaries.
           -- For all filetypes
           -- Note that setting an entry here replaces all other patterns for this entry.
           -- By setting the 'default' entry below, you can control which nodes you want to
@@ -86,6 +88,7 @@ require("harpoon").setup({
     width = vim.api.nvim_win_get_width(0) - 4,
   }
 })
+require("telescope").load_extension("harpoon")
 
 -- which-key mappings
 lvim.builtin.which_key.mappings["g"]["d"] = {
@@ -122,7 +125,7 @@ local dap = require "dap"
 
 require("dap-vscode-js").setup({
   -- node_path = "node", -- Path of node executable. Defaults to $NODE_PATH, and then "node"
-  debugger_path = vim.fn.expand('$HOME/vsjd/'), -- Path to vscode-js-debug installation.
+  debugger_path = vim.fn.expand('$HOME/vsjd/'),                                                -- Path to vscode-js-debug installation.
   -- debugger_cmd = { "js-debug-adapter" }, -- Command to use to launch the debug server. Takes precedence over `node_path` and `debugger_path`.
   adapters = { 'pwa-node', 'pwa-chrome', 'pwa-msedge', 'node-terminal', 'pwa-extensionHost' }, -- which adapters to register in nvim-dap
   -- log_file_path = "(stdpath cache)/dap_vscode_js.log" -- Path for file logging
@@ -243,8 +246,8 @@ formatters.setup {
 }
 
 -- lvim.builtin.lualine.options.theme = "gruvbox"
--- lvim.colorscheme = "kanagawa-wave"
-lvim.colorscheme = "onedark"
+lvim.colorscheme = "kanagawa-wave"
+-- lvim.colorscheme = "onedark"
 -- lvim.colorscheme = "lunaperche"
 
 vim.cmd([[
