@@ -7,6 +7,8 @@
 
 vim.list_extend(lvim.lsp.automatic_configuration.skipped_servers, { "tsserver", "denols" })
 
+lvim.builtin.nvimtree.setup.view.width = "25%"
+
 lvim.plugins = {
   { 'ray-x/lsp_signature.nvim' },
   { 'navarasu/onedark.nvim' },
@@ -246,9 +248,9 @@ formatters.setup {
   }),
 }
 
--- lvim.colorscheme = "kanagawa-wave"
-lvim.colorscheme = "onedark"
--- lvim.colorscheme = "gruvbox"
+-- lvim.builtin.lualine.options.theme = "gruvbox"
+lvim.colorscheme = "kanagawa-wave"
+-- lvim.colorscheme = "onedark"
 -- lvim.colorscheme = "lunaperche"
 
 vim.cmd([[
