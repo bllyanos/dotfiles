@@ -116,6 +116,9 @@ lvim.builtin.which_key.mappings["l"]["o"] = {
   "<cmd>SymbolsOutline<cr>", "Symbols Outline"
 }
 
+lvim.builtin.which_key.mappings["l"]["m"] = {
+  "<cmd>OrganizeImports<cr>", "Typescript Organize Imports"
+}
 
 -- dap configurations
 lvim.builtin.dap.active = true
@@ -123,7 +126,7 @@ local dap = require "dap"
 
 require("dap-vscode-js").setup({
   -- node_path = "node", -- Path of node executable. Defaults to $NODE_PATH, and then "node"
-  debugger_path = vim.fn.expand('$HOME/vsjd/'), -- Path to vscode-js-debug installation.
+  debugger_path = vim.fn.expand('$HOME/vsjd/'),                                                -- Path to vscode-js-debug installation.
   -- debugger_cmd = { "js-debug-adapter" }, -- Command to use to launch the debug server. Takes precedence over `node_path` and `debugger_path`.
   adapters = { 'pwa-node', 'pwa-chrome', 'pwa-msedge', 'node-terminal', 'pwa-extensionHost' }, -- which adapters to register in nvim-dap
   -- log_file_path = "(stdpath cache)/dap_vscode_js.log" -- Path for file logging
@@ -243,9 +246,9 @@ formatters.setup {
   }),
 }
 
--- lvim.builtin.lualine.options.theme = "gruvbox"
 -- lvim.colorscheme = "kanagawa-wave"
 lvim.colorscheme = "onedark"
+-- lvim.colorscheme = "gruvbox"
 -- lvim.colorscheme = "lunaperche"
 
 vim.cmd([[
