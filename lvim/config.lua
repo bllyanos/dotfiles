@@ -248,6 +248,24 @@ formatters.setup {
   }),
 }
 
+-- lvim.autocmds = {
+--   {   -- first entry
+--     "BufEnter",
+--     { -- this is passed directly as opts to `nvim_create_autocmd()`
+--       pattern = { "*.md" },
+--       -- enable wrap mode for json files only
+--       command = "setlocal tabstop=2 shiftwidth=2 expandtab",
+--     },
+--   },
+--   -- add more entries
+-- }
+
+vim.api.nvim_create_autocmd("BufEnter", {
+  pattern = { "*.md" },
+  -- enable wrap mode for json files only
+  command = "setlocal tabstop=2 shiftwidth=2 expandtab",
+})
+
 -- lvim.builtin.lualine.options.theme = "gruvbox"
 -- lvim.colorscheme = "kanagawa-wave"
 lvim.colorscheme = "onedark"
