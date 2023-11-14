@@ -268,8 +268,8 @@ vim.api.nvim_create_autocmd("BufEnter", {
 
 -- lvim.builtin.lualine.options.theme = "gruvbox"
 -- lvim.colorscheme = "gruvbox"
-lvim.colorscheme = "kanagawa-dragon"
--- lvim.colorscheme = "onedark"
+-- lvim.colorscheme = "kanagawa-dragon"
+lvim.colorscheme = "onedark"
 -- lvim.colorscheme = "lunaperche"
 
 vim.cmd([[
