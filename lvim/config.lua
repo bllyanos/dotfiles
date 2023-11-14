@@ -5,7 +5,7 @@
 
 -- lvim.lang.typescript.formatters = { { exe = "prettierd" } }
 
-vim.list_extend(lvim.lsp.automatic_configuration.skipped_servers, { "tsserver", "denols" })
+vim.list_extend(lvim.lsp.automatic_configuration.skipped_servers, { "tsserver", "denols", "ocamllsp" })
 
 lvim.builtin.nvimtree.setup.view.width = "25%"
 
@@ -269,6 +269,7 @@ vim.api.nvim_create_autocmd("BufEnter", {
 -- lvim.builtin.lualine.options.theme = "gruvbox"
 -- lvim.colorscheme = "gruvbox"
 -- lvim.colorscheme = "kanagawa-dragon"
+-- lvim.colorscheme = "kanagawa-wave"
 lvim.colorscheme = "onedark"
 -- lvim.colorscheme = "lunaperche"
 
