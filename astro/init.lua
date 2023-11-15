@@ -8,8 +8,18 @@ local function organize_imports()
 end
 
 return {
-  colorscheme = "kanagawa",
+  colorscheme = "onedark",
+  -- Diagnostics configuration (for vim.diagnostics.config({...})) when diagnostics are on
+  diagnostics = {
+    virtual_text = true,
+    underline = true,
+  },
   lsp = {
+    formatting = {
+      disabled = {
+        "tsserver",
+      }
+    },
     servers = {
       "tsserver",
     },
@@ -33,6 +43,16 @@ return {
       "williamboman/mason-lspconfig.nvim",
       opts = {
         ensure_installed = { "tsserver" }, -- automatically install lsp
+      },
+    },
+  },
+  -- Configure require("lazy").setup() options
+  lazy = {
+    defaults = { lazy = true },
+    performance = {
+      rtp = {
+        -- customize default disabled vim plugins
+        disabled_plugins = { "tohtml", "gzip", "matchit", "zipPlugin", "netrwPlugin", "tarPlugin" },
       },
     },
   },
