@@ -20,7 +20,10 @@ local opts = {
 }
 
 local deno_opts = {
-  root_dir = require("lspconfig").util.root_pattern("deno.json", "deno.jsonc")
+  root_dir = require("lspconfig").util.root_pattern("deno.json", "deno.jsonc"),
+  init_options = {
+    unstable = true
+  }
 }
 
 require("lvim.lsp.manager").setup("denols", deno_opts)

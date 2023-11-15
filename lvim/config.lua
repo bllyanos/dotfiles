@@ -5,7 +5,7 @@
 
 -- lvim.lang.typescript.formatters = { { exe = "prettierd" } }
 
-vim.list_extend(lvim.lsp.automatic_configuration.skipped_servers, { "tsserver", "denols" })
+vim.list_extend(lvim.lsp.automatic_configuration.skipped_servers, { "tsserver", "denols", "ocamllsp" })
 
 lvim.builtin.nvimtree.setup.view.width = "25%"
 
@@ -248,9 +248,29 @@ formatters.setup {
   }),
 }
 
+-- lvim.autocmds = {
+--   {   -- first entry
+--     "BufEnter",
+--     { -- this is passed directly as opts to `nvim_create_autocmd()`
+--       pattern = { "*.md" },
+--       -- enable wrap mode for json files only
+--       command = "setlocal tabstop=2 shiftwidth=2 expandtab",
+--     },
+--   },
+--   -- add more entries
+-- }
+
+vim.api.nvim_create_autocmd("BufEnter", {
+  pattern = { "*.md" },
+  -- enable wrap mode for json files only
+  command = "setlocal tabstop=2 shiftwidth=2 expandtab",
+})
+
 -- lvim.builtin.lualine.options.theme = "gruvbox"
-lvim.colorscheme = "kanagawa-wave"
--- lvim.colorscheme = "onedark"
+-- lvim.colorscheme = "gruvbox"
+-- lvim.colorscheme = "kanagawa-dragon"
+-- lvim.colorscheme = "kanagawa-wave"
+lvim.colorscheme = "onedark"
 -- lvim.colorscheme = "lunaperche"
 
 vim.cmd([[
