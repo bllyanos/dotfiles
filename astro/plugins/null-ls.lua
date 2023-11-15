@@ -23,7 +23,7 @@ return {
     --   end
     -- })
     --
-    -- config.root_dir = require("null-ls.utils").root_pattern("package.json", ".null-ls-root", "Makefile", ".git")
+    config.root_dir = require("null-ls.utils").root_pattern("package.json", ".null-ls-root", "Makefile", ".git")
     --
     -- -- config.should_attach = function(bufnr)
     -- --   return not vim.api.nvim_buf_get_name(bufnr):match("^git://")
