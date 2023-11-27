@@ -26,6 +26,7 @@ return {
     config = {
       tsserver = function()
         return {
+          filetypes = { "typescript", "typescriptreact", "javascript", "javascriptreact" },
           commands = {
             OrganizeImports = {
               organize_imports,
