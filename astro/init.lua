@@ -91,5 +91,10 @@ return {
         width = vim.api.nvim_win_get_width(0) - 4,
       }
     })
+
+    vim.cmd([[
+      set undodir=/lvim-undo
+      set directory=/nvim-swap
+    ]])
   end
 }
