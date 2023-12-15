@@ -22,6 +22,7 @@ return {
     },
     servers = {
       "tsserver",
+      "denols"
     },
     config = {
       tsserver = function()
@@ -36,7 +37,17 @@ return {
           root_dir = require("lspconfig").util.root_pattern("package.json"),
           single_file_support = false,
         }
-      end
+      end,
+      denols = function()
+        return {
+          filetypes = { "typescript", "typescriptreact", "javascript", "javascriptreact" },
+          root_dir = require("lspconfig").util.root_pattern("deno.json", "deno.jsonc"),
+          single_file_support = false,
+          init_options = {
+            unstable = true
+          }
+        }
+      end,
     }
   },
   plugins = {
@@ -97,5 +108,9 @@ return {
       set undodir=/lvim-undo
       set directory=/nvim-swap
     ]])
+
+    vim.g.copilot_assume_mapped = true
+    vim.g.copilot_no_tab_map = true
+    vim.api.nvim_set_keymap("i", "<C-U>", 'copilot#Accept("<CR>")', { silent = true, expr = true })
   end
 }
