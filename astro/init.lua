@@ -22,9 +22,26 @@ return {
     },
     servers = {
       "tsserver",
-      "denols"
+      "denols",
+      "clangd",
+      "ocamllsp",
     },
     config = {
+      ocamllsp = function()
+        return {
+          root_dir = require("lspconfig").util.root_pattern("dune-project"),
+        }
+      end,
+      clangd = function()
+        return {
+          cmd = { "clangd", "--background-index", "--offset-encoding=utf-16" },
+          filetypes = { "c", "cpp", "objc", "objcpp" },
+          root_dir = require("lspconfig").util.root_pattern(".c-project"),
+          init_options = {
+            clangdFileStatus = true
+          }
+        }
+      end,
       tsserver = function()
         return {
           filetypes = { "typescript", "typescriptreact", "javascript", "javascriptreact" },
