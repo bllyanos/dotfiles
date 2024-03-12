@@ -153,9 +153,6 @@ vim.opt.scrolloff = 10
 -- [[ Basic Keymaps ]]
 --  See `:help vim.keymap.set()`
 
--- Custom Imports
-require("config")
-
 -- Set highlight on search, but clear on pressing <Esc> in normal mode
 vim.opt.hlsearch = true
 vim.keymap.set("n", "<Esc>", "<cmd>nohlsearch<CR>")
@@ -271,6 +268,12 @@ require("lazy").setup({
 		"ThePrimeagen/harpoon",
 	},
 
+	{
+		"github.com/copilot.vim",
+		event = "InsertEnter",
+		lazy = false,
+	},
+
 	-- NOTE: Plugins can also be configured to run lua code when they are loaded.
 	--
 	-- This is often very useful to both group configuration, as well as handle
@@ -379,6 +382,8 @@ require("lazy").setup({
 
 			-- See `:help telescope.builtin`
 			local builtin = require("telescope.builtin")
+			local action_state = require('telescope.actions.state')
+			local actions = require('telescope.actions')
 			vim.keymap.set("n", "<leader>sh", builtin.help_tags, { desc = "[S]earch [H]elp" })
 			vim.keymap.set("n", "<leader>sk", builtin.keymaps, { desc = "[S]earch [K]eymaps" })
 			vim.keymap.set("n", "<leader>sf", builtin.find_files, { desc = "[S]earch [F]iles" })
@@ -399,7 +404,18 @@ require("lazy").setup({
 			vim.keymap.set("n", "<leader>s.", function()
 				builtin.find_files({ cwd = vim.fn.expand("%:p:h") })
 			end, { desc = "[S]earch Siblings" })
-			vim.keymap.set("n", "<leader><leader>", builtin.buffers, { desc = "[ ] Find existing buffers" })
+			vim.keymap.set("n", "<leader><leader>", function() builtin.buffers({
+				attach_mappings = function(prompt_bufnr, map)
+					local delete_buf = function()
+						local selection = action_state.get_selected_entry()
+						actions.close(prompt_bufnr)
+						vim.api.nvim_buf_delete(selection.bufnr, { force = true })
+					end
+		
+					map('n', 'd', delete_buf)
+					return true
+				end
+			}) end , { desc = "[ ] Find existing buffers" })
 
 			-- Slightly advanced example of overriding default behavior and theme
 			vim.keymap.set("n", "<leader>/", function()
@@ -737,7 +753,7 @@ require("lazy").setup({
 					-- Accept ([y]es) the completion.
 					--  This will auto-import if your LSP supports it.
 					--  This will expand snippets if the LSP sent a snippet.
-					["<C-y>"] = cmp.mapping.confirm({ select = true }),
+					["<CR>"] = cmp.mapping.confirm({ select = true }),
 
 					-- Manually trigger a completion from nvim-cmp.
 					--  Generally you don't need this, because nvim-cmp will display
@@ -899,6 +915,9 @@ require("lazy").setup({
 		},
 	},
 })
+
+-- Custom Imports
+require("config")
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
