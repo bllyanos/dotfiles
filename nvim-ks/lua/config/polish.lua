@@ -14,3 +14,13 @@ vim.cmd([[
 vim.g.copilot_assume_mapped = true
 vim.g.copilot_no_tab_map = true
 
+-- Indentation
+vim.cmd([[
+  set expandtab
+  set shiftwidth=2
+  set tabstop=2
+  set smartindent
+  set autoindent
+  set smarttab
+  set softtabstop=2
+]])
