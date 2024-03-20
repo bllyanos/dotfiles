@@ -38,6 +38,9 @@ exec --no-startup-id picom
 # sleep if inactive for 1 minute
 exec --no-startup-id "xautolock -detectsleep -time 100 -locker \"i3lock -c 000000\""
 
+# custom configurations: spectacle (screenshot utility for kde)
+for_window [title="Spectacle"] floating enable
+
 # Use pactl to adjust volume in PulseAudio.
 set $refresh_i3status killall -SIGUSR1 i3status
 bindsym XF86AudioRaiseVolume exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ +10% && $refresh_i3status
@@ -65,6 +68,10 @@ floating_modifier $mod
 
 # start a terminal
 bindsym $mod+Return exec alacritty
+
+# screenshot
+bindsym $mod+p exec --no-startup-id spectacle
+
 
 # kill focused window
 bindsym $mod+Shift+q kill
@@ -226,3 +233,5 @@ bar {
 # Please remove the following exec line:
 #######################################################################
 exec i3-config-wizard
+
+
