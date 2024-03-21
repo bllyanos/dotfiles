@@ -489,6 +489,8 @@ require("lazy").setup({
 			formatters_by_ft = {
 				typescript = { "prettierd" },
 				javascript = { "prettierd" },
+				typescriptreact = { "prettierd" },
+				javascriptreact = { "prettierd" },
 				graphql = { "prettierd" },
 				html = { "prettierd" },
 				lua = { "stylua" },
