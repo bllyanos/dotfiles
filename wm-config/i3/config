@@ -11,7 +11,7 @@
 
 # Font for window titles. Will also be used by the bar unless a different font
 # is used in the bar {} block below.
-font pango:monospace 8
+font pango:JetBrains Mono 8
 
 # This font is widely installed, provides lots of unicode glyphs, right-to-left
 # text rendering and scalability on retina/hidpi displays (thanks to pango).
@@ -32,8 +32,11 @@ exec --no-startup-id xss-lock --transfer-sleep-lock -- i3lock -c 212121 --nofork
 # and nm-applet is a desktop environment-independent system tray GUI for it.
 exec --no-startup-id nm-applet
 
-exec --no-startup-id nitrogen --restore  
+exec --no-startup-id nitrogen --restore 
 exec --no-startup-id picom
+
+# start datasaur fetcher
+exec --no-startup-id fetcher
 
 # sleep if inactive for 1 minute
 exec --no-startup-id "xautolock -detectsleep -time 100 -locker \"i3lock -c 000000\""
@@ -219,7 +222,9 @@ bindsym $mod+r mode "resize"
 # Start i3bar to display a workspace bar (plus the system information i3status
 # finds out, if available)
 bar {
-        status_command i3status
+        separator_symbol " · "
+        font pango:JetBrains Mono 10
+        status_command i3status | status
 }
 
 #######################################################################
