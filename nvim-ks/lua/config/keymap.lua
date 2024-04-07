@@ -10,7 +10,7 @@ vim.api.nvim_set_keymap("v", "<A-k>", ":m .-2<CR>", { desc = "Move line to top" 
 vim.api.nvim_set_keymap("v", "<A-j>", ":m .+1<CR>", { desc = "Move line to bottom" })
 
 -- typescript specific
-vim.keymap.set("n", "<leader>lm", "<cmd>OrganizeImports<CR>", { desc = "Typescript Organize Imports" })
+vim.keymap.set("n", "<leader>lm", "<cmd>TSToolsOrganizeImports<CR>", { desc = "Typescript Organize Imports" })
 
 -- Harpoon
 vim.keymap.set("n", "<leader>bh", "<cmd>lua require('harpoon.ui').toggle_quick_menu()<cr>", { desc = "Open Harpoon" })

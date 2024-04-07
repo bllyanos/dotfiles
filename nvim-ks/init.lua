@@ -53,6 +53,26 @@ require("lazy").setup({
 	-- "gc" to comment visual regions/lines
 	{ "numToStr/Comment.nvim", opts = {} },
 
+	-- "typescript-tools"
+	{
+		"pmizio/typescript-tools.nvim",
+		dependencies = { "nvim-lua/plenary.nvim", "neovim/nvim-lspconfig" },
+		opts = {},
+		config = function()
+			require("typescript-tools").setup({
+				filetypes = { "typescript", "typescriptreact", "javascript", "javascriptreact" },
+				on_attach = function(client, bufnr)
+					require("typescript-tools").on_attach(client, bufnr)
+				end,
+				settings = {
+					expose_as_code_action = "all",
+				},
+				commands = {},
+				root_dir = require("lspconfig").util.root_pattern("package.json"),
+			})
+		end,
+	},
+
 	-- Here is a more advanced example where we pass configuration
 	-- options to `gitsigns.nvim`. This is equivalent to the following lua:
 	--    require('gitsigns').setup({ ... })
@@ -394,17 +414,16 @@ require("lazy").setup({
 				--    https://github.com/pmizio/typescript-tools.nvim
 				--
 				-- But for many setups, the LSP (`tsserver`) will work just fine
-				tsserver = {
-					filetypes = { "typescript", "typescriptreact", "javascript", "javascriptreact" },
-					commands = {
-						OrganizeImports = {
-							require("custom_functions.typescript_organize_imports").organize_imports,
-							description = "Organize Imports",
-						},
-					},
-					root_dir = require("lspconfig").util.root_pattern("package.json"),
-					single_file_support = false,
-				},
+				-- tsserver = {
+				-- 	filetypes = { "typescript", "typescriptreact", "javascript", "javascriptreact" },
+				-- 	commands = {
+				-- 		OrganizeImports = {
+				-- 			require("custom_functions.typescript_organize_imports").organize_imports,
+				-- 			description = "Organize Imports",
+				-- 		},
+				-- 	},
+				-- 	root_dir = require("lspconfig").util.root_pattern("package.json"),
+				-- },
 
 				denols = {
 					filetypes = { "typescript", "typescriptreact", "javascript", "javascriptreact" },
@@ -457,7 +476,7 @@ require("lazy").setup({
 			local ensure_installed = vim.tbl_keys(servers or {})
 			vim.list_extend(ensure_installed, {
 				"stylua", -- Used to format lua code
-				"tsserver",
+				-- "tsserver",
 				"denols",
 				"gopls",
 			})
