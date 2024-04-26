@@ -68,6 +68,7 @@ require("lazy").setup({
 					expose_as_code_action = "all",
 				},
 				commands = {},
+				single_file_support = false,
 				root_dir = require("lspconfig").util.root_pattern("package.json"),
 			})
 		end,
@@ -511,7 +512,7 @@ require("lazy").setup({
 				typescriptreact = { "prettierd" },
 				javascriptreact = { "prettierd" },
 				graphql = { "prettierd" },
-				html = { "prettierd" },
+				html = { "prettier" },
 				lua = { "stylua" },
 				-- Conform can also run multiple formatters sequentially
 				-- python = { "isort", "black" },
