@@ -97,7 +97,7 @@ require("lazy").setup({
 	},
 
 	{
-		"github.com/copilot.vim",
+		"github/copilot.vim",
 		event = "InsertEnter",
 		lazy = false,
 	},
