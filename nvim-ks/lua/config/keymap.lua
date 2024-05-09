@@ -6,8 +6,8 @@ vim.keymap.set("n", "<leader>ee", ":Explore<CR>")
 vim.api.nvim_set_keymap("n", "<leader>h", "<cmd>noh<CR>", { desc = "Clear highlights" })
 vim.api.nvim_set_keymap("n", "<A-k>", ":m .-2<CR>", { desc = "Move line to top" })
 vim.api.nvim_set_keymap("n", "<A-j>", ":m .+1<CR>", { desc = "Move line to bottom" })
-vim.api.nvim_set_keymap("v", "<A-k>", ":m .-2<CR>", { desc = "Move line to top" })
-vim.api.nvim_set_keymap("v", "<A-j>", ":m .+1<CR>", { desc = "Move line to bottom" })
+vim.api.nvim_set_keymap("v", "<A-k>", ":m '<-2<CR>gv=gv", { desc = "Move line to bottom" })
+vim.api.nvim_set_keymap("v", "<A-j>", ":m '>+1<CR>gv=gv", { desc = "Move line to top" })
 
 -- typescript specific
 vim.keymap.set("n", "<leader>lm", "<cmd>TSToolsOrganizeImports<CR>", { desc = "Typescript Organize Imports" })
