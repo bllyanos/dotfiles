@@ -17,8 +17,7 @@ vim.api.nvim_create_autocmd("TextYankPost", {
 	end,
 })
 
--- [[ Install `lazy.nvim` plugin manager ]]
---    See `:help lazy.nvim.txt` or https://github.com/folke/lazy.nvim for more info
+-- [[ Install `lazy.nvim` plugin manager ]] See `:help lazy.nvim.txt` or https://github.com/folke/lazy.nvim for more info
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not vim.loop.fs_stat(lazypath) then
 	local lazyrepo = "https://github.com/folke/lazy.nvim.git"
@@ -495,6 +494,8 @@ require("lazy").setup({
 					end,
 				},
 			})
+
+			require("lspconfig").gleam.setup({})
 		end,
 	},
 
@@ -628,7 +629,7 @@ require("lazy").setup({
 			-- Load the colorscheme here.
 			-- Like many other themes, this one has different styles, and you could load
 			-- any other, such as 'tokyonight-storm', 'tokyonight-moon', or 'tokyonight-day'.
-			vim.cmd.colorscheme("tokyonight-night")
+			-- vim.cmd.colorscheme("tokyonight")
 
 			-- You can configure highlights by doing something like
 			vim.cmd.hi("Comment gui=none")
@@ -744,6 +745,10 @@ require("lazy").setup({
 		},
 	},
 })
+
+vim.cmd.colorscheme("tokyonight")
+vim.cmd.colorscheme("zellner")
+vim.cmd.colorscheme("randomhue")
 
 -- Custom Imports
 require("config.keymap")
