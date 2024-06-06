@@ -747,7 +747,7 @@ require("lazy").setup({
 })
 
 vim.cmd.colorscheme("tokyonight")
-vim.cmd.colorscheme("zellner")
+-- vim.cmd.colorscheme("zellner")
 vim.cmd.colorscheme("randomhue")
 
 -- Custom Imports
