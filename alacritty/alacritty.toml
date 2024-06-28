@@ -2,7 +2,7 @@
 family = "CaskaydiaCove Nerd Font"
 
 [font]
-size = 9.5
+size = 11
 
 [shell]
 program = "/bin/zsh"
