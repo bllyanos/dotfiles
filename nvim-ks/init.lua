@@ -424,6 +424,9 @@ require("lazy").setup({
 				-- 	},
 				-- 	root_dir = require("lspconfig").util.root_pattern("package.json"),
 				-- },
+				elixirls = {
+					single_file_support = true,
+				},
 
 				denols = {
 					filetypes = { "typescript", "typescriptreact", "javascript", "javascriptreact" },
@@ -636,6 +639,11 @@ require("lazy").setup({
 		end,
 	},
 
+	{
+		"olimorris/onedarkpro.nvim",
+		priority = 1000, -- Ensure it loads first
+	},
+
 	-- Highlight todo, notes, etc in comments
 	{
 		"folke/todo-comments.nvim",
@@ -690,6 +698,13 @@ require("lazy").setup({
 
 			---@diagnostic disable-next-line: missing-fields
 			require("nvim-treesitter.configs").setup({
+				incremental_selection = {
+					enable = true,
+					keymaps = {
+						node_incremental = "v",
+						node_decremental = "V",
+					},
+				},
 				ensure_installed = { "bash", "c", "html", "lua", "markdown", "vim", "vimdoc" },
 				-- Autoinstall languages that are not installed
 				auto_install = true,
@@ -746,9 +761,10 @@ require("lazy").setup({
 	},
 })
 
-vim.cmd.colorscheme("tokyonight")
+-- vim.cmd.colorscheme("tokyonight")
 -- vim.cmd.colorscheme("zellner")
-vim.cmd.colorscheme("randomhue")
+-- vim.cmd.colorscheme("randomhue")
+vim.cmd.colorscheme("onedark")
 
 -- Custom Imports
 require("config.keymap")
