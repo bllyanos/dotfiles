@@ -456,6 +456,10 @@ require("lazy").setup({
 					single_file_support = true,
 				},
 
+				ruby_lsp = {
+					root_dir = require("lspconfig").util.root_pattern("Gemfile", ".git"),
+				},
+
 				denols = {
 					filetypes = { "typescript", "typescriptreact", "javascript", "javascriptreact" },
 					root_dir = require("lspconfig").util.root_pattern("deno.json", "deno.jsonc"),
@@ -669,12 +673,13 @@ require("lazy").setup({
 	},
 
 	{
+		-- One dark
 		"olimorris/onedarkpro.nvim",
 		priority = 1000, -- Ensure it loads first
 	},
 
-	-- Highlight todo, notes, etc in comments
 	{
+		-- Highlight todo, notes, etc in comments
 		"folke/todo-comments.nvim",
 		event = "VimEnter",
 		dependencies = { "nvim-lua/plenary.nvim" },
