@@ -99,8 +99,36 @@ require("lazy").setup({
 		"github/copilot.vim",
 		event = "InsertEnter",
 		lazy = false,
+		tag = "v1.29.0",
 	},
 
+	{
+		"hedyhli/outline.nvim",
+		config = function()
+			-- Example mapping to toggle outline
+			vim.keymap.set("n", "<leader>o", "<cmd>Outline<CR>", { desc = "Toggle Outline" })
+
+			require("outline").setup({
+				-- Your setup opts here (leave empty to use defaults)
+				symbol_folding = {
+					autofold_depth = false,
+				},
+				symbols = {
+					filter = {
+						"Package",
+						"Module",
+						"Function",
+						"Class",
+						"Namespace",
+						"Method",
+						"Enum",
+						"Interface",
+						"Type",
+					},
+				},
+			})
+		end,
+	},
 	-- NOTE: Plugins can also be configured to run lua code when they are loaded.
 	--
 	-- This is often very useful to both group configuration, as well as handle
@@ -424,6 +452,9 @@ require("lazy").setup({
 				-- 	},
 				-- 	root_dir = require("lspconfig").util.root_pattern("package.json"),
 				-- },
+				elixirls = {
+					single_file_support = true,
+				},
 
 				denols = {
 					filetypes = { "typescript", "typescriptreact", "javascript", "javascriptreact" },
@@ -515,6 +546,7 @@ require("lazy").setup({
 				graphql = { "prettierd" },
 				html = { "prettier" },
 				lua = { "stylua" },
+				json = { "prettier" },
 				-- Conform can also run multiple formatters sequentially
 				-- python = { "isort", "black" },
 				--
@@ -644,6 +676,11 @@ require("lazy").setup({
 		opts = { signs = false },
 	},
 
+	{
+		"olimorris/onedarkpro.nvim",
+		priority = 1000, -- Ensure it loads first
+	},
+
 	{ -- Collection of various small independent plugins/modules
 		"echasnovski/mini.nvim",
 		config = function()
@@ -746,9 +783,14 @@ require("lazy").setup({
 	},
 })
 
-vim.cmd.colorscheme("tokyonight")
+-- vim.cmd.colorscheme("tokyonight")
 -- vim.cmd.colorscheme("zellner")
-vim.cmd.colorscheme("randomhue")
+-- vim.cmd.colorscheme("randomhue")
+vim.cmd.colorscheme("onedark_vivid")
+
+-- vim.api.nvim_set_keymap("i", "gg", 'copilot#Accept("<CR>")', {silent = true, expr = true})
+-- vim.api.nvim_set_keymap("i", "aa", 'copilot#Accept("<CR>")', {silent = true, expr = true})
+-- vim.api.nvim_set_keymap("i", "<C-a>", 'copilot#Accept("<CR>")', { silent = true, expr = true })
 
 -- Custom Imports
 require("config.keymap")
