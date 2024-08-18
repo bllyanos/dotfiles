@@ -64,6 +64,9 @@ require("lazy").setup({
 					require("typescript-tools").on_attach(client, bufnr)
 				end,
 				settings = {
+					tsserver_file_preferences = {
+						importModuleSpecifierPreference = "relative",
+					},
 					expose_as_code_action = "all",
 				},
 				commands = {},
