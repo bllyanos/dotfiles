@@ -52,6 +52,23 @@ require("lazy").setup({
 	-- "gc" to comment visual regions/lines
 	{ "numToStr/Comment.nvim", opts = {} },
 
+	{
+		"wuelnerdotexe/vim-astro",
+		opts = {},
+		config = function()
+			vim.g.astro_typescript = "enable"
+		end,
+	},
+
+	-- "function signature"
+	{
+		"ray-x/lsp_signature.nvim",
+		event = "VeryLazy",
+		opts = {},
+		config = function(_, opts)
+			require("lsp_signature").setup(opts)
+		end,
+	},
 	-- "typescript-tools"
 	{
 		"pmizio/typescript-tools.nvim",
@@ -64,6 +81,9 @@ require("lazy").setup({
 					require("typescript-tools").on_attach(client, bufnr)
 				end,
 				settings = {
+					tsserver_file_preferences = {
+						importModuleSpecifierPreference = "relative",
+					},
 					expose_as_code_action = "all",
 				},
 				commands = {},
@@ -99,6 +119,7 @@ require("lazy").setup({
 		"github/copilot.vim",
 		event = "InsertEnter",
 		lazy = false,
+		tag = "v1.29.0",
 	},
 
 	-- NOTE: Plugins can also be configured to run lua code when they are loaded.
@@ -518,6 +539,7 @@ require("lazy").setup({
 				graphql = { "prettierd" },
 				html = { "prettier" },
 				lua = { "stylua" },
+				astro = { "prettier" },
 				-- Conform can also run multiple formatters sequentially
 				-- python = { "isort", "black" },
 				--
@@ -764,7 +786,7 @@ require("lazy").setup({
 -- vim.cmd.colorscheme("tokyonight")
 -- vim.cmd.colorscheme("zellner")
 -- vim.cmd.colorscheme("randomhue")
-vim.cmd.colorscheme("onedark")
+vim.cmd.colorscheme("onedark_vivid")
 
 -- Custom Imports
 require("config.keymap")
