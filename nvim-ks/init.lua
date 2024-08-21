@@ -122,6 +122,33 @@ require("lazy").setup({
 		tag = "v1.29.0",
 	},
 
+	{
+		"hedyhli/outline.nvim",
+		config = function()
+			-- Example mapping to toggle outline
+			vim.keymap.set("n", "<leader>o", "<cmd>Outline<CR>", { desc = "Toggle Outline" })
+
+			require("outline").setup({
+				-- Your setup opts here (leave empty to use defaults)
+				symbol_folding = {
+					autofold_depth = false,
+				},
+				symbols = {
+					filter = {
+						"Package",
+						"Module",
+						"Function",
+						"Class",
+						"Namespace",
+						"Method",
+						"Enum",
+						"Interface",
+						"Type",
+					},
+				},
+			})
+		end,
+	},
 	-- NOTE: Plugins can also be configured to run lua code when they are loaded.
 	--
 	-- This is often very useful to both group configuration, as well as handle
@@ -449,6 +476,10 @@ require("lazy").setup({
 					single_file_support = true,
 				},
 
+				ruby_lsp = {
+					root_dir = require("lspconfig").util.root_pattern("Gemfile", ".git"),
+				},
+
 				denols = {
 					filetypes = { "typescript", "typescriptreact", "javascript", "javascriptreact" },
 					root_dir = require("lspconfig").util.root_pattern("deno.json", "deno.jsonc"),
@@ -540,6 +571,7 @@ require("lazy").setup({
 				html = { "prettier" },
 				lua = { "stylua" },
 				astro = { "prettier" },
+				json = { "prettier" },
 				-- Conform can also run multiple formatters sequentially
 				-- python = { "isort", "black" },
 				--
@@ -662,16 +694,22 @@ require("lazy").setup({
 	},
 
 	{
+		-- One dark
 		"olimorris/onedarkpro.nvim",
 		priority = 1000, -- Ensure it loads first
 	},
 
-	-- Highlight todo, notes, etc in comments
 	{
+		-- Highlight todo, notes, etc in comments
 		"folke/todo-comments.nvim",
 		event = "VimEnter",
 		dependencies = { "nvim-lua/plenary.nvim" },
 		opts = { signs = false },
+	},
+
+	{
+		"olimorris/onedarkpro.nvim",
+		priority = 1000, -- Ensure it loads first
 	},
 
 	{ -- Collection of various small independent plugins/modules
