@@ -52,6 +52,23 @@ require("lazy").setup({
 	-- "gc" to comment visual regions/lines
 	{ "numToStr/Comment.nvim", opts = {} },
 
+	{
+		"wuelnerdotexe/vim-astro",
+		opts = {},
+		config = function()
+			vim.g.astro_typescript = "enable"
+		end,
+	},
+
+	-- "function signature"
+	{
+		"ray-x/lsp_signature.nvim",
+		event = "VeryLazy",
+		opts = {},
+		config = function(_, opts)
+			require("lsp_signature").setup(opts)
+		end,
+	},
 	-- "typescript-tools"
 	{
 		"pmizio/typescript-tools.nvim",
@@ -459,6 +476,10 @@ require("lazy").setup({
 					single_file_support = true,
 				},
 
+				ruby_lsp = {
+					root_dir = require("lspconfig").util.root_pattern("Gemfile", ".git"),
+				},
+
 				denols = {
 					filetypes = { "typescript", "typescriptreact", "javascript", "javascriptreact" },
 					root_dir = require("lspconfig").util.root_pattern("deno.json", "deno.jsonc"),
@@ -549,6 +570,7 @@ require("lazy").setup({
 				graphql = { "prettierd" },
 				html = { "prettier" },
 				lua = { "stylua" },
+				astro = { "prettier" },
 				json = { "prettier" },
 				-- Conform can also run multiple formatters sequentially
 				-- python = { "isort", "black" },
@@ -672,12 +694,13 @@ require("lazy").setup({
 	},
 
 	{
+		-- One dark
 		"olimorris/onedarkpro.nvim",
 		priority = 1000, -- Ensure it loads first
 	},
 
-	-- Highlight todo, notes, etc in comments
 	{
+		-- Highlight todo, notes, etc in comments
 		"folke/todo-comments.nvim",
 		event = "VimEnter",
 		dependencies = { "nvim-lua/plenary.nvim" },
@@ -801,7 +824,7 @@ require("lazy").setup({
 -- vim.cmd.colorscheme("tokyonight")
 -- vim.cmd.colorscheme("zellner")
 -- vim.cmd.colorscheme("randomhue")
-vim.cmd.colorscheme("onedark")
+vim.cmd.colorscheme("onedark_vivid")
 
 -- Custom Imports
 require("config.keymap")
