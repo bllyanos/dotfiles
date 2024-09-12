@@ -454,7 +454,8 @@ require("lazy").setup({
 			local servers = {
 				-- clangd = {},
 				-- gopls = {},
-				-- pyright = {},
+				pyright = {},
+				ruff = {},
 				-- rust_analyzer = {},
 				-- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
 				--
@@ -476,7 +477,11 @@ require("lazy").setup({
 					single_file_support = true,
 				},
 
-				ruby_lsp = {
+				-- ruby_lsp = {
+				-- 	root_dir = require("lspconfig").util.root_pattern("Gemfile", ".git"),
+				-- },
+
+				solargraph = {
 					root_dir = require("lspconfig").util.root_pattern("Gemfile", ".git"),
 				},
 
@@ -559,7 +564,7 @@ require("lazy").setup({
 		opts = {
 			notify_on_error = false,
 			format_on_save = {
-				timeout_ms = 500,
+				timeout_ms = 1500,
 				lsp_fallback = true,
 			},
 			formatters_by_ft = {
@@ -572,8 +577,9 @@ require("lazy").setup({
 				lua = { "stylua" },
 				astro = { "prettier" },
 				json = { "prettier" },
+				eruby = { "erb_format" },
 				-- Conform can also run multiple formatters sequentially
-				-- python = { "isort", "black" },
+				python = { "yapf" },
 				--
 				-- You can use a sub-list to tell conform to run *until* a formatter
 				-- is found.
