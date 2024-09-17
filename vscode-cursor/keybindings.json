@@ -1,0 +1,43 @@
+// Place your key bindings in this file to override the defaults
+[
+  {
+    "key": "alt+1",
+    "command": "-workbench.action.openEditorAtIndex1"
+  },
+  {
+    "key": "alt+1",
+    "command": "workbench.action.focusActiveEditorGroup"
+  },
+  {
+    "key": "alt+2",
+    "command": "workbench.action.focusSideBar"
+  },
+  {
+    "key": "ctrl+0",
+    "command": "-workbench.action.focusSideBar"
+  },
+  {
+    "key": "alt+3",
+    "command": "workbench.action.focusAuxiliaryBar"
+  },
+  {
+    "key": "ctrl+9",
+    "command": "composer.startComposerPrompt",
+    "when": "composerIsEnabled"
+  },
+  {
+    "key": "ctrl+i",
+    "command": "-composer.startComposerPrompt",
+    "when": "composerIsEnabled"
+  },
+  {
+    "key": "ctrl+shift+9",
+    "command": "composer.startComposerControlPanel",
+    "when": "composerIsEnabled && isComposerControlPanelEnabled"
+  },
+  {
+    "key": "ctrl+shift+i",
+    "command": "-composer.startComposerControlPanel",
+    "when": "composerIsEnabled && isComposerControlPanelEnabled"
+  }
+]

@@ -1,0 +1,66 @@
+{
+  "window.commandCenter": true,
+  "workbench.sideBar.location": "right",
+  "vim.easymotion": true,
+  "vim.incsearch": true,
+  "vim.useSystemClipboard": true,
+  "window.titleBarStyle": "custom",
+  "vim.useCtrlKeys": true,
+  "vim.hlsearch": true,
+  "editor.fontSize": 16,
+  "editor.letterSpacing": 0.1,
+  "editor.lineHeight": 1.4,
+  "editor.fontFamily": "'JetBrainsMono Nerd Font', monospace",
+  "editor.fontLigatures": true,
+  "vim.normalModeKeyBindingsNonRecursive": [
+    {
+      "before": ["<C-n>"],
+      "commands": [":nohl"]
+    },
+    {
+      "before": ["K"],
+      "commands": ["editor.action.showHover"],
+      "when": "editorTextFocus && vim.active && !inDebugRepl"
+    },
+    {
+      "before": ["[", "d"],
+      "commands": ["editor.action.marker.next"]
+    },
+    {
+      "before": ["]", "d"],
+      "commands": ["editor.action.marker.prev"]
+    },
+    {
+      "before": ["g", "r"],
+      "commands": ["editor.action.goToReferences"]
+    },
+    {
+      "before": ["g", "i"],
+      "commands": ["editor.action.goToImplementation"]
+    },
+    {
+      "before": ["g", "R"],
+      "commands": ["references-view.findReferences"]
+    },
+    {
+      "before": ["g", "I"],
+      "commands": ["references-view.findImplementations"]
+    },
+    {
+      "before": ["<leader>", "s", "f"],
+      "commands": ["workbench.action.quickOpen"]
+    }
+  ],
+  "vim.leader": "<space>",
+  "vim.handleKeys": {
+    "<C-a>": false,
+    "<C-f>": false,
+    "<C-b>": false
+  },
+  "extensions.experimental.affinity": {
+    "vscodevim.vim": 1
+  },
+  "workbench.colorTheme": "Catppuccin Mocha",
+  "typescript.tsserver.maxTsServerMemory": 6144,
+  "githubPullRequests.pullBranch": "never"
+}
