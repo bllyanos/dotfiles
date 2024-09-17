@@ -60,6 +60,13 @@ require('lazy').setup({
     end,
   },
 
+  -- "catpuccin"
+  {
+    'catppuccin/nvim',
+    name = 'catppuccin',
+    priority = 1000,
+  },
+
   -- "function signature"
   {
     'ray-x/lsp_signature.nvim',
@@ -822,7 +829,8 @@ require('lazy').setup({
 -- vim.cmd.colorscheme("tokyonight")
 -- vim.cmd.colorscheme("zellner")
 -- vim.cmd.colorscheme("randomhue")
-vim.cmd.colorscheme 'onedark_vivid'
+-- vim.cmd.colorscheme 'onedark_vivid'
+vim.cmd.colorscheme 'catppuccin'
 
 -- Custom Imports
 require 'config.keymap'
