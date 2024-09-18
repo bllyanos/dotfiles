@@ -1,12 +1,13 @@
 {
   "window.commandCenter": true,
-  "workbench.sideBar.location": "right",
   "vim.easymotion": true,
   "vim.incsearch": true,
+  "editor.minimap.enabled": false,
   "vim.useSystemClipboard": true,
   "window.titleBarStyle": "custom",
   "vim.useCtrlKeys": true,
   "vim.hlsearch": true,
+  "editor.formatOnSave": true,
   "editor.fontSize": 16,
   "editor.letterSpacing": 0.1,
   "editor.lineHeight": 1.4,
@@ -62,5 +63,8 @@
   },
   "workbench.colorTheme": "Catppuccin Mocha",
   "typescript.tsserver.maxTsServerMemory": 6144,
-  "githubPullRequests.pullBranch": "never"
+  "githubPullRequests.pullBranch": "never",
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  }
 }
