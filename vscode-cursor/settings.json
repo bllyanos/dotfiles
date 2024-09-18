@@ -1,15 +1,16 @@
 {
-  "window.commandCenter": true,
-  "workbench.sideBar.location": "right",
+  "window.commandCenter": 1,
   "vim.easymotion": true,
   "vim.incsearch": true,
   "vim.useSystemClipboard": true,
   "window.titleBarStyle": "custom",
   "vim.useCtrlKeys": true,
   "vim.hlsearch": true,
-  "editor.fontSize": 16,
-  "editor.letterSpacing": 0.1,
-  "editor.lineHeight": 1.4,
+  "editor.fontSize": 13,
+  "chat.editor.fontSize": 13,
+  "terminal.integrated.fontSize": 13,
+  "editor.letterSpacing": 0.15,
+  "editor.lineHeight": 1.45,
   "editor.fontFamily": "'JetBrainsMono Nerd Font', monospace",
   "editor.fontLigatures": true,
   "vim.normalModeKeyBindingsNonRecursive": [
@@ -21,6 +22,10 @@
       "before": ["K"],
       "commands": ["editor.action.showHover"],
       "when": "editorTextFocus && vim.active && !inDebugRepl"
+    },
+    {
+      "before": ["<leader>", "c", "a"],
+      "commands": ["editor.action.quickFix"]
     },
     {
       "before": ["[", "d"],
@@ -49,6 +54,14 @@
     {
       "before": ["<leader>", "s", "f"],
       "commands": ["workbench.action.quickOpen"]
+    },
+    {
+      "before": ["<leader>", "r", "n"],
+      "commands": ["editor.action.rename"]
+    },
+    {
+      "before": ["<leader>", "h"],
+      "commands": [":nohl"]
     }
   ],
   "vim.leader": "<space>",
