@@ -7,7 +7,7 @@
   "window.titleBarStyle": "custom",
   "vim.useCtrlKeys": true,
   "vim.hlsearch": true,
-  "editor.formatOnSave": true,
+  "editor.formatOnSave":true,
   "chat.editor.fontSize": 12,
   "terminal.integrated.fontSize": 13,
   "editor.letterSpacing": 0.15,
@@ -76,8 +76,13 @@
   },
   "workbench.colorTheme": "Catppuccin Mocha",
   "typescript.tsserver.maxTsServerMemory": 6144,
-  "githubPullRequests.pullBranch": "never",
   "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[handlebars]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   }
 }
