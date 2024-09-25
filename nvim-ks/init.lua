@@ -567,11 +567,11 @@ require('lazy').setup({
         lsp_fallback = true,
       },
       formatters_by_ft = {
-        typescript = { 'prettierd' },
-        javascript = { 'prettierd' },
-        typescriptreact = { 'prettierd' },
-        javascriptreact = { 'prettierd' },
-        graphql = { 'prettierd' },
+        typescript = { 'prettier' },
+        javascript = { 'prettier' },
+        typescriptreact = { 'prettier' },
+        javascriptreact = { 'prettier' },
+        graphql = { 'prettier' },
         html = { 'prettier' },
         lua = { 'stylua' },
         astro = { 'prettier' },
@@ -582,7 +582,7 @@ require('lazy').setup({
         --
         -- You can use a sub-list to tell conform to run *until* a formatter
         -- is found.
-        -- javascript = { { "prettierd", "prettier" } },
+        -- javascript = { { "prettier", "prettier" } },
       },
     },
   },
