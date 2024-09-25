@@ -75,5 +75,11 @@
   },
   "workbench.colorTheme": "Catppuccin Mocha",
   "typescript.tsserver.maxTsServerMemory": 6144,
-  "githubPullRequests.pullBranch": "never"
+  "githubPullRequests.pullBranch": "never",
+  "[jsonc]": {
+    "editor.defaultFormatter": "vscode.json-language-features"
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  }
 }
