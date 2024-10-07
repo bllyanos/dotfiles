@@ -230,8 +230,9 @@ bindsym $mod+r mode "resize"
 # finds out, if available)
 bar {
         tray_output primary
+        tray_padding 4
         separator_symbol " · "
-        font pango:JetBrains Mono 10
+        font pango:JetBrains Mono 11
         status_command i3status | status
 }
 
