@@ -7,7 +7,7 @@
   "window.titleBarStyle": "custom",
   "vim.useCtrlKeys": true,
   "vim.hlsearch": true,
-  "editor.formatOnSave":true,
+  "editor.formatOnSave": true,
   "chat.editor.fontSize": 12,
   "terminal.integrated.fontSize": 13,
   "editor.letterSpacing": 0.15,
@@ -16,53 +16,114 @@
   "editor.fontLigatures": true,
   "vim.normalModeKeyBindingsNonRecursive": [
     {
-      "before": ["<C-n>"],
-      "commands": [":nohl"]
+      "before": [
+        "<C-n>"
+      ],
+      "commands": [
+        ":nohl"
+      ]
     },
     {
-      "before": ["K"],
-      "commands": ["editor.action.showHover"],
+      "before": [
+        "K"
+      ],
+      "commands": [
+        "editor.action.showHover"
+      ],
       "when": "editorTextFocus && vim.active && !inDebugRepl"
     },
     {
-      "before": ["<leader>", "c", "a"],
-      "commands": ["editor.action.quickFix"]
+      "before": [
+        "<leader>",
+        "c",
+        "a"
+      ],
+      "commands": [
+        "editor.action.quickFix"
+      ]
     },
     {
-      "before": ["[", "d"],
-      "commands": ["editor.action.marker.next"]
+      "before": [
+        "[",
+        "d"
+      ],
+      "commands": [
+        "editor.action.marker.next"
+      ]
     },
     {
-      "before": ["]", "d"],
-      "commands": ["editor.action.marker.prev"]
+      "before": [
+        "]",
+        "d"
+      ],
+      "commands": [
+        "editor.action.marker.prev"
+      ]
     },
     {
-      "before": ["g", "r"],
-      "commands": ["editor.action.goToReferences"]
+      "before": [
+        "g",
+        "r"
+      ],
+      "commands": [
+        "editor.action.goToReferences"
+      ]
     },
     {
-      "before": ["g", "i"],
-      "commands": ["editor.action.goToImplementation"]
+      "before": [
+        "g",
+        "i"
+      ],
+      "commands": [
+        "editor.action.goToImplementation"
+      ]
     },
     {
-      "before": ["g", "R"],
-      "commands": ["references-view.findReferences"]
+      "before": [
+        "g",
+        "R"
+      ],
+      "commands": [
+        "references-view.findReferences"
+      ]
     },
     {
-      "before": ["g", "I"],
-      "commands": ["references-view.findImplementations"]
+      "before": [
+        "g",
+        "I"
+      ],
+      "commands": [
+        "references-view.findImplementations"
+      ]
     },
     {
-      "before": ["<leader>", "s", "f"],
-      "commands": ["workbench.action.quickOpen"]
+      "before": [
+        "<leader>",
+        "s",
+        "f"
+      ],
+      "commands": [
+        "workbench.action.quickOpen"
+      ]
     },
     {
-      "before": ["<leader>", "r", "n"],
-      "commands": ["editor.action.rename"]
+      "before": [
+        "<leader>",
+        "r",
+        "n"
+      ],
+      "commands": [
+        "editor.action.rename"
+      ]
     },
     {
-      "before": ["<leader>", "h"],
-      "commands": [":nohl"]
+      "before": [
+        "<leader>",
+        "h"
+      ],
+      "commands": [
+        ":nohl"
+      ]
     }
   ],
   "vim.leader": "<space>",
@@ -76,6 +137,10 @@
   },
   "workbench.colorTheme": "Catppuccin Mocha",
   "typescript.tsserver.maxTsServerMemory": 6144,
+  "githubPullRequests.pullBranch": "never",
+  "[jsonc]": {
+    "editor.defaultFormatter": "vscode.json-language-features"
+  },
   "[typescript]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
