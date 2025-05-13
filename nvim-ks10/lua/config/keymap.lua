@@ -9,6 +9,8 @@ vim.api.nvim_set_keymap('n', '<A-j>', ':m .+1<CR>', { desc = 'Move line to botto
 vim.api.nvim_set_keymap('v', '<A-k>', ":m '<-2<CR>gv=gv", { desc = 'Move line to bottom' })
 vim.api.nvim_set_keymap('v', '<A-j>', ":m '>+1<CR>gv=gv", { desc = 'Move line to top' })
 
+vim.keymap.set('n', '<leader>fs', '<cmd>lua vim.diagnostic.open_float()<cr>')
+
 -- typescript specific
 vim.keymap.set('n', '<leader>lm', '<cmd>TSToolsOrganizeImports<CR>', { desc = 'Typescript Organize Imports' })
 
