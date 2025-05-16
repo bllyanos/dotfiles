@@ -21,7 +21,7 @@ set $menu rofi -show drun
 ### Output configuration
 #
 # Default wallpaper (more resolutions are available in /usr/share/backgrounds/sway/)
-output * bg /home/bay/Pictures/frierent.jpg center
+output * bg /home/bay/Pictures/frierent.jpg fill
 #
 # Example configuration:
 #
@@ -64,7 +64,7 @@ output * bg /home/bay/Pictures/frierent.jpg center
     bindsym $mod+Return exec $term
 
     # Kill focused window
-    bindsym $mod+Shift+q kill
+    bindsym $mod+q kill
 
     # Start your launcher
     bindsym $mod+d exec $menu
