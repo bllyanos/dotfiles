@@ -4,6 +4,8 @@
 #
 # Read `man 5 sway` for a complete reference.
 
+font pango:FantasqueSansM Nerd Font 11
+
 ### Variables
 #
 # Logo key. Use Mod1 for Alt.
@@ -212,6 +214,7 @@ bindsym $mod+r mode "resize"
     bindsym Print exec slurp | grim -g - - | wl-copy
 
     bindsym $mod+Control+l exec $lock
+    bindsym $mod+Control+k exec "systemctl suspend"
 
     bindsym XF86AudioRaiseVolume exec pactl set-sink-volume @DEFAULT_SINK@ +5%
     bindsym XF86AudioLowerVolume exec pactl set-sink-volume @DEFAULT_SINK@ -5%
@@ -226,6 +229,7 @@ bar {
 
     # status_command while date +'%Y-%m-%d %X'; do sleep 1; done
     status_command ~/.config/sway/index.js
+    # status_command i3status-rs | ~/.config/sway/wrap.js
 
     colors {
         statusline         #1a1a1a
