@@ -39,5 +39,9 @@
     "key": "ctrl+shift+i",
     "command": "-composer.startComposerControlPanel",
     "when": "composerIsEnabled && isComposerControlPanelEnabled"
+  },
+  {
+    "key": "ctrl+i",
+    "command": "composerMode.agent"
   }
 ]

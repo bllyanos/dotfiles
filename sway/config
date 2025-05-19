@@ -23,7 +23,7 @@ set $lock 'swaylock -f -c 212121'
 ### Output configuration
 #
 # Default wallpaper (more resolutions are available in /usr/share/backgrounds/sway/)
-output * bg /home/bay/Pictures/frierent.jpg fill
+output * bg ~/Pictures/frierent.jpg fill
 #
 # Example configuration:
 #

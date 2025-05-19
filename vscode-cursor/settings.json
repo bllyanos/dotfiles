@@ -8,11 +8,12 @@
   "vim.useCtrlKeys": true,
   "vim.hlsearch": true,
   "editor.formatOnSave": true,
-  "chat.editor.fontSize": 12,
-  "terminal.integrated.fontSize": 13,
+  "chat.editor.fontSize": 14,
+  "terminal.integrated.fontSize": 14,
   "editor.letterSpacing": 0.15,
   "editor.lineHeight": 1.45,
-  "editor.fontFamily": "'JetBrainsMono Nerd Font', monospace",
+  "editor.fontSize": 14,
+  "editor.fontFamily": "'FantasqueSansM Nerd Font', monospace",
   "editor.fontLigatures": true,
   "vim.normalModeKeyBindingsNonRecursive": [
     {
@@ -99,11 +100,30 @@
     {
       "before": [
         "<leader>",
-        "s",
+        "e"
+      ],
+      "commands": [
+        "workbench.view.explorer"
+      ]
+    },
+    {
+      "before": [
+        "<leader>",
+        "f",
         "f"
       ],
       "commands": [
         "workbench.action.quickOpen"
+      ]
+    },
+    {
+      "before": [
+        "<leader>",
+        "f",
+        "w"
+      ],
+      "commands": [
+        "workbench.action.findInFiles"
       ]
     },
     {
@@ -135,7 +155,6 @@
   "extensions.experimental.affinity": {
     "vscodevim.vim": 1
   },
-  "workbench.colorTheme": "Catppuccin Mocha",
   "typescript.tsserver.maxTsServerMemory": 6144,
   "githubPullRequests.pullBranch": "never",
   "[jsonc]": {

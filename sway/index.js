@@ -1,12 +1,21 @@
 #!/usr/bin/node
 
-const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+const { format } = require("date-fns");
+
+const days = [
+  "Sunday",
+  "Monday",
+  "Tuesday",
+  "Wednesday",
+  "Thursday",
+  "Friday",
+  "Saturday",
+];
 
 const mods = new Map();
 
 function print() {
   const items = [];
-
 
   // prod
   if (mods.has("prod")) {
@@ -20,19 +29,17 @@ function print() {
 
   // time
   const now = new Date();
-  const day = days[now.getDay()];
-  items.push(day + " " + now.toLocaleString());
+  const formattedDate = format(now, "eeee dd MMM yyyy, hh:mm:ss a");
+  items.push(formattedDate);
 
-
-  console.log(items.join(' | '));
+  console.log(items.join(" | "));
 }
 
 print();
 
 setInterval(() => {
   print();
-}, 1000)
-
+}, 1000);
 
 // ---
 
@@ -44,26 +51,27 @@ async function fetchDatasaur(key, url) {
 }
 
 function updateDatasaur() {
-  fetchDatasaur("prod", "https://app.datasaur.ai/api/health").then((data) => {
-    return data;
-  })
-  .then(res => {
-    mods.set("prod", res)
-  })
-  .catch(err => {
-    mods.set("prod", "prod unavailable")
-  });
+  fetchDatasaur("prod", "https://app.datasaur.ai/api/health")
+    .then((data) => {
+      return data;
+    })
+    .then((res) => {
+      mods.set("prod", res);
+    })
+    .catch((err) => {
+      mods.set("prod", "prod unavailable");
+    });
 
-  fetchDatasaur("qa", "https://frontend-qa.release.datasaur.ai/api/health").then((data) => {
-    return data;
-  })
-  .then(res => {
-    mods.set("qa", res)
-  })
-  .catch(err => {
-    mods.set("qa", "qa unavailable")
-  });
-
+  fetchDatasaur("qa", "https://frontend-qa.release.datasaur.ai/api/health")
+    .then((data) => {
+      return data;
+    })
+    .then((res) => {
+      mods.set("qa", res);
+    })
+    .catch((err) => {
+      mods.set("qa", "qa unavailable");
+    });
 }
 
 updateDatasaur();
