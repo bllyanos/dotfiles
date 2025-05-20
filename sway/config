@@ -190,6 +190,10 @@ bindsym $mod+r mode "resize"
     bindsym XF86AudioLowerVolume exec pactl set-sink-volume @DEFAULT_SINK@ -5%
     bindsym XF86AudioMute exec pactl set-sink-mute @DEFAULT_SINK@ toggle
 
+    # for_window [title="PopUp Calendar"] floating enable
+    for_window [title="PopUp Calendar"] floating enable, move position 1310 px 745 px
+
+
 #
 # Status Bar:
 #
@@ -198,8 +202,9 @@ bar {
     position bottom
 
     # status_command while date +'%Y-%m-%d %X'; do sleep 1; done
-    status_command ~/.config/sway/index.js
+    # status_command ~/.config/sway/index.js
     # status_command i3status-rs | ~/.config/sway/wrap.js
+    status_command i3status-rs 
 
     colors {
         statusline         #1a1a1a
