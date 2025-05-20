@@ -29,6 +29,8 @@ exec swayidle -w \
          timeout 900 'swaymsg "output * power off"' resume 'swaymsg "output * power on"' \
          before-sleep 'swaylock -f -c 212121'
 
+# Custom Autostarts
+exec_always blueman-applet
 
 ### Key bindings
 #
@@ -168,7 +170,11 @@ mode "resize" {
     bindsym Return mode "default"
     bindsym Escape mode "default"
 }
+
+
 bindsym $mod+r mode "resize"
+
+
 #
 # Utilities:
 #
@@ -199,7 +205,7 @@ bindsym $mod+r mode "resize"
 #
 # Read `man 5 sway-bar` for more information about this section.
 bar {
-    position bottom
+    position top
 
     # status_command while date +'%Y-%m-%d %X'; do sleep 1; done
     # status_command ~/.config/sway/index.js
