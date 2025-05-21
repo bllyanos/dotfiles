@@ -21,6 +21,24 @@ return {
     "ThePrimeagen/harpoon",
   },
 
+  {
+    "j-hui/fidget.nvim",
+    lazy = false,
+    priority = 1000,
+    opts = {
+      progress = {
+        poll_rate = 0, -- let LSP control updates
+        suppress_on_insert = false, -- optionally show progress in insert mode
+        ignore_done_already = false, -- show completed even if already done
+      },
+      notification = {
+        window = {
+          winblend = 0,
+        },
+      },
+    },
+  },
+
   { -- Autoformat
     "stevearc/conform.nvim",
     event = { "BufWritePre" },
@@ -108,6 +126,20 @@ return {
         },
       },
     },
+    keys = {
+      -- Top Pickers & Explorer
+      -- LSP
+      { "gd", function() require("snacks").picker.lsp_definitions() end, desc = "Goto Definition" },
+      { "gD", function() require("snacks").picker.lsp_declarations() end, desc = "Goto Declaration" },
+      {
+        "gr",
+        function() require("snacks").picker.lsp_references() end,
+        nowait = true,
+        desc = "References",
+      },
+      { "gI", function() require("snacks").picker.lsp_implementations() end, desc = "Goto Implementation" },
+      { "gy", function() require("snacks").picker.lsp_type_definitions() end, desc = "Goto T[y]pe Definition" },
+    },
   },
 
   -- You can disable default plugins as follows:
@@ -117,7 +149,7 @@ return {
   {
     "L3MON4D3/LuaSnip",
     config = function(plugin, opts)
-      require "astronvim.plugins.configs.luasnip" (plugin, opts) -- include the default astronvim config that calls the setup call
+      require "astronvim.plugins.configs.luasnip"(plugin, opts) -- include the default astronvim config that calls the setup call
       -- add more custom luasnip configuration such as filetype extend or custom snippets
       local luasnip = require "luasnip"
       luasnip.filetype_extend("javascript", { "javascriptreact" })
@@ -127,7 +159,7 @@ return {
   {
     "windwp/nvim-autopairs",
     config = function(plugin, opts)
-      require "astronvim.plugins.configs.nvim-autopairs" (plugin, opts) -- include the default astronvim config that calls the setup call
+      require "astronvim.plugins.configs.nvim-autopairs"(plugin, opts) -- include the default astronvim config that calls the setup call
       -- add more custom autopairs configuration such as custom rules
       local npairs = require "nvim-autopairs"
       local Rule = require "nvim-autopairs.rule"
@@ -135,18 +167,18 @@ return {
       npairs.add_rules(
         {
           Rule("$", "$", { "tex", "latex" })
-          -- don't add a pair if the next character is %
-              :with_pair(cond.not_after_regex "%%")
-          -- don't add a pair if  the previous character is xxx
-              :with_pair(
-                cond.not_before_regex("xxx", 3)
-              )
-          -- don't move right when repeat character
-              :with_move(cond.none())
-          -- don't delete if the next character is xx
-              :with_del(cond.not_after_regex "xx")
-          -- disable adding a newline when you press <cr>
-              :with_cr(cond.none()),
+            -- don't add a pair if the next character is %
+            :with_pair(cond.not_after_regex "%%")
+            -- don't add a pair if  the previous character is xxx
+            :with_pair(
+              cond.not_before_regex("xxx", 3)
+            )
+            -- don't move right when repeat character
+            :with_move(cond.none())
+            -- don't delete if the next character is xx
+            :with_del(cond.not_after_regex "xx")
+            -- disable adding a newline when you press <cr>
+            :with_cr(cond.none()),
         },
         -- disable for .vim files, but it work for another filetypes
         Rule("a", "a", "-vim")
