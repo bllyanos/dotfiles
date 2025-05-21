@@ -15,6 +15,7 @@ vim.keymap.set("n", "<A-j>", ":move +1<CR>", { noremap = true, silent = true })
 vim.keymap.set("n", "<A-Down>", ":move +1<CR>", { noremap = true, silent = true })
 vim.keymap.set("v", "<A-j>", ":move '>+1<CR><CR>gv", { noremap = true, silent = true })
 vim.keymap.set("v", "<A-Down>", ":move '>+1<CR>gv", { noremap = true, silent = true })
+vim.keymap.set("n", "<leader>la", function() vim.lsp.buf.code_action() end, { desc = "Code Action", silent = true })
 
 vim.cmd [[
   set undodir=/lvim-undo

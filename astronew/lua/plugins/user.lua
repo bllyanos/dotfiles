@@ -39,6 +39,27 @@ return {
     },
   },
 
+  -- Typescript Tools
+  {
+    "pmizio/typescript-tools.nvim",
+    dependencies = { "nvim-lua/plenary.nvim", "AstroNvim/astrolsp" },
+    opts = {},
+    config = function()
+      require("typescript-tools").setup {
+        filetypes = { "typescript", "typescriptreact", "javascript", "javascriptreact" },
+        settings = {
+          tsserver_file_preferences = {
+            importModuleSpecifierPreference = "relative",
+          },
+          expose_as_code_action = "all",
+        },
+        commands = {},
+        single_file_support = false,
+        root_dir = require("lspconfig").util.root_pattern "package.json",
+      }
+    end,
+  },
+
   { -- Autoformat
     "stevearc/conform.nvim",
     event = { "BufWritePre" },
