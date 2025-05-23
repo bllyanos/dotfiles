@@ -32,6 +32,7 @@ exec swayidle -w \
 # Custom Autostarts
 exec_always blueman-applet
 
+exec_always makoctl reload
 exec_always sleep 2 && notify-send "welcome back, $USER !"
 
 ### Key bindings
