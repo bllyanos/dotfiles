@@ -8,142 +8,73 @@
   "vim.useCtrlKeys": true,
   "vim.hlsearch": true,
   "editor.formatOnSave": true,
+  "editor.formatOnType": true,
   "chat.editor.fontSize": 14,
   "terminal.integrated.fontSize": 14,
-  "editor.letterSpacing": 0.15,
+  "editor.letterSpacing": 0.2,
   "editor.lineHeight": 1.45,
-  "editor.fontSize": 14,
-  "editor.fontFamily": "'FantasqueSansM Nerd Font', monospace",
+  "editor.fontSize": 13.5,
+  "editor.fontWeight": 600,
+  "editor.fontFamily": "'JetBrainsMono Nerd Font', monospace",
   "editor.fontLigatures": true,
+  "elixirLS.suggestSpecs": false,
   "vim.normalModeKeyBindingsNonRecursive": [
     {
-      "before": [
-        "<C-n>"
-      ],
-      "commands": [
-        ":nohl"
-      ]
+      "before": ["<C-n>"],
+      "commands": [":nohl"]
     },
     {
-      "before": [
-        "K"
-      ],
-      "commands": [
-        "editor.action.showHover"
-      ],
+      "before": ["K"],
+      "commands": ["editor.action.showHover"],
       "when": "editorTextFocus && vim.active && !inDebugRepl"
     },
     {
-      "before": [
-        "<leader>",
-        "c",
-        "a"
-      ],
-      "commands": [
-        "editor.action.quickFix"
-      ]
+      "before": ["<leader>", "c", "a"],
+      "commands": ["editor.action.quickFix"]
     },
     {
-      "before": [
-        "[",
-        "d"
-      ],
-      "commands": [
-        "editor.action.marker.next"
-      ]
+      "before": ["[", "d"],
+      "commands": ["editor.action.marker.next"]
     },
     {
-      "before": [
-        "]",
-        "d"
-      ],
-      "commands": [
-        "editor.action.marker.prev"
-      ]
+      "before": ["]", "d"],
+      "commands": ["editor.action.marker.prev"]
     },
     {
-      "before": [
-        "g",
-        "r"
-      ],
-      "commands": [
-        "editor.action.goToReferences"
-      ]
+      "before": ["g", "r"],
+      "commands": ["editor.action.goToReferences"]
     },
     {
-      "before": [
-        "g",
-        "i"
-      ],
-      "commands": [
-        "editor.action.goToImplementation"
-      ]
+      "before": ["g", "i"],
+      "commands": ["editor.action.goToImplementation"]
     },
     {
-      "before": [
-        "g",
-        "R"
-      ],
-      "commands": [
-        "references-view.findReferences"
-      ]
+      "before": ["g", "R"],
+      "commands": ["references-view.findReferences"]
     },
     {
-      "before": [
-        "g",
-        "I"
-      ],
-      "commands": [
-        "references-view.findImplementations"
-      ]
+      "before": ["g", "I"],
+      "commands": ["references-view.findImplementations"]
     },
     {
-      "before": [
-        "<leader>",
-        "e"
-      ],
-      "commands": [
-        "workbench.view.explorer"
-      ]
+      "before": ["<leader>", "e"],
+      "commands": ["workbench.view.explorer"]
     },
     {
-      "before": [
-        "<leader>",
-        "f",
-        "f"
-      ],
-      "commands": [
-        "workbench.action.quickOpen"
-      ]
+      "before": ["<leader>", "f", "f"],
+      "commands": ["workbench.action.quickOpen"]
     },
     {
-      "before": [
-        "<leader>",
-        "f",
-        "w"
-      ],
-      "commands": [
-        "workbench.action.findInFiles"
-      ]
+      "before": ["<leader>", "f", "w"],
+      "commands": ["workbench.action.findInFiles"]
     },
     {
-      "before": [
-        "<leader>",
-        "r",
-        "n"
-      ],
-      "commands": [
-        "editor.action.rename"
-      ]
+      "before": ["<leader>", "r", "n"],
+      "commands": ["editor.action.rename"]
     },
     {
-      "before": [
-        "<leader>",
-        "h"
-      ],
-      "commands": [
-        ":nohl"
-      ]
+      "before": ["<leader>", "h"],
+      "commands": [":nohl"]
     }
   ],
   "vim.leader": "<space>",
@@ -158,7 +89,7 @@
   "typescript.tsserver.maxTsServerMemory": 6144,
   "githubPullRequests.pullBranch": "never",
   "[jsonc]": {
-    "editor.defaultFormatter": "vscode.json-language-features"
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "[typescript]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
@@ -168,5 +99,24 @@
   },
   "[handlebars]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
-  }
+  },
+  "remote.SSH.remotePlatform": {
+    "billy@localhost": "linux",
+    "datasaur-billy": "linux"
+  },
+  "cursor.cpp.disabledLanguages": [],
+  "[css]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "remote.autoForwardPortsSource": "hybrid",
+  "[json]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "workbench.colorTheme": "Cursor Dark Midnight",
+  "[html]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "cursor.composer.usageSummaryDisplay": "always",
+  "elixirLS.mcpEnabled": true,
+  "workbench.iconTheme": "se98"
 }

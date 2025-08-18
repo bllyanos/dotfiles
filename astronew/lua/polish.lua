@@ -18,8 +18,8 @@ vim.keymap.set("v", "<A-Down>", ":move '>+1<CR>gv", { noremap = true, silent = t
 vim.keymap.set("n", "<leader>la", function() vim.lsp.buf.code_action() end, { desc = "Code Action", silent = true })
 
 vim.cmd [[
-  set undodir=/lvim-undo
-  set directory=/nvim-swap
+  set undodir=/lvim-undo-bay
+  set directory=/nvim-swap-bay
 ]]
 
 vim.cmd [[
