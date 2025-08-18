@@ -1,16 +1,25 @@
 icons_format = "{icon}"
 
 [theme]
-theme = "native"
-# [theme.overrides]
-# idle_bg = "#123456"
-# idle_fg = "#abcdef"
+theme = "ctp-frappe"
+[theme.overrides]
+separator = " · "
+separator_bg = "#414559"
+separator_fg = "#c6d0f5"
 
 [icons]
 icons = "awesome4"
 [icons.overrides]
-bat = ["|E|", "|_|", "|=|", "|F|"]
-bat_charging = "|^| "
+bat = ["empty", "low", "medium", "full"]
+bat_charging = "charging"
+cpu = "cpu"
+volume_muted = "muted"
+volume = "volume"
+
+[[block]]
+block = "custom"
+command = "light -G | awk '{printf \"brightness %d%%\", $1}'"
+interval = 2
 
 [[block]]
 block = "cpu"
@@ -26,7 +35,7 @@ alert_unit = "GB"
 interval = 20
 warning = 20.0
 alert = 10.0
-format = " $icon available / $available.eng(w:2) "
+format = " $icon root: $available.eng(w:2) "
 
 [[block]]
 block = "memory"
@@ -40,15 +49,13 @@ button = "left"
 cmd = "pavucontrol"
 
 [[block]]
-block = "net"
-format = " $icon $device $graph_down $speed_down -- $graph_up $speed_up "
-device = "enp42s0"
+block = "battery"
+format = " $icon $percentage {$time_remaining.dur(hms:true, min_unit:m)} "
+full_format = " $icon $percentage "
+charging_format = " $icon $percentage "
+driver = "upower"
 
 [[block]]
 block = "time"
-interval = 1
-format = " $timestamp.datetime(f:'%A %d %B %Y %I:%M:%S %p %Z') "
-[[block.click]]
-button = "left"
-cmd = "~/.config/i3status-rust/cal.sh"
-
+interval = 5
+format = " $timestamp.datetime(f:'%a %d %b %Y %H:%M') "
