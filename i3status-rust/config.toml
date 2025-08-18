@@ -1,0 +1,61 @@
+icons_format = "{icon}"
+
+[theme]
+theme = "ctp-frappe"
+[theme.overrides]
+separator = " · "
+separator_bg = "#414559"
+separator_fg = "#c6d0f5"
+
+[icons]
+icons = "awesome4"
+[icons.overrides]
+bat = ["empty", "low", "medium", "full"]
+bat_charging = "charging"
+cpu = "cpu"
+volume_muted = "muted"
+volume = "volume"
+
+[[block]]
+block = "custom"
+command = "light -G | awk '{printf \"brightness %d%%\", $1}'"
+interval = 2
+
+[[block]]
+block = "cpu"
+info_cpu = 20
+warning_cpu = 50
+critical_cpu = 90
+
+[[block]]
+block = "disk_space"
+path = "/"
+info_type = "available"
+alert_unit = "GB"
+interval = 20
+warning = 20.0
+alert = 10.0
+format = " $icon root: $available.eng(w:2) "
+
+[[block]]
+block = "memory"
+format = " $icon $mem_total_used_percents.eng(w:2) "
+format_alt = " $icon_swap $swap_used_percents.eng(w:2) "
+
+[[block]]
+block = "sound"
+[[block.click]]
+button = "left"
+cmd = "pavucontrol"
+
+[[block]]
+block = "battery"
+format = " $icon $percentage {$time_remaining.dur(hms:true, min_unit:m)} "
+full_format = " $icon $percentage "
+charging_format = " $icon $percentage "
+driver = "upower"
+
+[[block]]
+block = "time"
+interval = 5
+format = " $timestamp.datetime(f:'%a %d %b %Y %H:%M') "
