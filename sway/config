@@ -18,6 +18,8 @@ font pango:JetBrainsMono Nerd Font 11
 
 exec_always swaybg -i ~/Pictures/ctp-wall.jpg -m fill
 
+exec blueman-applet
+
 bindsym XF86MonBrightnessUp exec light -A 5 && pkill -RTMIN+8 i3status-rs
 bindsym XF86MonBrightnessDown exec light -U 5 && pkill -RTMIN+8 i3status-rs
 

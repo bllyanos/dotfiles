@@ -10,10 +10,11 @@
   "editor.formatOnSave": true,
   "chat.editor.fontSize": 14,
   "terminal.integrated.fontSize": 14,
+  "terminal.integrated.defaultProfile.linux": "zsh",
   "editor.letterSpacing": 0.15,
   "editor.lineHeight": 1.45,
   "editor.fontSize": 14,
-  "editor.fontFamily": "'FantasqueSansM Nerd Font', monospace",
+  "editor.fontFamily": "'Hack Nerd Font Mono', monospace",
   "editor.fontLigatures": true,
   "vim.normalModeKeyBindingsNonRecursive": [
     {
@@ -168,5 +169,8 @@
   },
   "[handlebars]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "remote.SSH.remotePlatform": {
+    "billy@localhost": "linux"
   }
 }
