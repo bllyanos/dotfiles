@@ -1,0 +1,25 @@
+#!/bin/bash
+tmpbg=$(mktemp /tmp/screenfreeze.XXXXXX.png)
+
+mkdir -p ~/Pictures/Screenshots
+
+# Take full screenshot first (frozen background)
+grim "$tmpbg"
+
+# Show frozen image as overlay while selecting
+# swaylock is the easiest way to display it
+swaylock --image "$tmpbg" --show-failed-attempts=false --daemonize
+
+# Now run slurp to select area
+slurp_output=$(slurp)
+
+# Kill the frozen overlay
+pkill -u "$USER" swaylock
+
+# Save the cropped screenshot
+if [ -n "$slurp_output" ]; then
+  grim -g "$slurp_output" ~/Pictures/Screenshots/screenshot-$(date +'%Y-%m-%d_%H-%M-%S').png
+fi
+
+# Cleanup
+rm "$tmpbg"
