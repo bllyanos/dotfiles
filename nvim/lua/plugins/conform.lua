@@ -7,7 +7,7 @@ return {
       },
     },
     formatters_by_ft = {
-      eruby = { "htmlbeautifier" },
+      eruby = { "erb_format" },
       ruby = { "rufo" },
       markdown = { "markdownlint" },
       yaml = { "yamlfix" },
