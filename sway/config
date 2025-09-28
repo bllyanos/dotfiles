@@ -1,5 +1,9 @@
 include catppuccin-frappe
 
+exec dbus-update-activation-environment --systemd DISPLAY WAYLAND_DISPLAY XDG_CURRENT_DESKTOP=sway
+exec /usr/lib/xdg-desktop-portal-wlr &
+exec /usr/lib/xdg-desktop-portal &
+
 ### Variables
 #
 # Logo key. Use Mod1 for Alt.
@@ -10,7 +14,7 @@ set $down j
 set $up k
 set $right l
 # Your preferred terminal emulator
-set $term kitty
+set $term alacritty
 # Your preferred application launcher
 set $menu rofi
 
@@ -230,13 +234,15 @@ bindsym $mod+r mode "resize"
     # Special keys to adjust brightness via brightnessctl
     # bindsym --locked XF86MonBrightnessDown exec brightnessctl set 5%-
     # bindsym --locked XF86MonBrightnessUp exec brightnessctl set 5%+
-    # Special key to take a screenshot with grim
-    bindsym Print exec ~/.local/bin/grim-freeze-select
-    bindsym $mod+Shift+s exec ~/.local/bin/grim-freeze-select-copy
     bindsym $mod+Ctrl+l exec swaylock -f --color 212121
     bindsym $mod+Ctrl+k exec systemctl suspend
 
+    # screenshot with wayfreeze
+    bindsym Print exec wayfreeze --after-freeze-cmd 'grim -g "$(slurp)" - | wl-copy; killall wayfreeze'
+    bindsym $mod+Shift+s exec wayfreeze --after-freeze-cmd 'grim -g "$(slurp)" - | wl-copy; killall wayfreeze'
 
+    # screenshot older method, doesn't work
+    # bindsym $mod+Shift+s exec ~/.local/bin/grim-freeze-select-copy
 #
 # Status Bar:
 #
@@ -286,10 +292,9 @@ client.placeholder       $overlay0 $base $text  $overlay0  $overlay0
 client.background        $base
 
 # Smart gaps (disable when only one window is open)
-# smart_gaps on
-
+smart_gaps on
 # Set gaps between windows
-gaps inner 5
-gaps outer 5
+# gaps inner 0
+# gaps outer 0
 
 include /etc/sway/config.d/*

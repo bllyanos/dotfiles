@@ -12,9 +12,9 @@
   "terminal.integrated.fontSize": 14,
   "terminal.integrated.defaultProfile.linux": "zsh",
   "editor.letterSpacing": 0.15,
-  "editor.lineHeight": 1.45,
-  "editor.fontSize": 14,
-  "editor.fontFamily": "'Hack Nerd Font Mono', monospace",
+  "editor.lineHeight": 1.20,
+  "editor.fontSize": 16,
+  "editor.fontFamily": "'JetBrainsMono Nerd Font Mono', monospace",
   "editor.fontLigatures": true,
   "vim.normalModeKeyBindingsNonRecursive": [
     {
@@ -171,6 +171,22 @@
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "remote.SSH.remotePlatform": {
-    "billy@localhost": "linux"
-  }
+    "billy@localhost": "linux",
+    "datasaur-billy": "linux"
+  },
+  "workbench.iconTheme": "catppuccin-mocha",
+  "remote.autoForwardPortsSource": "hybrid",
+  "json.schemaDownload.enable": true,
+  "[json]": {
+    "editor.defaultFormatter": "denoland.vscode-deno"
+  },
+  "files.watcherExclude": {
+    "**/.bloop": true,
+    "**/.metals": true
+  },
+  "rubyLsp.rubyVersionManager": {
+    "identifier": "mise"
+  },
+  "workbench.colorTheme": "Catppuccin Mocha",
+  "typescript.updateImportsOnFileMove.enabled": "always"
 }
