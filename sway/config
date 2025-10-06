@@ -4,6 +4,8 @@ exec dbus-update-activation-environment --systemd DISPLAY WAYLAND_DISPLAY XDG_CU
 exec /usr/lib/xdg-desktop-portal-wlr &
 exec /usr/lib/xdg-desktop-portal &
 
+exec exec_always makoctl mode -r do-not-disturb
+
 ### Variables
 #
 # Logo key. Use Mod1 for Alt.
@@ -14,7 +16,7 @@ set $down j
 set $up k
 set $right l
 # Your preferred terminal emulator
-set $term alacritty
+set $term kitty
 # Your preferred application launcher
 set $menu rofi
 
@@ -241,6 +243,8 @@ bindsym $mod+r mode "resize"
     bindsym Print exec wayfreeze --after-freeze-cmd 'grim -g "$(slurp)" - | wl-copy; killall wayfreeze'
     bindsym $mod+Shift+s exec wayfreeze --after-freeze-cmd 'grim -g "$(slurp)" - | wl-copy; killall wayfreeze'
 
+    bindsym $mod+Shift+m exec makoctl mode -t auto_dnd; notify-send 'DND inactive'
+
     # screenshot older method, doesn't work
     # bindsym $mod+Shift+s exec ~/.local/bin/grim-freeze-select-copy
 #
@@ -294,7 +298,7 @@ client.background        $base
 # Smart gaps (disable when only one window is open)
 smart_gaps on
 # Set gaps between windows
-# gaps inner 0
-# gaps outer 0
+gaps inner 5
+gaps outer 5
 
 include /etc/sway/config.d/*
