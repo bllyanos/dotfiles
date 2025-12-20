@@ -1,21 +1,21 @@
 {
   "window.commandCenter": true,
-  "vim.easymotion": true,
-  "vim.incsearch": true,
-  "editor.minimap.enabled": false,
-  "vim.useSystemClipboard": true,
   "window.titleBarStyle": "custom",
-  "vim.useCtrlKeys": true,
-  "vim.hlsearch": true,
+  "editor.useTabStops": false,
+  "editor.tabSize": 2,
+  "editor.minimap.enabled": false,
   "editor.formatOnSave": true,
-  "chat.editor.fontSize": 14,
-  "terminal.integrated.fontSize": 14,
-  "terminal.integrated.defaultProfile.linux": "zsh",
-  "editor.letterSpacing": 0.15,
-  "editor.lineHeight": 1.20,
+  "editor.letterSpacing": 0.1,
+  "editor.lineHeight": 1.1,
   "editor.fontSize": 16,
   "editor.fontFamily": "'JetBrainsMono Nerd Font Mono', monospace",
   "editor.fontLigatures": true,
+  "terminal.integrated.fontSize": 14,
+  "terminal.integrated.defaultProfile.linux": "zsh",
+  "remote.autoForwardPortsSource": "hybrid",
+  "json.schemaDownload.enable": true,
+  "typescript.updateImportsOnFileMove.enabled": "always",
+  "typescript.tsserver.maxTsServerMemory": 8144,
   "vim.normalModeKeyBindingsNonRecursive": [
     {
       "before": [
@@ -153,11 +153,14 @@
     "<C-f>": false,
     "<C-b>": false
   },
+  "vim.easymotion": true,
+  "vim.incsearch": true,
+  "vim.useSystemClipboard": true,
+  "vim.useCtrlKeys": true,
+  "vim.hlsearch": true,
   "extensions.experimental.affinity": {
     "vscodevim.vim": 1
   },
-  "typescript.tsserver.maxTsServerMemory": 6144,
-  "githubPullRequests.pullBranch": "never",
   "[jsonc]": {
     "editor.defaultFormatter": "vscode.json-language-features"
   },
@@ -170,23 +173,33 @@
   "[handlebars]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
+  "[json]": {
+    "editor.defaultFormatter": "vscode.json-language-features"
+  },
   "remote.SSH.remotePlatform": {
     "billy@localhost": "linux",
     "datasaur-billy": "linux"
   },
-  "workbench.iconTheme": "catppuccin-mocha",
-  "remote.autoForwardPortsSource": "hybrid",
-  "json.schemaDownload.enable": true,
-  "[json]": {
-    "editor.defaultFormatter": "denoland.vscode-deno"
+  "diffEditor.renderSideBySide": true,
+  "chat.tools.terminal.autoApprove": {
+    "/^gh --version$/": {
+      "approve": true,
+      "matchCommandLine": true
+    },
+    "gh": true,
+    "/^mix test$/": {
+      "approve": true,
+      "matchCommandLine": true
+    },
+    "mix": true,
+    "git add": true,
+    "git commit": true,
+    "git push": true,
+    "npm install": true
   },
-  "files.watcherExclude": {
-    "**/.bloop": true,
-    "**/.metals": true
-  },
-  "rubyLsp.rubyVersionManager": {
-    "identifier": "mise"
-  },
-  "workbench.colorTheme": "Catppuccin Mocha",
-  "typescript.updateImportsOnFileMove.enabled": "always"
+  "symbols.hidesExplorerArrows": false,
+  "workbench.iconTheme": "flow-dark",
+  "elixirLS.suggestSpecs": false,
+  "github.copilot.nextEditSuggestions.enabled": true,
+  "workbench.colorTheme": "Catppuccin Mocha"
 }
