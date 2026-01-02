@@ -7,4 +7,5 @@ yay -S --noconfirm sway \
   swaylock \
   zellij \
   nvim \
-  nwg-displays
+  nwg-displays \
+  wayfreeze
