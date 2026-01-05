@@ -16,7 +16,7 @@ set $down j
 set $up k
 set $right l
 # Your preferred terminal emulator
-set $term kitty
+set $term alacritty
 # Your preferred application launcher
 set $menu rofi
 
@@ -80,8 +80,8 @@ input type:touchpad {
 }
 
 exec swayidle -w \
-  timeout 300 'swaylock -f --color 212121' \
-  timeout 600 'swaymsg "output * dpms off"' \
+  timeout 600 'swaylock -f --color 212121' \
+  timeout 1200 'swaymsg "output * dpms off"' \
   resume 'swaymsg "output * dpms on"' \
   before-sleep 'swaylock -f --color 212121'
 
@@ -296,9 +296,10 @@ client.placeholder       $overlay0 $base $text  $overlay0  $overlay0
 client.background        $base
 
 # Smart gaps (disable when only one window is open)
-smart_gaps on
+# smart_gaps on
+
 # Set gaps between windows
-gaps inner 5
-gaps outer 5
+# gaps inner 5
+# gaps outer 5
 
 include /etc/sway/config.d/*
