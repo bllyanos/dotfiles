@@ -44,6 +44,13 @@ button = "left"
 cmd = "pavucontrol"
 
 [[block]]
+block = "custom"
+command = "echo dnd"
+[[block.click]]
+button = "left"
+cmd = "autodnd"
+
+[[block]]
 block = "time"
 interval = 5
-format = " $timestamp.datetime(f:'%a %d %b %Y %H:%M') "
+format = "$timestamp.datetime(f:'%a %d %b %Y %H:%M') "
