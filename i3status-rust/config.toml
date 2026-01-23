@@ -1,11 +1,11 @@
 icons_format = "{icon}"
 
 [theme]
-theme = "ctp-frappe"
+theme = "plain"
 [theme.overrides]
 separator = " · "
-separator_bg = "#414559"
-separator_fg = "#c6d0f5"
+separator_bg = "#1a1a1a"
+separator_fg = "#e0e0e0"
 
 [icons]
 icons = "awesome4"

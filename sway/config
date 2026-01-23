@@ -1,5 +1,5 @@
 ### Theme & Variables
-include catppuccin-frappe
+include monochrome
 
 set $mod    Mod4
 set $left   h
@@ -18,23 +18,11 @@ exec /usr/lib/xdg-desktop-portal &
 
 exec exec_always makoctl mode -r do-not-disturb
 
-### Variables
-#
-# Logo key. Use Mod1 for Alt.
-set $mod Mod4
-# Home row direction keys, like vim
-set $left h
-set $down j
-set $up k
-set $right l
-# Your preferred terminal emulator
-set $term alacritty
-# Your preferred application launcher
-set $menu rofi
-
 font pango:JetBrainsMono Nerd Font 11
 
-exec_always swaybg -i ~/Pictures/ctp-wall.jpg -m fill
+exec_always makoctl mode -r do-not-disturb
+exec_always swaybg -i ~/Pictures/wall.jpg -m fill
+
 exec blueman-applet
 
 ### Input Configuration
