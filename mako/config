@@ -3,12 +3,11 @@
 # Normal notifications
 font=JetBrainsMono Nerd Font 10
 
-
-# Colors
-background-color=#303446
-text-color=#c6d0f5
-border-color=#8caaee
-progress-color=over #414559
+# Colors (Monochrome)
+background-color=#1a1a1a
+text-color=#e0e0e0
+border-color=#ffffff
+progress-color=over #4d4d4d
 
 border-size=2
 padding=10
@@ -18,7 +17,7 @@ height=100
 default-timeout=4000
 
 [urgency=high]
-border-color=#ef9f76
+border-color=#999999
 default-timeout=0
 
 # --generated auto_dnd

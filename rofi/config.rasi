@@ -1,4 +1,4 @@
-@theme "catppuccin-default"
+@theme "monochrome"
 
 configuration {
 }

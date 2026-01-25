@@ -152,10 +152,10 @@ mode "resize" {
 bindsym $mod+r mode "resize"
 
 ### Appearance
-smart_gaps on
+# smart_gaps on
 # Gaps
-gaps inner 5
-gaps outer 5
+# gaps inner 5
+# gaps outer 5
 
 # Window Decorations
 # target                 title      bg     text    indicator  border
@@ -171,6 +171,7 @@ bar {
     font pango:JetBrainsMono Nerd Font 11
     position top
     status_command i3status-rs
+    tray_output *
 
     colors {
         background         $base
