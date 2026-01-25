@@ -4,14 +4,18 @@ icons_format = "{icon}"
 theme = "plain"
 [theme.overrides]
 separator = "  "
-idle_bg = "#1a1a1a"
+idle_bg = "#262626"
 idle_fg = "#e0e0e0"
-info_bg = "#333333"
+separator_bg = "#262626"
+separator_fg = "#262626"
+info_bg = "#262626"
 info_fg = "#ffffff"
-warning_bg = "#666666"
-warning_fg = "#ffffff"
-critical_bg = "#999999"
+warning_bg = "#262626"
+warning_fg = "#808080"
+critical_bg = "#262626"
 critical_fg = "#ffffff"
+good_bg = "#262626"
+good_fg = "#e0e0e0"
 
 [icons]
 icons = "awesome5"
@@ -22,11 +26,11 @@ bat_charging = ""
 [[block]]
 block = "cpu"
 interval = 2
-format = "  $utilization "
+format = "  $utilization% "
 
 [[block]]
 block = "memory"
-format = "  $mem_total_used_percents.eng(w:2) "
+format = "  $mem_used_percents% "
 format_alt = "  $mem_used.eng(w:3, u:B, p:G) / $mem_total.eng(w:3, u:B, p:G) "
 
 [[block]]
@@ -38,12 +42,13 @@ format = "  $available "
 [[block]]
 block = "net"
 device = "enp42s0"
-format = "  $speed_down.eng(w:3)  $speed_up.eng(w:3)  "
+format = "  $speed_down / $speed_up "
 interval = 5
 
 [[block]]
 block = "custom"
-command = "echo dnd"
+command = "echo "
+interval = "once"
 [[block.click]]
 button = "left"
 cmd = "autodnd"
@@ -56,13 +61,6 @@ button = "left"
 cmd = "pavucontrol"
 
 [[block]]
-block = "custom"
-command = "echo dnd"
-[[block.click]]
-button = "left"
-cmd = "autodnd"
-
-[[block]]
 block = "time"
 interval = 1
-format = "  $timestamp.datetime(f:'%a %d %b %R:%S') "
+format = "  $timestamp.datetime(f:'%a %d %b %H:%M:%S') "

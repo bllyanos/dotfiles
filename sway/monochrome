@@ -6,7 +6,7 @@ set $dark_gray   #333333
 set $black      #000000
 
 # Mapping to expected variables in config
-set $base       #1a1a1a
+set $base       #262626
 set $text       #e0e0e0
 set $mauve      #ffffff
 set $crust      #000000
