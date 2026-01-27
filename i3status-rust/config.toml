@@ -55,7 +55,7 @@ cmd = "autodnd"
 
 [[block]]
 block = "sound"
-format = " $icon $volume "
+format = " $icon {$volume|} "
 [[block.click]]
 button = "left"
 cmd = "pavucontrol"
