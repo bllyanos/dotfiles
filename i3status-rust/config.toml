@@ -61,6 +61,9 @@ button = "left"
 cmd = "pavucontrol"
 
 [[block]]
+block = "battery"
+
+[[block]]
 block = "time"
 interval = 1
 format = "  $timestamp.datetime(f:'%a %d %b %H:%M:%S') "
