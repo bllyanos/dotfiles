@@ -30,7 +30,7 @@ return {
   {
     "LazyVim/LazyVim",
     opts = {
-      colorscheme = "lackluster-dark",
+      colorscheme = "lackluster-night",
     },
   },
 }
