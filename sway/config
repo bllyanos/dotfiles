@@ -1,5 +1,5 @@
 ### Theme & Variables
-include monochrome
+include moonfly
 
 set $mod    Mod4
 set $left   h
@@ -16,11 +16,8 @@ exec dbus-update-activation-environment --systemd DISPLAY WAYLAND_DISPLAY XDG_CU
 exec /usr/lib/xdg-desktop-portal-wlr &
 exec /usr/lib/xdg-desktop-portal &
 
-exec exec_always makoctl mode -r do-not-disturb
+exec makoctl mode -r do-not-disturb
 
-font pango:JetBrainsMono Nerd Font 11
-
-exec_always makoctl mode -r do-not-disturb
 exec_always swaybg -i ~/Pictures/wall.jpg -m fill
 
 exec blueman-applet
@@ -41,10 +38,11 @@ include ~/.config/sway/workspaces
 
 ### Idle Configuration
 exec swayidle -w \
-  timeout 600 'swaylock -f --color 212121' \
+  timeout 600 'swaylock -f --color $crust' \
   timeout 1200 'swaymsg "output * dpms off"' \
   resume 'swaymsg "output * dpms on"' \
-  before-sleep 'swaylock -f --color 212121'
+  before-sleep 'swaylock -f --color $crust'
+
 
 ### Key Bindings - Basics
 bindsym $mod+Return  exec $term
@@ -52,6 +50,7 @@ bindsym $mod+q       kill
 bindsym $mod+d       exec $menu -show drun
 bindsym $mod+Shift+c reload
 bindsym $mod+Shift+e exec swaynag -t warning -m 'Exit sway?' -B 'Yes' 'swaymsg exit'
+
 
 floating_modifier $mod normal
 
@@ -124,7 +123,7 @@ bindsym --locked XF86AudioMicMute      exec pactl set-source-mute @DEFAULT_SOURC
 bindsym XF86MonBrightnessUp            exec light -A 5 && pkill -RTMIN+8 i3status-rs
 bindsym XF86MonBrightnessDown          exec light -U 5 && pkill -RTMIN+8 i3status-rs
 
-bindsym $mod+Ctrl+l                    exec swaylock -f --color 212121
+bindsym $mod+Ctrl+l                    exec swaylock -f --color $crust
 bindsym $mod+Ctrl+k                    exec systemctl suspend
 
 # Screenshots

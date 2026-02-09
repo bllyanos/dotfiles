@@ -24,13 +24,14 @@ return {
   --     transparent = false,
   --   },
   -- },
-  { "slugbyte/lackluster.nvim", priority = 999 },
+  -- { "slugbyte/lackluster.nvim", priority = 999 },
+  { "bluz71/vim-moonfly-colors", name = "moonfly", lazy = false, priority = 1000 },
 
-  -- Configure LazyVim to load gruvbox
+  -- Configure LazyVim to load moonfly
   {
     "LazyVim/LazyVim",
     opts = {
-      colorscheme = "lackluster-night",
+      colorscheme = "moonfly",
     },
   },
 }
