@@ -25,13 +25,26 @@ return {
   --   },
   -- },
   -- { "slugbyte/lackluster.nvim", priority = 999 },
-  { "bluz71/vim-moonfly-colors", name = "moonfly", lazy = false, priority = 1000 },
+  -- { "bluz71/vim-moonfly-colors", name = "moonfly", lazy = false, priority = 1000 },
 
-  -- Configure LazyVim to load moonfly
+  {
+    "neanias/everforest-nvim",
+    version = false,
+    lazy = false,
+    priority = 1000,
+    config = function()
+      require("everforest").setup({
+        background = "medium",
+      })
+      vim.cmd("colorscheme everforest")
+    end,
+  },
+
+  -- Configure LazyVim to load everforest
   {
     "LazyVim/LazyVim",
     opts = {
-      colorscheme = "moonfly",
+      colorscheme = "everforest",
     },
   },
 }
