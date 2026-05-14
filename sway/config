@@ -20,7 +20,7 @@ exec gammastep -O 6000
 
 exec makoctl mode -r do-not-disturb
 
-exec_always swaybg -i ~/Pictures/wall.jpg -m fill
+exec_always swaybg -i ~/Pictures/wall.png -m fill
 
 exec blueman-applet
 
@@ -132,11 +132,11 @@ bindsym $mod+Ctrl+l                    exec swaylock -f --color 232634
 bindsym $mod+Ctrl+k                    exec systemctl suspend
 
 # Screenshots
-# bindsym Print         exec wayfreeze --disable-inverse-transform --after-freeze-cmd 'grim -g "$(slurp)" - | wl-copy; killall wayfreeze'
-# bindsym $mod+Shift+s  exec wayfreeze --disable-inverse-transform --after-freeze-cmd 'grim -g "$(slurp)" - | wl-copy; killall wayfreeze'
+bindsym Print         exec wayfreeze --disable-inverse-transform --after-freeze-cmd 'grim -g "$(slurp)" - | wl-copy; killall wayfreeze'
+bindsym $mod+Shift+s  exec wayfreeze --disable-inverse-transform --after-freeze-cmd 'grim -g "$(slurp)" - | wl-copy; killall wayfreeze'
 
-bindsym Print         exec wayfreeze --after-freeze-cmd 'grim -g "$(slurp)" - | wl-copy; killall wayfreeze'
-bindsym $mod+Shift+s  exec wayfreeze --after-freeze-cmd 'grim -g "$(slurp)" - | wl-copy; killall wayfreeze'
+# bindsym Print         exec wayfreeze --after-freeze-cmd 'grim -g "$(slurp)" - | wl-copy; killall wayfreeze'
+# bindsym $mod+Shift+s  exec wayfreeze --after-freeze-cmd 'grim -g "$(slurp)" - | wl-copy; killall wayfreeze'
 
 # Notifications
 bindsym $mod+Shift+m  exec makoctl mode -t auto_dnd; notify-send 'DND toggled'
@@ -159,10 +159,10 @@ mode "resize" {
 bindsym $mod+r mode "resize"
 
 ### Appearance
-# smart_gaps on
+smart_gaps on
 # Gaps
-# gaps inner 5
-# gaps outer 5
+gaps inner 5
+gaps outer 5
 
 # Window Decorations
 # target                 title      bg     text    indicator  border
