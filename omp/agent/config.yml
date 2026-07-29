@@ -1,0 +1,66 @@
+providers: 
+  webSearchOrder: 
+    - tavily
+    - perplexity
+    - gemini
+    - anthropic
+    - codex
+    - xai
+    - zai
+    - exa
+    - tinyfish
+    - jina
+    - kagi
+    - firecrawl
+    - brave
+    - kimi
+    - parallel
+    - synthetic
+    - searxng
+    - startpage
+    - duckduckgo
+    - ecosia
+    - google
+    - mojeek
+    - public
+modelRoles: 
+  default: openai-codex/gpt-5.6-terra:medium
+  smol: openai-codex/gpt-5.6-luna
+  slow: openai-codex/gpt-5.6-terra
+  vision: openai-codex/gpt-5.6-luna
+  plan: openai-codex/gpt-5.6-sol:high
+  designer: openai-codex/gpt-5.6-terra
+  commit: openai-codex/gpt-5.6-luna
+  tiny: openai-codex/gpt-5.6-luna:low
+  task: openai-codex/gpt-5.6-terra
+  advisor: openai-codex/gpt-5.6-sol:high
+symbolPreset: nerd
+theme: 
+  dark: dark-gruvbox
+  light: light-catppuccin
+setupVersion: 1
+defaultThinkingLevel: auto
+retry: 
+  fallbackChains: 
+    {}
+  usageAwareFallback: false
+cycleOrder: 
+  - default
+  - smol
+  - slow
+dev: 
+  autoqaConsent: granted
+hideThinkingBlock: false
+memory: 
+  backend: local
+autolearn: 
+  enabled: true
+task: 
+  eager: preferred
+  enableEffort: true
+  maxConcurrency: 4
+  maxRecursionDepth: 1
+astGrep: 
+  enabled: true
+bashInterceptor: 
+  enabled: false

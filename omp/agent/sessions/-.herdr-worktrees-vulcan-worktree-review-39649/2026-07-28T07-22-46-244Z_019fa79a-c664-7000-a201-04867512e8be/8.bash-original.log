@@ -1,0 +1,1035 @@
+diff --git a/vulcan-frontend/src/app/pages/TeamMemberAnalyticsPage/TeamMemberAnalyticsPage.tsx b/vulcan-frontend/src/app/pages/TeamMemberAnalyticsPage/TeamMemberAnalyticsPage.tsx
+index efb45aff7f..2d0870471a 100644
+--- a/vulcan-frontend/src/app/pages/TeamMemberAnalyticsPage/TeamMemberAnalyticsPage.tsx
++++ b/vulcan-frontend/src/app/pages/TeamMemberAnalyticsPage/TeamMemberAnalyticsPage.tsx
+@@ -11,9 +11,8 @@ import { Tabs } from '@vulcan-ai/vulcan-ui/lib/components/Tabs';
+ import { styled } from '@vulcan-ai/vulcan-ui/lib/theme';
+ import React, { useState } from 'react';
+ import { FormattedMessage, useIntl } from 'react-intl';
+-import { LoadingCircular } from 'src/app/components/LoadingCircular';
+ import { ChartLevel, ChartSet, Role } from 'src/apps/common/__generated__/types';
+-import { AnalyticChartWidgetWrapper } from 'src/modules/Analytic/components/AnalyticChartWidgetWrapper';
++import { AnalyticChartsGrid } from 'src/modules/Analytic/components/AnalyticChartsGrid';
+ import { ChartsLastUpdatedAtDate } from 'src/modules/Analytic/components/AnalyticsLastUpdatedAtDate/ChartsLastUpdatedAtDate';
+ import { AnalyticTrendsDateFilter } from 'src/modules/Analytic/components/AnalyticTrendsDateFilter';
+ import { AnalyticFilterProvider } from 'src/modules/Analytic/context/AnalyticFilter';
+@@ -74,31 +73,18 @@ export default function TeamMemberAnalyticsPage() {
+     return <Redirect to={construct(ROUTES.TEAM_MEMBERS)} />;
+   }
+ 
+-  const renderCharts = () => {
+-    if (loading) {
+-      return (
+-        <Grid item xs={12}>
+-          <FlexBox m={3} justifyContent="center" alignItems="center" height={334}>
+-            <LoadingCircular />
+-          </FlexBox>
+-        </Grid>
+-      );
+-    }
+-    return data?.result.map((chart) => (
+-      <Grid key={chart.id} item md={6} xs={12}>
+-        <FlexBox p={3}>
+-          <AnalyticChartWidgetWrapper
+-            teamId={teamDetail.id}
+-            chart={chart}
+-            userId={userId}
+-            teamMemberId={enableLabelingAgentSpanBased ? memberId : undefined}
+-            height={334}
+-            labeledBy={userRole}
+-          />
+-        </FlexBox>
+-      </Grid>
+-    ));
+-  };
++  const renderCharts = () => (
++    <AnalyticChartsGrid
++      chartsQuery={{ loading, data }}
++      widgetProps={{
++        teamId: teamDetail.id,
++        userId,
++        teamMemberId: enableLabelingAgentSpanBased ? memberId : undefined,
++        height: 334,
++        labeledBy: userRole,
++      }}
++    />
++  );
+ 
+   return (
+     <AnalyticFilterProvider>
+diff --git a/vulcan-frontend/src/app/pages/TeamProjectAnalyticsPage/TeamProjectAnalyticsPage.tsx b/vulcan-frontend/src/app/pages/TeamProjectAnalyticsPage/TeamProjectAnalyticsPage.tsx
+index b13f96ce66..09642c4cd0 100644
+--- a/vulcan-frontend/src/app/pages/TeamProjectAnalyticsPage/TeamProjectAnalyticsPage.tsx
++++ b/vulcan-frontend/src/app/pages/TeamProjectAnalyticsPage/TeamProjectAnalyticsPage.tsx
+@@ -5,8 +5,6 @@ import { useMemoizedCallback } from '@vulcan-ai/frontend-shared/lib/src/commons/
+ import { useIntlResolver } from '@vulcan-ai/frontend-shared/lib/src/commons/i18n/useIntlResolver';
+ import { useHistory, useParams } from '@vulcan-ai/frontend-shared/lib/src/commons/route';
+ import { useRoute } from '@vulcan-ai/frontend-shared/lib/src/commons/route/hooks/useRoute';
+-import { DocumentationLink } from '@vulcan-ai/frontend-shared/lib/src/modules/Documentation/components/DocumentationLink';
+-import { DocumentationPath } from '@vulcan-ai/frontend-shared/lib/src/modules/Documentation/constants';
+ import { useFeatureTrackingService } from '@vulcan-ai/frontend-shared/lib/src/modules/FeatureTracking/contexts/FeatureTrackingServiceContext';
+ import {
+   FeatureTrackingAction,
+@@ -18,15 +16,13 @@ import { FlexBox } from '@vulcan-ai/vulcan-ui/lib/components/Flex/FlexBox';
+ import { Grid } from '@vulcan-ai/vulcan-ui/lib/components/Grid';
+ import { CircularProgress } from '@vulcan-ai/vulcan-ui/lib/components/ProgressIndicator/CircularProgress/CircularProgress';
+ import { Tabs } from '@vulcan-ai/vulcan-ui/lib/components/Tabs';
+-import { Tooltip } from '@vulcan-ai/vulcan-ui/lib/components/Tooltip/Tooltip';
+ import { useToggle } from '@vulcan-ai/vulcan-ui/lib/helpers/useToggle';
+ import { EditIcon } from '@vulcan-ai/vulcan-ui/lib/icon/EditIcon';
+-import { InfoOutlineIcon } from '@vulcan-ai/vulcan-ui/lib/icon/InfoOutlineIcon';
+ import { styled } from '@vulcan-ai/vulcan-ui/lib/theme';
+ import React, { useCallback, useState } from 'react';
+ import { FormattedMessage, useIntl } from 'react-intl';
+-import { AnalyticChartWidgetWrapper } from 'src/modules/Analytic/components/AnalyticChartWidgetWrapper';
+-import { AnalyticFilterWidget } from 'src/modules/Analytic/components/AnalyticFilterWidget';
++import { AnalyticChartsGrid } from 'src/modules/Analytic/components/AnalyticChartsGrid';
++import { AnalyticTrendsDateFilter } from 'src/modules/Analytic/components/AnalyticTrendsDateFilter';
+ import { ChartsLastUpdatedAtDate } from 'src/modules/Analytic/components/AnalyticsLastUpdatedAtDate/ChartsLastUpdatedAtDate';
+ import { IAAForm } from 'src/modules/Analytic/components/IAAForm';
+ import { IAAWidgetContainer } from 'src/modules/Analytic/components/IAAWidgetContainer';
+@@ -233,25 +229,8 @@ function TeamProjectAnalyticsPageWrapper() {
+ 
+             {displayedTab === ProjectAnalyticsTab.CHARTS && (
+               <Grid item xs={12}>
+-                <FlexBox gap={2} mt={3} py={2} px={3} alignItems="center">
+-                  <AnalyticFilterWidget />
+-                  <TooltipContainer ml={1}>
+-                    <Tooltip
+-                      title={formatMessage({ id: 'team-project-analytics-page.filter.description' })}
+-                      arrow
+-                      placement="right"
+-                    >
+-                      <InfoOutlineIcon />
+-                    </Tooltip>
+-                  </TooltipContainer>
+-                  <DocumentationLink
+-                    documentationPath={DocumentationPath.PROJECT_ANALYTICS}
+-                    onClick={() =>
+-                      handleTrackFeature({ name: TeamProjectAnalyticsPageFeatureTrackingName.CLICK_ANALYTICS_GITBOOK })
+-                    }
+-                  >
+-                    <FormattedMessage id="team-project-analytics-page.filter.learn-more" />
+-                  </DocumentationLink>
++                <FlexBox mt={3} alignItems="center">
++                  <AnalyticTrendsDateFilter />
+                 </FlexBox>
+               </Grid>
+             )}
+@@ -264,16 +243,12 @@ function TeamProjectAnalyticsPageWrapper() {
+               </Grid>
+             )}
+ 
+-            {displayedTab === ProjectAnalyticsTab.CHARTS &&
+-              config.app.featureToggle.enableAnalytics &&
+-              !chartsQuery.loading &&
+-              chartsQuery.data?.result.map((chart) => (
+-                <Grid key={chart.id} item md={6} xs={12}>
+-                  <FlexBox p={3}>
+-                    <AnalyticChartWidgetWrapper teamId={team.id} projectId={project.id} chart={chart} height={334} />
+-                  </FlexBox>
+-                </Grid>
+-              ))}
++            {displayedTab === ProjectAnalyticsTab.CHARTS && config.app.featureToggle.enableAnalytics && (
++              <AnalyticChartsGrid
++                chartsQuery={chartsQuery}
++                widgetProps={{ teamId: team.id, projectId: project.id, height: 334 }}
++              />
++            )}
+ 
+             {displayedTab === ProjectAnalyticsTab.IAA && (
+               <IAAWidgetContainer>
+@@ -315,11 +290,6 @@ function TeamProjectAnalyticsPageWrapper() {
+   );
+ }
+ 
+-const TooltipContainer = styled(FlexBox, { name: 'TeamProjectAnalyticsPage-TooltipContainer' })(() => ({
+-  alignSelf: 'center',
+-  lineHeight: 1.43,
+-}));
+-
+ const WidgetsContainer = styled(FlexBox, { name: 'TeamProjectAnalyticsPage-WidgetsContainer' })({
+   backgroundColor: 'white',
+ });
+diff --git a/vulcan-frontend/src/modules/Analytic/components/AnalyticChartWidget/AnalyticChart.tsx b/vulcan-frontend/src/modules/Analytic/components/AnalyticChartWidget/AnalyticChart.tsx
+index 14bcaca8a1..812dcb2c8f 100644
+--- a/vulcan-frontend/src/modules/Analytic/components/AnalyticChartWidget/AnalyticChart.tsx
++++ b/vulcan-frontend/src/modules/Analytic/components/AnalyticChartWidget/AnalyticChart.tsx
+@@ -13,8 +13,19 @@ import { VisualizationMap } from './constants';
+ import { normalizeGqlLegend } from './helper';
+ 
+ export function AnalyticChart() {
+-  const { teamId, chart, projectId, userId, teamMemberId, labelType, dateRange, labeledBy, tagNames, setIsChartEmpty } =
+-    useAnalyticChartWidgetContext();
++  const {
++    teamId,
++    chart,
++    projectId,
++    userId,
++    teamMemberId,
++    labelType,
++    dateRange,
++    labeledBy,
++    tagNames,
++    hasTagFilter,
++    setIsChartEmpty,
++  } = useAnalyticChartWidgetContext();
+ 
+   const calendarDate = getDateRangeString(dateRange);
+   const { colors, pieHoleText, showTable } = chart.visualizationParams;
+@@ -30,6 +41,7 @@ export function AnalyticChart() {
+       labelType={labelType}
+       labeledBy={labeledBy}
+       tagNames={tagNames}
++      hasTagFilter={hasTagFilter}
+       setIsChartEmpty={setIsChartEmpty}
+     >
+       {(data: GetChartDataQuery, keyPayloadType: KeyPayloadType | undefined) => (
+diff --git a/vulcan-frontend/src/modules/Analytic/components/AnalyticChartWidget/AnalyticChartWidget.tsx b/vulcan-frontend/src/modules/Analytic/components/AnalyticChartWidget/AnalyticChartWidget.tsx
+index 664b1a4840..e622dde81c 100644
+--- a/vulcan-frontend/src/modules/Analytic/components/AnalyticChartWidget/AnalyticChartWidget.tsx
++++ b/vulcan-frontend/src/modules/Analytic/components/AnalyticChartWidget/AnalyticChartWidget.tsx
+@@ -18,6 +18,7 @@ export interface AnalyticChartWidgetProps {
+   labelType?: AnalyticsLabelType;
+   labeledBy?: Role;
+   tagNames?: string[];
++  hasTagFilter?: boolean;
+ }
+ 
+ export function AnalyticChartWidget({
+@@ -31,6 +32,7 @@ export function AnalyticChartWidget({
+   labelType,
+   labeledBy,
+   tagNames,
++  hasTagFilter,
+ }: AnalyticChartWidgetProps) {
+   const [isChartEmpty, setIsChartEmpty] = useState(false);
+   const contextValue: AnalyticChartWidgetContextValue = useMemo(
+@@ -44,6 +46,7 @@ export function AnalyticChartWidget({
+       labelType,
+       labeledBy,
+       tagNames,
++      hasTagFilter,
+       isChartEmpty,
+       setIsChartEmpty,
+     }),
+@@ -57,6 +60,7 @@ export function AnalyticChartWidget({
+       labelType,
+       labeledBy,
+       tagNames,
++      hasTagFilter,
+       isChartEmpty,
+       setIsChartEmpty,
+     ],
+diff --git a/vulcan-frontend/src/modules/Analytic/components/AnalyticChartWidget/AnalyticChartWidgetContent.tsx b/vulcan-frontend/src/modules/Analytic/components/AnalyticChartWidget/AnalyticChartWidgetContent.tsx
+index ed1c4aba0e..4b6ff2dbd0 100644
+--- a/vulcan-frontend/src/modules/Analytic/components/AnalyticChartWidget/AnalyticChartWidgetContent.tsx
++++ b/vulcan-frontend/src/modules/Analytic/components/AnalyticChartWidget/AnalyticChartWidgetContent.tsx
+@@ -20,8 +20,9 @@ import { AnalyticChart } from './AnalyticChart';
+ import { useAnalyticChartWidgetContext } from './AnalyticChartWidgetContext';
+ 
+ export function AnalyticChartWidgetContent() {
++  const context = useAnalyticChartWidgetContext();
+   const { dateRange, chart, teamId, projectId, userId, teamMemberId, labelType, labeledBy, tagNames, isChartEmpty } =
+-    useAnalyticChartWidgetContext();
++    context;
+   const exportChartFunction: (variables: ExportChartQueryVariables) => Promise<ApolloQueryResult<ExportChartQuery>> =
+     useExportChartQueryFunction();
+ 
+@@ -52,7 +53,9 @@ export function AnalyticChartWidgetContent() {
+       },
+     });
+     await dialog.alert(<FormattedMessage id="analytic.export-chart-success" />);
+-  }, [exportChartFunction, chart.id, teamId, calendarDate, projectId, userId, teamMemberId, labelType, labeledBy]);
++    // context is memoized upstream over exactly these fields (see AnalyticChartWidget.tsx),
++    // so depending on it as a whole covers every field the closure reads above.
++  }, [context, exportChartFunction, dialog, trackEvent]);
+ 
+   return (
+     <FlexBox direction="column" fullHeight>
+diff --git a/vulcan-frontend/src/modules/Analytic/components/AnalyticChartWidget/AnalyticChartWidgetContext.ts b/vulcan-frontend/src/modules/Analytic/components/AnalyticChartWidget/AnalyticChartWidgetContext.ts
+index 93e9cfe708..baaf41e658 100644
+--- a/vulcan-frontend/src/modules/Analytic/components/AnalyticChartWidget/AnalyticChartWidgetContext.ts
++++ b/vulcan-frontend/src/modules/Analytic/components/AnalyticChartWidget/AnalyticChartWidgetContext.ts
+@@ -13,6 +13,7 @@ export interface AnalyticChartWidgetContextValue {
+   labelType?: AnalyticsLabelType;
+   labeledBy?: Role;
+   tagNames?: string[];
++  hasTagFilter?: boolean;
+ 
+   isChartEmpty: boolean;
+   setIsChartEmpty: (isChartEmpty: boolean) => void;
+diff --git a/vulcan-frontend/src/modules/Analytic/components/AnalyticChartWidgetWrapper.tsx b/vulcan-frontend/src/modules/Analytic/components/AnalyticChartWidgetWrapper.tsx
+index 52a50b4396..2810bc13db 100644
+--- a/vulcan-frontend/src/modules/Analytic/components/AnalyticChartWidgetWrapper.tsx
++++ b/vulcan-frontend/src/modules/Analytic/components/AnalyticChartWidgetWrapper.tsx
+@@ -1,16 +1,17 @@
+ import { useWatchValue } from '@vulcan-ai/vulcan-ui/lib/components/Form/helpers/useWatchValue';
+-import React, { FC } from 'react';
++import React from 'react';
+ import { projectKindToAnalyticsLabelType } from '../context/AnalyticFilter';
+ import { AnalyticChartWidget, AnalyticChartWidgetProps } from './AnalyticChartWidget';
+ 
+-type Props = Omit<AnalyticChartWidgetProps, 'projectKind' | 'dateRange'>;
++export type AnalyticChartWidgetWrapperProps = Omit<AnalyticChartWidgetProps, 'projectKind' | 'dateRange'>;
++type Props = AnalyticChartWidgetWrapperProps;
+ 
+-export const AnalyticChartWidgetWrapper: FC<Props> = (props) => {
+-  const projectKind = useWatchValue('projectKindField', 'field-level', []);
++export function AnalyticChartWidgetWrapper(props: Props) {
++  const projectKind = useWatchValue('projectKind', 'field-level', []);
+   const labelType = projectKind ? projectKindToAnalyticsLabelType(projectKind) : undefined;
+ 
+   const dateRange = useWatchValue('dateRange', 'field-level', []);
+   const tagNames = useWatchValue('tagNames', 'field-level', []);
+ 
+   return <AnalyticChartWidget {...props} labelType={labelType} dateRange={dateRange} tagNames={tagNames} />;
+-};
++}
+diff --git a/vulcan-frontend/src/modules/Analytic/components/AnalyticChartsGrid.tsx b/vulcan-frontend/src/modules/Analytic/components/AnalyticChartsGrid.tsx
+new file mode 100644
+index 0000000000..f7691fa521
+--- /dev/null
++++ b/vulcan-frontend/src/modules/Analytic/components/AnalyticChartsGrid.tsx
+@@ -0,0 +1,35 @@
++import { FlexBox } from '@vulcan-ai/vulcan-ui/lib/components/Flex/FlexBox';
++import { Grid } from '@vulcan-ai/vulcan-ui/lib/components/Grid';
++import React from 'react';
++import { LoadingCircular } from 'src/app/components/LoadingCircular';
++import { ChartFragment } from 'src/apps/common/__generated__/types';
++import { AnalyticChartWidgetWrapper, AnalyticChartWidgetWrapperProps } from './AnalyticChartWidgetWrapper';
++
++interface Props {
++  chartsQuery: { loading: boolean; data?: { result: ChartFragment[] } | null };
++  widgetProps: Omit<AnalyticChartWidgetWrapperProps, 'chart'>;
++}
++
++export function AnalyticChartsGrid({ chartsQuery, widgetProps }: Props) {
++  if (chartsQuery.loading) {
++    return (
++      <Grid item xs={12}>
++        <FlexBox m={3} justifyContent="center" alignItems="center" height={widgetProps.height}>
++          <LoadingCircular />
++        </FlexBox>
++      </Grid>
++    );
++  }
++
++  return (
++    <>
++      {chartsQuery.data?.result.map((chart) => (
++        <Grid key={chart.id} item md={6} xs={12}>
++          <FlexBox p={3}>
++            <AnalyticChartWidgetWrapper {...widgetProps} chart={chart} />
++          </FlexBox>
++        </Grid>
++      ))}
++    </>
++  );
++}
+diff --git a/vulcan-frontend/src/modules/Analytic/components/AnalyticFilterWidget/AnalyticFilterWidget.tsx b/vulcan-frontend/src/modules/Analytic/components/AnalyticFilterWidget/AnalyticFilterWidget.tsx
+deleted file mode 100644
+index 5f4965e649..0000000000
+--- a/vulcan-frontend/src/modules/Analytic/components/AnalyticFilterWidget/AnalyticFilterWidget.tsx
++++ /dev/null
+@@ -1,29 +0,0 @@
+-import { useConfig } from '@vulcan-ai/frontend-shared/lib/src/commons/config';
+-import { DateRangeWithPresetField } from '@vulcan-ai/frontend-shared/lib/src/commons/form/fields/DateRange/DateRangeWithPresetField';
+-import { FlexBox } from '@vulcan-ai/vulcan-ui/lib/components/Flex/FlexBox';
+-import { styled } from '@vulcan-ai/vulcan-ui/lib/theme';
+-import React from 'react';
+-import { getMaximumAnalyticsDateRange, getMinimumAnalyticsDate } from '../../helper';
+-import { CustomPopper } from '../CustomPopper';
+-
+-export function AnalyticFilterWidget() {
+-  const config = useConfig();
+-
+-  const minimumAnalyticsDate = getMinimumAnalyticsDate(config.app.analyticsDataRetentionMonths);
+-  const maximumAnalyticsDateRange = getMaximumAnalyticsDateRange(config.app.analyticsMaximumDateRange);
+-
+-  return (
+-    <FilterContainer>
+-      <DateRangeWithPresetField
+-        name="dateRange"
+-        minimumDate={minimumAnalyticsDate}
+-        maximumDateRange={maximumAnalyticsDateRange}
+-        PopperComponent={CustomPopper}
+-      />
+-    </FilterContainer>
+-  );
+-}
+-
+-const FilterContainer = styled(FlexBox, { name: 'AnalyticFilterWidget-FilterContainer' })({
+-  width: 320,
+-});
+diff --git a/vulcan-frontend/src/modules/Analytic/components/AnalyticFilterWidget/index.ts b/vulcan-frontend/src/modules/Analytic/components/AnalyticFilterWidget/index.ts
+deleted file mode 100644
+index fed10cc45d..0000000000
+--- a/vulcan-frontend/src/modules/Analytic/components/AnalyticFilterWidget/index.ts
++++ /dev/null
+@@ -1 +0,0 @@
+-export * from './AnalyticFilterWidget';
+diff --git a/vulcan-frontend/src/modules/Analytic/components/AnalyticTrendsDateFilter.tsx b/vulcan-frontend/src/modules/Analytic/components/AnalyticTrendsDateFilter.tsx
+index bc84dddd19..4aac8b907c 100644
+--- a/vulcan-frontend/src/modules/Analytic/components/AnalyticTrendsDateFilter.tsx
++++ b/vulcan-frontend/src/modules/Analytic/components/AnalyticTrendsDateFilter.tsx
+@@ -1,18 +1,28 @@
+ import { useConfig } from '@vulcan-ai/frontend-shared/lib/src/commons/config';
+ import { DateRangeSelectField } from '@vulcan-ai/frontend-shared/lib/src/commons/form/fields/DateRange/DateRangeSelectField';
+ import { DateRangeMode } from '@vulcan-ai/frontend-shared/lib/src/commons/form/fields/DateRange/interfaces';
++import { DocumentationLink } from '@vulcan-ai/frontend-shared/lib/src/modules/Documentation/components/DocumentationLink';
++import { DocumentationPath } from '@vulcan-ai/frontend-shared/lib/src/modules/Documentation/constants';
+ import { Box } from '@vulcan-ai/vulcan-ui/lib/components/Box/Box';
+ import { Divider } from '@vulcan-ai/vulcan-ui/lib/components/Divider/Divider';
+ import { FlexBox } from '@vulcan-ai/vulcan-ui/lib/components/Flex/FlexBox';
+ import { DateField as _DateField } from '@vulcan-ai/vulcan-ui/lib/components/Form/fields/DateField/DateField';
+ import { useWatchValue } from '@vulcan-ai/vulcan-ui/lib/components/Form/helpers/useWatchValue';
++import { Tooltip } from '@vulcan-ai/vulcan-ui/lib/components/Tooltip/Tooltip';
+ import { Typography } from '@vulcan-ai/vulcan-ui/lib/components/Typography';
++import { InfoOutlineIcon } from '@vulcan-ai/vulcan-ui/lib/icon/InfoOutlineIcon';
+ import { styled } from '@vulcan-ai/vulcan-ui/lib/theme';
+-import { addDays, differenceInDays } from 'date-fns';
+ import React, { useEffect, useMemo } from 'react';
+ import { useFormContext } from 'react-hook-form';
+ import { FormattedMessage, useIntl } from 'react-intl';
+-import { getMaximumAnalyticsDateRange, getMinimumAnalyticsDate } from '../helper';
++import {
++  getAdjustedEndDate,
++  getAnalyticsDataRetentionMonths,
++  getMaxEndDate,
++  getMaximumAnalyticsDateRange,
++  getMinEndDate,
++  getMinimumAnalyticsDate,
++} from '../helper';
+ 
+ export function AnalyticTrendsDateFilter() {
+   const config = useConfig();
+@@ -24,49 +34,47 @@ export function AnalyticTrendsDateFilter() {
+ 
+   const minimumAnalyticsDate = getMinimumAnalyticsDate(config.app.analyticsDataRetentionMonths);
+   const maximumAnalyticsDateRange = getMaximumAnalyticsDateRange(config.app.analyticsMaximumDateRange);
++  const analyticsDataRetentionMonths = getAnalyticsDataRetentionMonths(config.app.analyticsDataRetentionMonths);
+ 
+-  // Calculate the maximum end date based on start date and maximum date range
+-  const maxEndDate = useMemo(() => {
+-    if (!startDate) return new Date();
+-    const calculatedMaxEndDate = addDays(new Date(startDate), maximumAnalyticsDateRange);
+-    const today = new Date();
+-    return calculatedMaxEndDate < today ? calculatedMaxEndDate : today;
+-  }, [startDate, maximumAnalyticsDateRange]);
++  const maxEndDate = useMemo(
++    () => getMaxEndDate(startDate, maximumAnalyticsDateRange),
++    [startDate, maximumAnalyticsDateRange],
++  );
+ 
+-  // Calculate the minimum end date (should be at least the start date)
+-  const minEndDate = useMemo(() => {
+-    return startDate ? new Date(startDate) : new Date();
+-  }, [startDate]);
++  const minEndDate = useMemo(() => getMinEndDate(startDate), [startDate]);
+ 
+   // Automatically adjust end date if needed
+   useEffect(() => {
+     if (startDate && endDate && dateRangeMode === DateRangeMode.CUSTOM) {
+-      const startDateObj = new Date(startDate);
+-      const endDateObj = new Date(endDate);
+-
+-      // If start date is later than end date, adjust end date to start date
+-      if (startDateObj > endDateObj) {
+-        setValue('dateRange.endDate', startDateObj);
+-        return;
+-      }
+-
+-      const currentRangeDays = differenceInDays(endDateObj, startDateObj);
+-
+-      if (currentRangeDays > maximumAnalyticsDateRange) {
+-        const adjustedEndDate = addDays(startDateObj, maximumAnalyticsDateRange);
+-        const today = new Date();
+-        const finalEndDate = adjustedEndDate < today ? adjustedEndDate : today;
+-
+-        setValue('dateRange.endDate', finalEndDate);
++      const adjustedEndDate = getAdjustedEndDate(startDate, endDate, maximumAnalyticsDateRange);
++      if (adjustedEndDate) {
++        setValue('dateRange.endDate', adjustedEndDate);
+       }
+     }
+   }, [startDate, endDate, dateRangeMode, maximumAnalyticsDateRange, setValue]);
+ 
+   return (
+     <FlexBox px={3} gap={2} direction="row" alignItems="flex-end" justifyContent="space-between" fullWidth>
+-      <Title variant="body2" fontWeight="bold" mr={2}>
+-        <FormattedMessage id="team-overview-page.trends" />
+-      </Title>
++      <FlexBox gap={2} direction="row" alignItems="center">
++        <Title variant="body1" fontWeight="bold" mr={2}>
++          <FormattedMessage id="team-overview-page.trends" />
++        </Title>
++        <TooltipContainer>
++          <Tooltip
++            title={formatMessage(
++              { id: 'team-overview-page.trends.tooltip' },
++              { days: maximumAnalyticsDateRange, months: analyticsDataRetentionMonths },
++            )}
++            arrow
++            placement="top-end"
++          >
++            <InfoOutlineIcon />
++          </Tooltip>
++        </TooltipContainer>
++        <DocumentationLink documentationPath={DocumentationPath.PROJECT_ANALYTICS}>
++          <FormattedMessage id="team-overview-page.trends.learn-more" />
++        </DocumentationLink>
++      </FlexBox>
+       <FlexBox gap={2}>
+         <DateRangeSelectField
+           name="dateRange"
+@@ -113,3 +121,7 @@ const DateField = styled(_DateField, { name: 'AnalyticTrendsDateFilter-DateField
+   marginBottom: 0,
+   width: 160,
+ });
++
++const TooltipContainer = styled(FlexBox, { name: 'AnalyticTrendsDateFilter-TooltipContainer' })({
++  lineHeight: 1.43,
++});
+diff --git a/vulcan-frontend/src/modules/Analytic/components/ChartDataQueryHandler/ChartDataQueryHandler.tsx b/vulcan-frontend/src/modules/Analytic/components/ChartDataQueryHandler/ChartDataQueryHandler.tsx
+index 256fcb9503..21fc77aeda 100644
+--- a/vulcan-frontend/src/modules/Analytic/components/ChartDataQueryHandler/ChartDataQueryHandler.tsx
++++ b/vulcan-frontend/src/modules/Analytic/components/ChartDataQueryHandler/ChartDataQueryHandler.tsx
+@@ -11,9 +11,16 @@ interface Props {
+   chartDataQueryResult: QueryResult<GetChartDataQuery, GetChartDataQueryVariables>;
+   children: (data: GetChartDataQuery, keyPayloadType?: KeyPayloadType) => ReactNode;
+   setIsChartEmpty: (isChartEmpty: boolean) => void;
++  hasTagFilter?: boolean;
+ }
+ 
+-export function ChartDataQueryHandler({ chartId, chartDataQueryResult, children, setIsChartEmpty }: Props) {
++export function ChartDataQueryHandler({
++  chartId,
++  chartDataQueryResult,
++  children,
++  setIsChartEmpty,
++  hasTagFilter,
++}: Props) {
+   const formatError = useErrorIntl();
+ 
+   const numberOfDataPoint = useMemo(() => {
+@@ -59,5 +66,5 @@ export function ChartDataQueryHandler({ chartId, chartDataQueryResult, children,
+     return <>{children(chartDataQueryResult.data, keyPayloadType)}</>;
+   }
+ 
+-  return <EmptyAnalyticsData chartId={chartId} />;
++  return <EmptyAnalyticsData chartId={chartId} hasTagFilter={hasTagFilter} />;
+ }
+diff --git a/vulcan-frontend/src/modules/Analytic/components/ChartDataQueryHandler/EmptyAnalyticsData.tsx b/vulcan-frontend/src/modules/Analytic/components/ChartDataQueryHandler/EmptyAnalyticsData.tsx
+index ae3283c7ce..12f55cfc9b 100644
+--- a/vulcan-frontend/src/modules/Analytic/components/ChartDataQueryHandler/EmptyAnalyticsData.tsx
++++ b/vulcan-frontend/src/modules/Analytic/components/ChartDataQueryHandler/EmptyAnalyticsData.tsx
+@@ -1,18 +1,23 @@
+-import React, { FC } from 'react';
++import React from 'react';
+ import { EmptyAnalyticsDataMessage } from './EmptyAnalyticsDataMessage';
+ 
+ interface Props {
+   chartId?: string;
++  hasTagFilter?: boolean;
+ }
+ 
+-const CONFLICT_RESOLUTION_CHARTS = ['CONFLICT_RESOLUTION_PER_PROJECT'];
++function getDescriptionId(chartId: string | undefined, hasTagFilter: boolean): string {
++  if (chartId === 'CONFLICT_RESOLUTION_PER_PROJECT') {
++    return 'analytic.conflict-resolution.no-data-available.description';
++  }
++  if (!hasTagFilter) {
++    return 'analytic.no-data-available.no-tag-filter.description';
++  }
++  return 'analytic.no-data-available.description';
++}
+ 
+-export const EmptyAnalyticsData: FC<Props> = ({ chartId }) => {
+-  const titleId = `analytic.no-data-available.title`;
+-  const descriptionId =
+-    chartId && CONFLICT_RESOLUTION_CHARTS.includes(chartId)
+-      ? `analytic.conflict-resolution.no-data-available.description`
+-      : `analytic.no-data-available.description`;
++export function EmptyAnalyticsData({ chartId, hasTagFilter = false }: Props) {
++  const descriptionId = getDescriptionId(chartId, hasTagFilter);
+ 
+-  return <EmptyAnalyticsDataMessage titleId={titleId} descriptionId={descriptionId} />;
+-};
++  return <EmptyAnalyticsDataMessage titleId="analytic.no-data-available.title" descriptionId={descriptionId} />;
++}
+diff --git a/vulcan-frontend/src/modules/Analytic/components/ChartDataQueryHandler/EmptyAnalyticsDataMessage.tsx b/vulcan-frontend/src/modules/Analytic/components/ChartDataQueryHandler/EmptyAnalyticsDataMessage.tsx
+index b3be7c1235..7c325ebfa1 100644
+--- a/vulcan-frontend/src/modules/Analytic/components/ChartDataQueryHandler/EmptyAnalyticsDataMessage.tsx
++++ b/vulcan-frontend/src/modules/Analytic/components/ChartDataQueryHandler/EmptyAnalyticsDataMessage.tsx
+@@ -1,11 +1,13 @@
+ import { ROUTES } from '@vulcan-ai/frontend-shared/lib/src/app/constants/Routes';
+ import { useHistory } from '@vulcan-ai/frontend-shared/lib/src/commons/route';
+ import { useRoute } from '@vulcan-ai/frontend-shared/lib/src/commons/route/hooks/useRoute';
++import { Box } from '@vulcan-ai/vulcan-ui/lib/components/Box/Box';
+ import { Button } from '@vulcan-ai/vulcan-ui/lib/components/Button/Button';
++import { FlexBox } from '@vulcan-ai/vulcan-ui/lib/components/Flex/FlexBox';
+ import { Typography } from '@vulcan-ai/vulcan-ui/lib/components/Typography';
+ import { AddIcon } from '@vulcan-ai/vulcan-ui/lib/icon/AddIcon';
+ import { styled } from '@vulcan-ai/vulcan-ui/lib/theme';
+-import React, { FC } from 'react';
++import React from 'react';
+ import { FormattedMessage } from 'react-intl';
+ 
+ interface Props {
+@@ -14,52 +16,32 @@ interface Props {
+   showCreateProjectButton?: boolean;
+ }
+ 
+-export const EmptyAnalyticsDataMessage: FC<Props> = ({ titleId, descriptionId, showCreateProjectButton }) => {
++export function EmptyAnalyticsDataMessage({ titleId, descriptionId, showCreateProjectButton }: Props) {
+   const { construct } = useRoute();
+   const { push } = useHistory();
+   const handleClick = () => {
+     push(construct(ROUTES.TEAM_PROJECTS));
+   };
+   return (
+-    <MessageContainer>
+-      <MessageTitle>
++    <FlexBox alignItems="center" justifyContent="center" fullHeight direction="column">
++      <Box mb={2}>
+         <Typography align="center" variant="body2" fontWeight="700">
+           <FormattedMessage id={titleId} />
+         </Typography>
+-      </MessageTitle>
+-      <MessageDescription>
++      </Box>
++      <FlexBox width={320} justifyContent="center" mb={3}>
+         <Typography align="center" variant="caption" color="textSecondary">
+           <FormattedMessage id={descriptionId} />
+         </Typography>
+-      </MessageDescription>
++      </FlexBox>
+       {showCreateProjectButton && (
+         <StyledButton variant="secondary" onClick={handleClick} startIcon={<AddIcon />}>
+           <FormattedMessage id="analytic.statistical.no-data-available.create-project" />
+         </StyledButton>
+       )}
+-    </MessageContainer>
++    </FlexBox>
+   );
+-};
+-
+-const MessageContainer = styled('div', { name: 'EmptyAnalyticsDataMessage-MessageContainer' })({
+-  alignItems: 'center',
+-  display: 'flex',
+-  flexDirection: 'column',
+-  height: '100%',
+-  justifyContent: 'center',
+-});
+-
+-const MessageDescription = styled('div', { name: 'EmptyAnalyticsDataMessage-MessageDescription' })(({ theme }) => ({
+-  width: 320,
+-  display: 'flex',
+-  justifyContent: 'center',
+-  marginBottom: theme.spacing(3),
+-}));
+-
+-const MessageTitle = styled('div', { name: 'EmptyAnalyticsDataMessage-MessageTitle' })(({ theme }) => ({
+-  fontWeight: 700,
+-  marginBottom: theme.spacing(2),
+-}));
++}
+ 
+ const StyledButton = styled(Button, { name: 'EmptyAnalyticsDataMessage-StyledButton' })({
+   height: 'auto',
+diff --git a/vulcan-frontend/src/modules/Analytic/components/ChartDataQueryHandler/SimpleChartDataQueryHandler.tsx b/vulcan-frontend/src/modules/Analytic/components/ChartDataQueryHandler/SimpleChartDataQueryHandler.tsx
+index 2ef73e0692..07ba9cab35 100644
+--- a/vulcan-frontend/src/modules/Analytic/components/ChartDataQueryHandler/SimpleChartDataQueryHandler.tsx
++++ b/vulcan-frontend/src/modules/Analytic/components/ChartDataQueryHandler/SimpleChartDataQueryHandler.tsx
+@@ -24,6 +24,7 @@ interface Props {
+   calendarDate?: string;
+   labeledBy?: Role;
+   tagNames?: string[];
++  hasTagFilter?: boolean;
+ 
+   setIsChartEmpty: (isChartEmpty: boolean) => void;
+ }
+@@ -39,6 +40,7 @@ export function SimpleChartDataQueryHandler({
+   calendarDate,
+   labeledBy,
+   tagNames,
++  hasTagFilter,
+   setIsChartEmpty,
+ }: Readonly<Props>) {
+   const input = {
+@@ -61,6 +63,7 @@ export function SimpleChartDataQueryHandler({
+       chartId={chartId}
+       chartDataQueryResult={chartDataQueryResult}
+       setIsChartEmpty={setIsChartEmpty}
++      hasTagFilter={hasTagFilter}
+     >
+       {children}
+     </ChartDataQueryHandler>
+diff --git a/vulcan-frontend/src/modules/Analytic/components/CheckboxSelectFieldForLabelSet.tsx b/vulcan-frontend/src/modules/Analytic/components/CheckboxSelectFieldForLabelSet.tsx
+deleted file mode 100644
+index 4d377294e6..0000000000
+--- a/vulcan-frontend/src/modules/Analytic/components/CheckboxSelectFieldForLabelSet.tsx
++++ /dev/null
+@@ -1,144 +0,0 @@
+-import { MenuProps } from '@material-ui/core/Menu';
+-import { styled } from '@vulcan-ai/vulcan-ui/lib/theme';
+-import {
+-  CheckboxGroupField,
+-  CheckboxOption,
+-} from '@vulcan-ai/frontend-shared/lib/src/commons/form/fields/CheckboxGroupField';
+-import { BaseForm } from '@vulcan-ai/frontend-shared/lib/src/commons/form/forms/BaseForm';
+-import { FormControl } from '@vulcan-ai/frontend-shared/lib/src/commons/ui/components/Form';
+-import { ListItemText } from '@vulcan-ai/frontend-shared/lib/src/commons/ui/components/List/components';
+-import { MenuItem } from '@vulcan-ai/frontend-shared/lib/src/commons/ui/components/Menu';
+-import { Select } from '@vulcan-ai/frontend-shared/lib/src/commons/ui/components/Select';
+-import { Ellipsis } from '@vulcan-ai/vulcan-ui/lib/components/Ellipsis';
+-import uniqWith from 'lodash/uniqWith';
+-import React, { ChangeEvent, FC, useEffect } from 'react';
+-import { FormattedMessage } from 'react-intl';
+-import { useGetLabelSetsByTeamId } from '../hooks/useGetLabelSetsByTeamId';
+-
+-interface Props {
+-  teamId: string;
+-  onSelectedLabelSetsChange: Function;
+-}
+-
+-export const CheckboxSelectFieldForLabelSet: FC<Props> = ({ teamId, onSelectedLabelSetsChange }) => {
+-  const labelSets = useGetLabelSetsByTeamId(teamId).data?.result;
+-
+-  const uniqueLabelSets = labelSets
+-    ? uniqWith(
+-        labelSets,
+-        (firstLabelSet, secondLabelSet) =>
+-          firstLabelSet.name === secondLabelSet.name && firstLabelSet.signature === secondLabelSet.signature,
+-      ).map((labelSet) => ({
+-        id: labelSet.id,
+-        name: labelSet.name,
+-      }))
+-    : [];
+-
+-  const ITEM_HEIGHT = 48;
+-  const ITEM_PADDING_TOP = 8;
+-  const menuProps: Partial<MenuProps> = {
+-    PaperProps: {
+-      style: {
+-        maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+-        width: 250,
+-      },
+-    },
+-    getContentAnchorEl: null,
+-    anchorOrigin: {
+-      vertical: 'bottom',
+-      horizontal: 'center',
+-    },
+-    transformOrigin: {
+-      vertical: 'top',
+-      horizontal: 'center',
+-    },
+-    variant: 'menu',
+-  };
+-
+-  const labelSetIds = uniqueLabelSets.map((labelSet) => labelSet.id);
+-  const handleSubmit = (values: FormData) => {
+-    onSelectedLabelSetsChange(values.labelSetIds);
+-  };
+-
+-  interface FormData {
+-    labelSetIds: string[];
+-  }
+-
+-  const ALL = 'all';
+-  const INITIAL_LABEL = labelSetIds[0];
+-
+-  useEffect(() => {
+-    onSelectedLabelSetsChange(INITIAL_LABEL);
+-  }, [INITIAL_LABEL]);
+-
+-  if (uniqueLabelSets.length === 0) {
+-    return null;
+-  }
+-
+-  return (
+-    <BaseForm id="FilterByLabelSetCheckBox" initialValues={{ labelSetIds: [INITIAL_LABEL] }} onSubmit={handleSubmit}>
+-      {({ values, submitForm, setFieldValue }) => {
+-        const onChangeSelect = (event: ChangeEvent<HTMLInputElement>) => {
+-          const {
+-            target: { value },
+-          } = event;
+-          if (value[value.length - 1] === ALL) {
+-            const labelSetIdsValue = labelSetIds.length !== values.labelSetIds.length ? labelSetIds : [];
+-            setFieldValue('labelSetIds', labelSetIdsValue);
+-          }
+-          submitForm();
+-        };
+-        return (
+-          <StyledFormControl>
+-            <Select
+-              multiple
+-              displayEmpty
+-              value={values.labelSetIds}
+-              renderValue={(value: string[]) =>
+-                value.length !== 0 ? (
+-                  <Ellipsis>{value.map((v) => uniqueLabelSets.find((l) => l.id === v)?.name).join(', ')}</Ellipsis>
+-                ) : (
+-                  <FormattedMessage id="analytic.checkbox-select-field-for-label-set.filter-by-label-set" />
+-                )
+-              }
+-              MenuProps={menuProps}
+-              onChange={onChangeSelect}
+-            >
+-              <MenuItem value={ALL}>
+-                <ListItemText primary={<SelectAllText>Select All</SelectAllText>} />
+-              </MenuItem>
+-              <MenuItem>
+-                <CheckboxGroupField name="labelSetIds">
+-                  {uniqueLabelSets.map((labelSet) => (
+-                    <StyledCheckboxOption key={labelSet.id} label={labelSet.name} value={labelSet.id} />
+-                  ))}
+-                </CheckboxGroupField>
+-              </MenuItem>
+-            </Select>
+-          </StyledFormControl>
+-        );
+-      }}
+-    </BaseForm>
+-  );
+-};
+-
+-const StyledFormControl = styled(FormControl, { name: 'CheckboxSelectFieldForLabelSet-FormControl' })(({ theme }) => ({
+-  marginLeft: theme.spacing(1),
+-  width: 200,
+-}));
+-
+-const SelectAllText = styled('span', { name: 'CheckboxSelectFieldForLabelSet-SelectAllText' })({
+-  fontWeight: 500,
+-  fontSize: '70%',
+-  color: 'blue',
+-});
+-
+-const StyledCheckboxOption = styled(CheckboxOption, { name: 'CheckboxSelectFieldForLabelSet-CheckboxOption' })({
+-  maxWidth: '100%',
+-  '& .MuiFormControlLabel-label': {
+-    overflow: 'hidden',
+-    textOverflow: 'ellipsis',
+-    whiteSpace: 'nowrap',
+-    display: 'block',
+-  },
+-});
+diff --git a/vulcan-frontend/src/modules/Analytic/components/StatisticalAnalyticChartWidget/StatisticalAnalyticChartDataQueryHandler.tsx b/vulcan-frontend/src/modules/Analytic/components/StatisticalAnalyticChartWidget/StatisticalAnalyticChartDataQueryHandler.tsx
+index 7b39ed2a37..165a3f2d64 100644
+--- a/vulcan-frontend/src/modules/Analytic/components/StatisticalAnalyticChartWidget/StatisticalAnalyticChartDataQueryHandler.tsx
++++ b/vulcan-frontend/src/modules/Analytic/components/StatisticalAnalyticChartWidget/StatisticalAnalyticChartDataQueryHandler.tsx
+@@ -31,5 +31,5 @@ export function StatisticalAnalyticChartDataQueryHandler<T>({ children, query }:
+     return <>{children(queryResult.data)}</>;
+   }
+ 
+-  return <EmptyAnalyticsData />;
++  return <EmptyAnalyticsData hasTagFilter />;
+ }
+diff --git a/vulcan-frontend/src/modules/Analytic/components/TeamOverviewWidget/AnalyticTrendsFilterWidget.tsx b/vulcan-frontend/src/modules/Analytic/components/TeamOverviewWidget/AnalyticTrendsFilterWidget.tsx
+deleted file mode 100644
+index 54f797076b..0000000000
+--- a/vulcan-frontend/src/modules/Analytic/components/TeamOverviewWidget/AnalyticTrendsFilterWidget.tsx
++++ /dev/null
+@@ -1,35 +0,0 @@
+-import { DocumentationLink } from '@vulcan-ai/frontend-shared/lib/src/modules/Documentation/components/DocumentationLink';
+-import { DocumentationPath } from '@vulcan-ai/frontend-shared/lib/src/modules/Documentation/constants';
+-import { FlexBox } from '@vulcan-ai/vulcan-ui/lib/components/Flex/FlexBox';
+-import { Tooltip } from '@vulcan-ai/vulcan-ui/lib/components/Tooltip/Tooltip';
+-import { Typography } from '@vulcan-ai/vulcan-ui/lib/components/Typography';
+-import { InfoOutlineIcon } from '@vulcan-ai/vulcan-ui/lib/icon/InfoOutlineIcon';
+-import { styled } from '@vulcan-ai/vulcan-ui/lib/theme';
+-import React, { FC } from 'react';
+-import { FormattedMessage } from 'react-intl';
+-import { AnalyticFilterWidget } from '../AnalyticFilterWidget';
+-
+-export const AnalyticTrendsFilterWidget: FC = () => {
+-  return (
+-    <FlexBox gap={2} direction="row" alignItems="center" fullWidth>
+-      <Typography fontWeight="bold" mr={2}>
+-        <FormattedMessage id="team-overview-page.trends" />
+-      </Typography>
+-      <AnalyticFilterWidget />
+-      <TooltipContainer>
+-        <Tooltip title={<FormattedMessage id="team-overview-page.trends.tooltip" />} arrow placement="right">
+-          <InfoOutlineIcon />
+-        </Tooltip>
+-      </TooltipContainer>
+-      <DocumentationLink documentationPath={DocumentationPath.PROJECT_ANALYTICS}>
+-        <FormattedMessage id="team-overview-page.trends.learn-more" />
+-      </DocumentationLink>
+-    </FlexBox>
+-  );
+-};
+-
+-const TooltipContainer = styled('div', { name: 'AnalyticTrendsFilterWidget-TooltipContainer' })({
+-  alignSelf: 'center',
+-  display: 'flex',
+-  lineHeight: 1.43,
+-});
+diff --git a/vulcan-frontend/src/modules/Analytic/components/TeamOverviewWidget/TeamOverviewWidget.tsx b/vulcan-frontend/src/modules/Analytic/components/TeamOverviewWidget/TeamOverviewWidget.tsx
+index b4d6b1427a..92e1164d96 100644
+--- a/vulcan-frontend/src/modules/Analytic/components/TeamOverviewWidget/TeamOverviewWidget.tsx
++++ b/vulcan-frontend/src/modules/Analytic/components/TeamOverviewWidget/TeamOverviewWidget.tsx
+@@ -4,10 +4,10 @@ import { Box } from '@vulcan-ai/vulcan-ui/lib/components/Box/Box';
+ import { Grid } from '@vulcan-ai/vulcan-ui/lib/components/Grid';
+ import React, { FC } from 'react';
+ import { ChartLevel, ChartSet } from 'src/apps/common/__generated__/types';
+-import { AnalyticChartWidgetWrapper } from 'src/modules/Analytic/components/AnalyticChartWidgetWrapper';
++import { AnalyticChartsGrid } from 'src/modules/Analytic/components/AnalyticChartsGrid';
+ import { useGetChartsQuery } from 'src/modules/Analytic/hooks/useGetChartsQuery';
+ import { AnalyticTagDropdownField } from '../AnalyticFilterWidget/AnalyticTagFilterWidget';
+-import { AnalyticTrendsFilterWidget } from './AnalyticTrendsFilterWidget';
++import { AnalyticTrendsDateFilter } from '../AnalyticTrendsDateFilter';
+ import { OverallProjectsChart } from './OverallProjectsChart';
+ import { RemainingFilesChart } from './RemainingFilesChart';
+ 
+@@ -36,20 +36,17 @@ export const TeamOverviewWidget: FC = () => {
+       </Grid>
+       {config.app.featureToggle.enableAnalytics && (
+         <Grid item xs={12}>
+-          <Box p={3} pt={4}>
+-            <AnalyticTrendsFilterWidget />
++          <Box pt={4}>
++            <AnalyticTrendsDateFilter />
+           </Box>
+         </Grid>
+       )}
+-      {config.app.featureToggle.enableAnalytics &&
+-        !getChartsQuery.loading &&
+-        getChartsQuery.data?.result.map((chart) => (
+-          <Grid key={chart.id} item md={6} xs={12}>
+-            <Box p={3}>
+-              <AnalyticChartWidgetWrapper teamId={teamId} chart={chart} height={334} />
+-            </Box>
+-          </Grid>
+-        ))}
++      {config.app.featureToggle.enableAnalytics && (
++        <AnalyticChartsGrid
++          chartsQuery={getChartsQuery}
++          widgetProps={{ teamId, height: 334, hasTagFilter: true }}
++        />
++      )}
+     </Grid>
+   );
+ };
+diff --git a/vulcan-frontend/src/modules/Analytic/helper.ts b/vulcan-frontend/src/modules/Analytic/helper.ts
+index e7e6958b47..10351beaaf 100644
+--- a/vulcan-frontend/src/modules/Analytic/helper.ts
++++ b/vulcan-frontend/src/modules/Analytic/helper.ts
+@@ -1,4 +1,6 @@
+ import { DateRange } from '@vulcan-ai/frontend-shared/lib/src/commons/form/fields/DateRange/interfaces';
++import addDays from 'date-fns/addDays';
++import differenceInDays from 'date-fns/differenceInDays';
+ import subMonths from 'date-fns/subMonths';
+ 
+ /*
+@@ -10,13 +12,17 @@ export function getDateRangeString(dateRange: DateRange) {
+ 
+ const DEFAULT_ANALYTICS_DATA_RETENTION_MONTHS = 6;
+ 
++export function getAnalyticsDataRetentionMonths(analyticsDataRetentionMonths?: number): number {
++  return analyticsDataRetentionMonths ?? DEFAULT_ANALYTICS_DATA_RETENTION_MONTHS;
++}
++
+ export function getMinimumAnalyticsDate(analyticsDataRetentionMonths?: number): Date {
+   const now = new Date();
+ 
+   // set to date 1 of the months, to make sure no missing date (e.g. feb only until 28/29)
+   now.setDate(1);
+ 
+-  const maximumMonths = (analyticsDataRetentionMonths ?? DEFAULT_ANALYTICS_DATA_RETENTION_MONTHS) - 1;
++  const maximumMonths = getAnalyticsDataRetentionMonths(analyticsDataRetentionMonths) - 1;
+   return subMonths(now, maximumMonths);
+ }
+ 
+@@ -25,3 +31,40 @@ const MAXIMUM_ANALYTICS_DATE_RANGE = 31;
+ export function getMaximumAnalyticsDateRange(maxDateRange?: number): number {
+   return maxDateRange ?? MAXIMUM_ANALYTICS_DATE_RANGE;
+ }
++
++export function getMaxEndDate(startDate: Date | string | null | undefined, maximumAnalyticsDateRange: number): Date {
++  const today = new Date();
++  if (!startDate) return today;
++
++  const calculatedMaxEndDate = addDays(new Date(startDate), maximumAnalyticsDateRange);
++  return calculatedMaxEndDate < today ? calculatedMaxEndDate : today;
++}
++
++export function getMinEndDate(startDate: Date | string | null | undefined): Date {
++  return startDate ? new Date(startDate) : new Date();
++}
++
++/*
++Returns adjusted end date when start/end date range violates constraints, or null if no adjustment needed.
++*/
++export function getAdjustedEndDate(
++  startDate: Date | string,
++  endDate: Date | string,
++  maximumAnalyticsDateRange: number,
++): Date | null {
++  const startDateObj = new Date(startDate);
++  const endDateObj = new Date(endDate);
++
++  if (startDateObj > endDateObj) {
++    return startDateObj;
++  }
++
++  const currentRangeDays = differenceInDays(endDateObj, startDateObj);
++  if (currentRangeDays > maximumAnalyticsDateRange) {
++    const adjustedEndDate = addDays(startDateObj, maximumAnalyticsDateRange);
++    const today = new Date();
++    return adjustedEndDate < today ? adjustedEndDate : today;
++  }
++
++  return null;
++}
+diff --git a/vulcan-frontend/src/modules/Analytic/hooks/useGetPaginatedChartDataQuery.gql b/vulcan-frontend/src/modules/Analytic/hooks/useGetPaginatedChartDataQuery.gql
+deleted file mode 100644
+index 36d733d090..0000000000
+--- a/vulcan-frontend/src/modules/Analytic/hooks/useGetPaginatedChartDataQuery.gql
++++ /dev/null
+@@ -1,14 +0,0 @@
+-#import "./ChartDataRowFragment.gql"
+-
+-query GetPaginatedChartDataQuery($input: PaginatedAnalyticsDashboardQueryInput!) {
+-  result: getPaginatedChartData(input: $input) {
+-    totalCount
+-    pageInfo {
+-      nextCursor
+-      prevCursor
+-    }
+-    nodes {
+-      ...ChartDataRowFragment
+-    }
+-  }
+-}
+diff --git a/vulcan-frontend/src/modules/Analytic/hooks/useGetPaginatedChartDataQuery.ts b/vulcan-frontend/src/modules/Analytic/hooks/useGetPaginatedChartDataQuery.ts
+deleted file mode 100644
+index ed04b74260..0000000000
+--- a/vulcan-frontend/src/modules/Analytic/hooks/useGetPaginatedChartDataQuery.ts
++++ /dev/null
+@@ -1,22 +0,0 @@
+-import { usePaginatedQuery } from '@vulcan-ai/frontend-shared/lib/src/commons/pagination';
+-import {
+-  ChartDataRowFragment,
+-  GetPaginatedChartDataQuery,
+-  GetPaginatedChartDataQueryVariables,
+-  OffsetPageInput,
+-  PaginatedAnalyticsDashboardFilterInput,
+-} from '../../../apps/common/__generated__/types';
+-import query from './useGetPaginatedChartDataQuery.gql';
+-
+-export function useGetPaginatedChartDataQuery(
+-  initialFilter: PaginatedAnalyticsDashboardFilterInput,
+-  initialPage: OffsetPageInput,
+-) {
+-  return usePaginatedQuery<
+-    ChartDataRowFragment,
+-    GetPaginatedChartDataQuery,
+-    GetPaginatedChartDataQueryVariables,
+-    PaginatedAnalyticsDashboardFilterInput,
+-    OffsetPageInput
+-  >(query, undefined, { filter: initialFilter, page: initialPage, sort: [] });
+-}

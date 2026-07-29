@@ -1,0 +1,28 @@
+$ vite build
+vite v8.1.5 building client environment for production...
+[2Ktransforming...
+[@tanstack/devtools-vite] Removed devtools code from: /src/routes/__root.tsx
+
+✓ 126 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/client/assets/styles-Dwvb47ib.css   33.57 kB │ gzip:   6.99 kB
+dist/client/assets/routes-CV8A3_bV.js     9.57 kB │ gzip:   2.75 kB
+dist/client/assets/index-CGM9H0iu.js    319.06 kB │ gzip: 101.29 kB
+
+✓ built in 323ms
+vite v8.1.5 building ssr environment for production...
+[2Ktransforming...
+[@tanstack/devtools-vite] Removed devtools code from: /src/routes/__root.tsx
+
+✓ 54 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/server/assets/start-5Z2QO8AU.js                        0.14 kB │ gzip:  0.13 kB
+dist/server/assets/empty-plugin-adapters-D9UWiqvJ.js        0.22 kB │ gzip:  0.16 kB
+dist/server/assets/_tanstack-start-manifest_v-C3l4sZoV.js   0.50 kB │ gzip:  0.30 kB
+dist/server/assets/router-BGo2m58z.js                       6.11 kB │ gzip:  2.25 kB
+dist/server/assets/routes-ctC-Jtk0.js                      13.47 kB │ gzip:  3.06 kB
+dist/server/server.js                                      59.49 kB │ gzip: 15.27 kB
+
+✓ built in 158ms

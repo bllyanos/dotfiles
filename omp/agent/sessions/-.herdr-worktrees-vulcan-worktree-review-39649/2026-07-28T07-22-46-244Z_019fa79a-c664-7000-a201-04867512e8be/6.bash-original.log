@@ -1,0 +1,464 @@
+diff --git a/IAA_V2.4_PLAN.md b/IAA_V2.4_PLAN.md
+deleted file mode 100644
+index 7c1cef3229..0000000000
+--- a/IAA_V2.4_PLAN.md
++++ /dev/null
+@@ -1,146 +0,0 @@
+-# IAA v2.4 — Skip Labeler-Labeler Above Threshold (+ on-demand recalc)
+-
+-Issue #34798. Cap IAA pair count so very large projects stay within the max job
+-duration; when capped, let users compute specific labeler-labeler pairs on demand.
+-
+-## Background
+-
+-Even after #37594, labeler-labeler IAA has no upper bound on documents/assignments.
+-Very large projects still exceed reasonable processing time.
+-
+-**Already shipped (v2.3):**
+-- Single-pass pipeline — `IAAService.calculateIAA` builds pair records once, both
+-  Cohen + Krippendorff reuse them. (`iaa.service.ts:18`)
+-- Assignment filter — unassigned labeler docs skipped, REVIEW gold kept (Option B).
+-  (`iaa-pair-record.builder.ts`)
+-- Single calculate job, not two per method. (`calculate-iaa.listener.ts:42`)
+-
+-**v2.4 = two parts:** (1) bound the pair count, (2) when bounded, surface it in the
+-UI and allow on-demand labeler-labeler calculation for user-selected pairs.
+-
+-## Pair model (confirmed in code)
+-
+-- Docs grouped by `originId`. Per origin: `comparableDocuments` = REVIEW gold doc(s)
+-  + assigned labeler docs.
+-- `createPairs` → all `C(N,2)` document pairs. (`helpers/createPairs.ts`)
+-- **Reviewer-labeler pair** = one side is `DocumentType.REVIEW`.
+-  **Labeler-labeler** = both non-REVIEW.
+-- Total project pairs = `Σ_origin C(N_o, 2)`.
+-- Heavy work = `createLabelPairRecordFromDocuments`, called per pair. Filter pairs
+-  **before** this call to save time.
+-
+-Skipping L-L drops a group of R + k labelers from `k(k+1)/2` pairs → `k` pairs. O(k²)→O(k).
+-
+-## PM decisions (locked)
+-
+-1. **Threshold = f(max job duration).** Benchmark predicts pairs-per-unit-time;
+-   threshold = throughput × max job duration × safety margin (shave for caution).
+-2. **No silent hide** — UI must communicate when L-L was skipped.
+-3. **Fallback = on-demand calc** — user selects which labeler-labeler pair(s) to
+-   compute; system runs them and keeps track of computed vs pending.
+-5. **Backfill = new-ish projects only** (active within ~1 year); no mass recompute.
+-
+-## Core design — "selected pairs" set as source of truth
+-
+-A persistent per-project set of labeler pairs the user opted into.
+-
+-- **Skip mode computes:** all R-L pairs **+** L-L pairs **only for selected annotator
+-  pairs**. (Non-skip mode unchanged — all pairs.)
+-- **Manual select:** add pair to the set → enqueue recalc.
+-- **Why:** auto-recalc (on relabel) recomputes R-L + the whole selected set each run,
+-  so manual results never go stale, and the existing **overwrite-by-project**
+-  persistence stays valid — the set (not existing rows) decides which L-L to include.
+-  No fragile row-merging.
+-
+-## Plan
+-
+-### Phase 1 — Threshold mechanism (code) ✅ DONE
+-
+-- Config `IAA_MAX_PAIRS` (default 0 = disabled). (`config.ts`, `.env.example`)
+-- `iaa-pair-record.builder.ts`: pre-pass sums `totalPairs`; over threshold →
+-  emit only reviewer-labeler pairs; filter before the heavy loader.
+-- `[IAA]` logs on skip + on origin groups with no reviewer.
+-- Tests in `iaa-pair-record.builder.spec.ts` + `createPairs.spec.ts`.
+-- Commits: `a52f19c` (config), `54304af` (skip logic).
+-
+-### Phase 2 — Persist skip metadata + selected-pairs model (backend)
+-
+-**a. Selected-pairs entity** — new table `iaa_selected_labeler_pair`:
+-`{ projectId, teamMemberId1, teamMemberId2 }` (normalize order; index on projectId).
+-Migration + entity + repository.
+-
+-**b. Skip metadata** — per-project IAA status persisted at calc time:
+-`{ projectId, labelerLabelerSkipped, totalPairs, threshold, calculatedAt }`.
+-Set inside the builder/service run so the UI can read it without recomputing.
+-(New small table or column set; reuse existing IAA info read path.)
+-
+-**c. Builder filter generalized** — `isReviewerLabelerPair` → `shouldEmitPair`:
+-emit if (one side REVIEW) **OR** (both annotators form a selected pair).
+-Load the selected set once per run, pass into the builder.
+-
+-**d. Guard** — cap number of selectable pairs per project (config, e.g.
+-`IAA_MAX_SELECTED_PAIRS`) so manual calc can't blow the same budget the cap protects.
+-
+-### Phase 3 — On-demand labeler-pair calculation (backend)
+-
+-**a. Mutation** `calculateLabelerPairIAA(projectId, teamMemberId1, teamMemberId2)`
+-(or a list): validates the pair, inserts into selected set, enqueues recalc.
+-Reuses the existing `CALCULATE_IAA` job + pipeline (full overwrite of R-L + selected L-L).
+-
+-**b. Status query** — per selected pair, derive status:
+-- `computed` — rows exist for the annotator pair.
+-- `pending` — recalc job in flight.
+-- `no_overlap` — selected but annotators never co-labeled an origin (no rows ever).
+-- not-selected pairs → omitted / shown as available to select.
+-
+-**c. Permissions** — gate behind existing IAA project permission handler.
+-
+-### Phase 4 — UI surfacing + manual selection (frontend) ⏳ interim DONE
+-
+-> **Interim — waiting on design team.** Ship a minimal, easy-to-revert placeholder
+-> UI now; swap for the real design once delivered. Keep it isolated (one component /
+-> feature flag) so removal is a clean revert, no entanglement with shared components.
+->
+-> **Feature flag:** `ENABLE_IAA_LABELER_PAIR_PICKER` (`frontendConfig.enableIAALabelerPairPicker`,
+-> default `false`). Gate the whole placeholder on it — flip on per env, revert = flip off.
+-> Backend config added (`config.ts`, `.env.example`); regen frontend config types so
+-> `enableIAALabelerPairPicker` is readable client-side.
+-
+-**Interim placeholder (DONE):**
+-- `IAALabelerPairPickerPlaceholder.tsx` — self-contained, gated on
+-  `enableIAALabelerPairPicker`, mounted above `IAAProjectTable` in `ProjectIAAWidget`.
+-  Renders nothing unless flag on AND `labelerLabelerSkipped`.
+-- Hooks: `useGetIAALabelerLabelerStatusQuery` (status query),
+-  `useCalculateLabelerPairIAAMutation` (on-demand calc) + their `.gql` docs.
+-- Plain text banner, selected-pairs list with computed/pending text status, two
+-  member-id inputs + Calculate button. No bespoke styling — clean revert later.
+-- TODO when design lands: pair matrix from project members (drop raw id inputs),
+-  proper status badges incl. no-overlap, multi-select + budget, poll pending.
+-
+-**Final (after design delivered):**
+-- Banner + labeler-pair picker (list/matrix) with proper status badges, styled per
+-  design spec. Replaces the placeholder wholesale.
+-
+-### Phase 5 — Benchmark (ops, after Phase 1–3 deploy)
+-
+-1. Query prod projects, order by assignment count + text-doc count desc;
+-   filter `updatedAt` within ~1 year.
+-2. Trigger `calculateIAA` top-down, record wall-clock (`[IAA]` start/end markers).
+-3. Collect `(time, documents, assignments, totalPairs)`.
+-4. Derive throughput → **threshold = throughput × max job duration × safety margin.**
+-
+-### Phase 6 — Roll out
+-
+-- Set `IAA_MAX_PAIRS` (and `IAA_MAX_SELECTED_PAIRS`) in prod.
+-- Recalc new-ish projects only (active within ~1 year).
+-
+-## Decisions / open items
+-
+-- **No-reviewer group over threshold** → 0 pairs for that group unless its labeler
+-  pair is manually selected. Logged, not silent.
+-- **Manual recalc** reuses full-overwrite pipeline (heavier than a delta merge).
+-  Acceptable — R-L is the bounded part; selected L-L adds a little. Delta-merge =
+-  later optimization if needed.
+-- **Selectable-pair cap** value — TBD (config); set conservatively vs job budget.
+-- **Skip-state staleness** — metadata refreshed every calc run, so it tracks the
+-  latest calculation; no separate invalidation needed.
+diff --git a/llm-lab-frontend/src/commons/i18n/messages/en.ts b/llm-lab-frontend/src/commons/i18n/messages/en.ts
+index 21eec1b649..b5a1090415 100644
+--- a/llm-lab-frontend/src/commons/i18n/messages/en.ts
++++ b/llm-lab-frontend/src/commons/i18n/messages/en.ts
+@@ -108,6 +108,7 @@ export const EN = (config: Config) => {
+     'CUSTOM_EMBEDDING_MODEL_API_KEY_INVALID',
+     'CUSTOM_EMBEDDING_MODEL_NOT_FOUND',
+     'AUTOLABEL_LLM_LABS_BATCH_API_FAILED',
++    'BAD_GATEWAY',
+   ] as const;
+ 
+   type ErrorMessage = typeof ERROR_MESSAGE | Record<GraphQLErrorCode, string>;
+@@ -5822,8 +5823,6 @@ export const EN = (config: Config) => {
+ 
+     'test-result.export.failed': 'Download test result failed. Please try again.',
+     'test-result.export.in-progress': 'Exporting...',
+-    'team-project-analytics-page.filter.description':
+-      'Our system uses UTC instead of individual time zones, so the displayed data may have discrepancies based on your location.',
+     'team-project-analytics-page.filter.learn-more': 'Learn more about Analytics',
+     'team-project-analytics-page.IAA.learn-more': 'Learn more about Inter-Annotator Agreement',
+     'team-project-analytics-page.iaa.export.success':
+@@ -6045,6 +6044,11 @@ export const EN = (config: Config) => {
+     'integration.role-arn': 'Role ARN',
+     'integration.role-arn.error-label': 'role ARN',
+     'integration.role-arn.placeholder': 'See the guide below',
++    'integration.endpoint': 'Custom endpoint URL',
++    'integration.endpoint.placeholder': 'e.g. https://minio.example.com',
++    'integration.s3-force-path-style': 'Use path-style addressing',
++    'integration.aws-s3-compatible.helper-text':
++      'Leave blank for AWS S3 (including access-point aliases). Set only for S3-compatible stores such as MinIO.',
+     'integration.settings.description': 'Integrate your object storage as the target storage when creating projects.',
+ 
+     'integration.redirect.success': 'You have successfully added Datasaur as your tenant',
+diff --git a/vulcan-frontend/src/commons/i18n/messages/en.ts b/vulcan-frontend/src/commons/i18n/messages/en.ts
+index 9d490ad44c..7b876e10e1 100644
+--- a/vulcan-frontend/src/commons/i18n/messages/en.ts
++++ b/vulcan-frontend/src/commons/i18n/messages/en.ts
+@@ -112,6 +112,7 @@ export const EN = (config: Config) => {
+     'CUSTOM_EMBEDDING_MODEL_API_KEY_INVALID',
+     'CUSTOM_EMBEDDING_MODEL_NOT_FOUND',
+     'AUTOLABEL_LLM_LABS_BATCH_API_FAILED',
++    'BAD_GATEWAY',
+   ] as const;
+ 
+   type ErrorMessage = typeof ERROR_MESSAGE | Record<GraphQLErrorCode, string>;
+@@ -129,6 +130,7 @@ export const EN = (config: Config) => {
+     ACTIVITY_EVENT_SERIALIZATION_ERROR: 'Activity event serialization error',
+     ACTIVITY_ELASTICSEARCH_READ_SOURCE_ERROR:
+       'Activity data source is outdated. Please contact support to update your system.',
++    ANSWER_FILE_NOT_FOUND: 'No answer file was found paired with {filename}.',
+     API_KEY_INVALID: 'The API key is invalid. Check your API key and try again.',
+     [`${ERROR_MESSAGE.API_KEY_INVALID}.link-title`]: 'Manage API key',
+     REQUEST_TIMEOUT: 'Unable to parse {filename}. The API request timeout.',
+@@ -1036,6 +1038,15 @@ export const EN = (config: Config) => {
+     'action.run.detail.status.warning.tooltip': 'Project created; source files not deleted',
+     'action.run.warning': 'Warning',
+ 
++    'action.run.cancel.button': 'Cancel run',
++    'action.run.cancel.button.pending': 'Cancelling…',
++    'action.run.cancel.dialog.title': 'Cancel this run?',
++    'action.run.cancel.dialog.description':
++      'Any documents already processed will keep their created projects. Documents not yet processed will be skipped.',
++    'action.run.cancel.dialog.confirm': 'Cancel run',
++    'action.run.cancel.process': 'Cancelling run…',
++    'action.run.cancel.error': 'Failed to cancel this run. Please try again.',
++
+     // --- Run reporting error/warning registry (banner + row "Show issue" dialog) ---
+     // Layout per code: title → cause (body) → impact → numbered "What you can do" solutions.
+     'action.run.error.RUN_STOPPED_SOURCE_DELETE.title': 'Run stopped early — couldn’t delete source files',
+@@ -1063,6 +1074,29 @@ export const EN = (config: Config) => {
+     'action.run.error.CPA_NOTHING_NEW.title': 'Nothing new to create',
+     'action.run.error.CPA_NOTHING_NEW.body':
+       'Every sub-folder in the input folder already has a project from a previous run, so no new projects were created. Add new sub-folders and run again to create more.',
++    'action.run.error.PARTIAL_FILES_SKIPPED.title': 'Some files were skipped',
++    'action.run.error.PARTIAL_FILES_SKIPPED.body':
++      'The project was created, but some files could not be read and were skipped.',
++    'action.run.error.PARTIAL_FILES_SKIPPED.impact':
++      'The skipped files are not part of the project. Fix their access and run again to add them.',
++    'action.run.error.CPA_PARTIAL_SUCCESS.title': 'Completed with warnings',
++    'action.run.error.CPA_PARTIAL_SUCCESS.body':
++      'The run finished, but some files were skipped because they could not be read.',
++    'action.run.error.DOCUMENT_RETRIEVAL_FAILURE.title': 'Couldn’t retrieve a document',
++    'action.run.error.POST_LAUNCH_STEP_FAILED.title': 'Project created, but a post-creation step failed',
++    'action.run.error.POST_LAUNCH_STEP_FAILED.body':
++      'One or more steps that run after project creation (for example, cache invalidation) failed. The project itself was created successfully.',
++    'action.run.error.POST_LAUNCH_STEP_FAILED.impact':
++      'The project is usable, but may need manual follow-up for the failed step(s) below.',
++    'action.run.error.skippedFiles.label': 'Skipped files',
++    // Richer run-detail error fields: "Read N of M files", plus which files succeeded/failed
++    // (with per-file stage), rendered generically across every code that carries them
++    // (INPUT_READ_DENIED, DOCUMENT_RETRIEVAL_FAILURE) rather than one message per code.
++    'action.run.error.readProgress.label': 'Read {processed} of {total} file(s)',
++    'action.run.error.succeededFiles.label': 'Succeeded files',
++    'action.run.error.failedFiles.label': 'Failed files',
++    'action.run.error.failedFiles.stage': 'stage {stage}',
++    'action.run.error.failedHooks.label': 'Failed step(s)',
+     'action.run.error.UNKNOWN.title': 'Something went wrong',
+     'action.run.error.UNKNOWN.body': 'An unexpected error occurred while processing your files.',
+     // Solutions (ordered) + section labels
+@@ -1109,6 +1143,9 @@ export const EN = (config: Config) => {
+     'action.details-dialog.project-template': 'Project template',
+     'action.details-dialog.read-only': 'Read Only',
+     'action.details-dialog.immutable-input': 'Keep input files in place',
++    'action.details-dialog.ingest-mode': 'Ingest mode',
++    'action.details-dialog.ingest-mode.PRESIGNED': 'Presigned URL',
++    'action.details-dialog.ingest-mode.GET_OBJECT': 'Direct download (getObject)',
+     'action.details-dialog.additional-tag-names': 'Tag names',
+     'action.details-dialog.reviewers-count': '{value, plural, one {Reviewer} other {Reviewers}} ({value})',
+     'action.details-dialog.target-storage': 'Input storage',
+@@ -1405,6 +1442,7 @@ export const EN = (config: Config) => {
+     'analytic.export-chart-success': "We've sent the chart data to your email. Please check your email inbox.",
+     'analytic.no-data-available.title': 'No data available',
+     'analytic.no-data-available.description': 'Try adjusting the date range or the tag filter.',
++    'analytic.no-data-available.no-tag-filter.description': 'Try adjusting the date range.',
+     'analytic.conflict-resolution.no-data-available.description':
+       'This chart will only display projects that have at least one labeler and one reviewer, as conflicts cannot occur if a single member serves as both. Additionally, consider adjusting the date range.',
+     'analytic.statistical.no-data-available.description':
+@@ -1646,6 +1684,7 @@ export const EN = (config: Config) => {
+     'common.clear-all': 'Clear all',
+     'common.close': 'Close',
+     'common.comment': 'Comment',
++    'common.comments': 'Comments',
+     'common.complete': 'Complete',
+     'common.completed': 'Completed',
+     'common.conditions': 'Conditions',
+@@ -3310,6 +3349,14 @@ After:
+     'extension.search.advanced.conditions.label-attribution-filter-by.reviewed-user-ids': 'is reviewed by',
+     'extension.search.advanced.conditions.label-attribution-filter-by.not-reviewed-user-ids': 'is not reviewed by',
+ 
++    'extension.search.advanced.conditions.comment-filter-by.user-id': 'is from',
++    'extension.search.advanced.conditions.comment-filter-by.not-user-id': 'is not from',
++
++    'extension.search.advanced.conditions.comment-filter-by.resolved': 'is resolved',
++    'extension.search.advanced.conditions.comment-filter-by.not-resolved': 'is open',
++    'extension.search.advanced.conditions.comment-filter-by.resolved.preview': 'is <u>resolved</u>',
++    'extension.search.advanced.conditions.comment-filter-by.not-resolved.preview': 'is <u>open</u>',
++
+     'extension.search.advanced.script.restore-logic-builder-version': 'Restore logic builder version',
+     'extension.search.advanced.script.restore-logic-builder-version.disabled':
+       'Conditions in the query match the ones in the logic builder configuration.',
+@@ -3323,6 +3370,7 @@ After:
+     [`extension.search.advanced.conditions.search-by.${AdvancedSearchBy.LABEL}`]: 'Label',
+     [`extension.search.advanced.conditions.search-by.${AdvancedSearchBy.ANSWER}`]: 'Answer',
+     [`extension.search.advanced.conditions.search-by.${AdvancedSearchBy.METADATA}`]: 'Metadata',
++    [`extension.search.advanced.conditions.search-by.${AdvancedSearchBy.COMMENT}`]: 'Comment',
+     [`extension.search.advanced.conditions.question.${SEARCH_CONDITION_ANY_QUESTIONS}`]: 'any questions',
+     [`extension.search.advanced.conditions.match-type.${AdvancedMatchType.IS}`]: 'is',
+     [`extension.search.advanced.conditions.match-type.${AdvancedMatchType.IS_NOT}`]: 'is not',
+@@ -3346,6 +3394,10 @@ After:
+     'extension.search.advanced.result-information.count': '({count, plural, one {# line} other {# lines}})',
+     'extension.search.advanced.result-information.with-filter': '0 results found based on the applied filters',
+     'extension.search.advanced.go-to-line': 'Go to line',
++    'extension.search.advanced.result.line-checkbox.disabled-tooltip':
++      "This line can't be selected because none of its results can be labeled",
++    'extension.search.advanced.result.file-checkbox.disabled-tooltip':
++      "This file can't be selected because none of its results can be labeled",
+     'extension.search.advanced.no-specific-result':
+       'This line matches the configurations, with no specific {searchType} to display.',
+     'extension.search.advanced.metadata-or-answer-not-specific-notice':
+@@ -5802,6 +5854,61 @@ After:
+       'Grant the role behind this storage the following on bucket {bucket}:',
+     'team-action.create-project.wizard.project-details.permissions.copy': 'Copy IAM policy JSON',
+     'team-action.create-project.wizard.project-details.permissions.copied': 'Copied!',
++    'team-action.create-project.wizard.project-details.advanced.title': 'Advanced',
++    'team-action.create-project.wizard.project-details.advanced.ingest-mode.label': 'Document ingest mode',
++    'team-action.create-project.wizard.project-details.advanced.ingest-mode.description':
++      'How this action reads document bytes from your object storage. Presigned URL is the default and matches today’s behavior; SDK getObject avoids URL/session-token expiry on long-running imports.',
++    'team-action.create-project.wizard.project-details.advanced.ingest-mode.presigned': 'Presigned URL (default)',
++    'team-action.create-project.wizard.project-details.advanced.ingest-mode.get-object': 'SDK getObject (streaming)',
++    'storage-diagnostic.entry.label': 'Storage diagnostics',
++    'storage-diagnostic.config.title': 'Storage diagnostics',
++    'storage-diagnostic.config.coverage.title': 'Coverage',
++    'storage-diagnostic.config.coverage.all': 'Walk the whole prefix',
++    'storage-diagnostic.config.coverage.cap': 'Number of files to check',
++    'storage-diagnostic.config.depth.title': 'Depth',
++    'storage-diagnostic.config.depth.label': 'How much of each file to read',
++    'storage-diagnostic.config.depth.probe': 'Probe (HEAD + first byte) — fast, default',
++    'storage-diagnostic.config.depth.full': 'Full download',
++    'storage-diagnostic.config.depth.full-warning':
++      'Full downloads every matched file end-to-end. This can be slow and use significant bandwidth for large or numerous files.',
++    'storage-diagnostic.config.read-modes.title': 'Read modes',
++    'storage-diagnostic.config.read-modes.label': 'Which read paths to check',
++    'storage-diagnostic.config.read-modes.both': 'Both (getObject + presigned)',
++    'storage-diagnostic.config.read-modes.get-object': 'SDK getObject only',
++    'storage-diagnostic.config.read-modes.presigned': 'Presigned URL only',
++    'storage-diagnostic.config.submit': 'Run diagnostic',
++    'storage-diagnostic.config.submit-error': 'Could not start the diagnostic run. Please try again.',
++    'storage-diagnostic.config.no-storage':
++      'This action has no input external object storage configured. Please select one before running diagnostics.',
++    'storage-diagnostic.opening': 'Checking diagnostic status…',
++    'storage-diagnostic.progress.title': 'Running diagnostic',
++    'storage-diagnostic.progress.starting': 'Starting the diagnostic run…',
++    'storage-diagnostic.progress.close': 'Run in background',
++    'storage-diagnostic.progress.file-count': '{processed} / {total} files',
++    'storage-diagnostic.progress.file-count-unknown-total': '{processed} files processed',
++    'storage-diagnostic.progress.current-op': 'Checking {key}',
++    'storage-diagnostic.progress.per-file': 'Current file: {downloaded} / {total} bytes',
++    'storage-diagnostic.progress.passed': 'Passed: {passed}',
++    'storage-diagnostic.progress.failed': 'Failed: {failed}',
++    'storage-diagnostic.progress.cancel': 'Cancel',
++    'storage-diagnostic.progress.poll-error':
++      'Lost connection to the diagnostic run. Please refresh to check its status.',
++    'storage-diagnostic.progress.cancel-error': 'Failed to cancel the diagnostic run. Please try again.',
++    'storage-diagnostic.results.title': 'Diagnostic results',
++    'storage-diagnostic.results.loading': 'Loading results…',
++    'storage-diagnostic.results.summary-title': '{count} files checked.',
++    'storage-diagnostic.results.failed-group': 'Failed',
++    'storage-diagnostic.results.passed-group': 'Passed',
++    'storage-diagnostic.results.copy-failed-list': 'Copy failed list ({count})',
++    'storage-diagnostic.results.empty-title': 'No files were checked',
++    'storage-diagnostic.results.empty-description':
++      'This run didn’t process any files — try a broader coverage setting or a different prefix.',
++    'storage-diagnostic.results.last-checked': 'Last checked {time}.',
++    'storage-diagnostic.results.run-again': 'Run again',
++    'storage-diagnostic.results.status-pass': 'PASS',
++    'storage-diagnostic.results.status-fail': 'FAIL',
++    'storage-diagnostic.results.check-get-object': 'getObject: {status} {errorClass}',
++    'storage-diagnostic.results.check-presigned': 'presigned: {status} {errorClass}',
+     'team-action.create-project.wizard.project-details.mode-change-warning.title': 'You changed this action’s mode',
+     'team-action.create-project.wizard.project-details.mode-change-warning.to-move':
+       'Switching to Move means future runs will delete input files after creating a project. Projects already created by this action read their files from the input folder and may lose access to source files (e.g. previews or re-import) once those files are deleted. Existing projects are not changed; this affects future runs only.',
+@@ -6016,7 +6123,7 @@ After:
+     'team-overview-page.trends': 'Trends',
+     'team-overview-page.trends.learn-more': 'Learn more about Trends',
+     'team-overview-page.trends.tooltip':
+-      'Our system uses UTC instead of individual time zones, so the displayed data may have discrepancies based on your location.',
++      'Our system uses UTC instead of individual time zones, so the displayed data may have discrepancies based on your location. Custom date range is limited to a maximum of {days} days, and data is only available for the last {months} months.',
+ 
+     'test-result.export.failed': 'Download test result failed. Please try again.',
+     'test-result.export.in-progress': 'Exporting...',
+@@ -6266,8 +6373,6 @@ After:
+     'team-project-analytics-page.empty-answer.row-based': 'Empty answer',
+     'team-project-analytics-page.empty-answer.span-based': 'Empty label',
+ 
+-    'team-project-analytics-page.filter.description':
+-      'Our system uses UTC instead of individual time zones, so the displayed data may have discrepancies based on your location.',
+     'team-project-analytics-page.filter.learn-more': 'Learn more about Analytics',
+     'team-project-analytics-page.IAA.learn-more': 'Learn more about Inter-Annotator Agreement',
+     'team-project-analytics-page.iaa.export.success':
+@@ -6459,6 +6564,11 @@ After:
+     'integration.how-to-attach-role-to-service-account': 'How to attach the appropriate role to the service account',
+     'integration.role-arn.error-label': 'role ARN',
+     'integration.role-arn.placeholder': 'See the guide below',
++    'integration.endpoint': 'Custom endpoint URL',
++    'integration.endpoint.placeholder': 'e.g. https://minio.example.com',
++    'integration.s3-force-path-style': 'Use path-style addressing',
++    'integration.aws-s3-compatible.helper-text':
++      'Leave blank for AWS S3 (including access-point aliases). Set only for S3-compatible stores such as MinIO.',
+     'integration.settings.description': 'Integrate your object storage as the target storage when creating projects.',
+     'integration.settings.default-storage': 'Default object storage',
+     'integration.settings.default-storage-description':
+@@ -7037,6 +7147,7 @@ After:
+       one {needs}
+       other {need}
+     } more assignees to reach consensus.`,
++    'project.assignment.reviewer-labeler.any': 'Any labeler/reviewer',
+     'project.assignment.labeler.all': 'All labelers',
+     'project.assignment.labeler.any': 'Any labeler',
+     'project.assignment.reviewer.all': 'All reviewers',
+@@ -7243,6 +7354,7 @@ After:
+     'project-creation-wizard.preview-data.context-menu.show-column': 'Show',
+     'project-creation-wizard.preview-data.media-notes':
+       'This is the preview of the media and transcription files pair from {filename}',
++    'project-creation-wizard.preview-data.media-only-notes': 'This is the preview of the media file from {filename}',
+     'project-creation-wizard.preview-data.default-notes': 'This is a preview of what your data will look like.',
+     'project-creation-wizard.preview-data.displayed-rows': 'Number of rows displayed per page',
+     'project-creation-wizard.preview-data.displayed-rows.all': 'All rows',
+diff --git a/vulcan-frontend/src/modules/IAA/components/IAASummaryTable/IAASummaryContent.tsx b/vulcan-frontend/src/modules/IAA/components/IAASummaryTable/IAASummaryContent.tsx
+index 7a2f15bf6d..e8cc373680 100644
+--- a/vulcan-frontend/src/modules/IAA/components/IAASummaryTable/IAASummaryContent.tsx
++++ b/vulcan-frontend/src/modules/IAA/components/IAASummaryTable/IAASummaryContent.tsx
+@@ -1,5 +1,7 @@
+ import { DataTable } from '@vulcan-ai/vulcan-ui/lib/components/DataTable';
++import { styled } from '@vulcan-ai/vulcan-ui/lib/theme';
+ import React from 'react';
++import { FormattedMessage } from 'react-intl';
+ import { CabinetContributor } from 'src/apps/common/__generated__/types';
+ import { HeaderCell } from '../IAATable/IAATableCommon';
+ import { MemberCell } from '../IAATable/MemberCell';
+@@ -25,7 +27,11 @@ export function IAASummaryContent({
+       <DataTable.Head>
+         <DataTable.Head.Row />
+         <DataTable.Head.Row>
+-          <HeaderCell stickyTop stickyLeft width={175} />
++          <HeaderCell stickyTop stickyLeft width={175}>
++            <b>
++              <FormattedMessage id="common.member" />
++            </b>
++          </HeaderCell>
+           {memberIds.map((memberId) => (
+             <MemberCell
+               key={memberId}
+@@ -40,13 +46,17 @@ export function IAASummaryContent({
+         </DataTable.Head.Row>
+       </DataTable.Head>
+ 
+-      <DataTable.Body.Row>
++      <Row>
+         <MemberCell variant="body" memberId={null} memberRecord={memberRecord} contributorMap={contributorMap} />
+         {memberIds.map((verticalMemberId) => {
+           const key2 = [':', verticalMemberId].join('-');
+           return <ValueCell key={verticalMemberId} value={indexedRecord[key2]} />;
+         })}
+-      </DataTable.Body.Row>
++      </Row>
+     </>
+   );
+ }
++
++const Row = styled(DataTable.Body.Row, { name: 'IAASummaryContent-Row' })(({ theme }) => ({
++  borderBottom: `1px solid ${theme.palette.lightGrey2}`,
++}));

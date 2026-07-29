@@ -1,0 +1,740 @@
+URL: https://www.wiz.io/blog/shai-hulud-npm-supply-chain-attack
+Content-Type: text/html
+Method: native
+
+---
+
+---
+canonical: https://www.wiz.io/blog/shai-hulud-npm-supply-chain-attack
+meta-article:author: https://www.wiz.io/authors/barak-sharoni
+meta-article:modified_time: 2025-09-16T10:04:50-04:00
+meta-article:published_time: 2025-09-16T10:04:50-04:00
+meta-article:tag: Threat Intel
+meta-description: Learn how the Shai-Hulud npm worm compromised 100+ packages with data-stealing malware. See how it spreads, the risks, and steps to detect and mitigate.
+meta-google-site-verification: zSanwcyYxMtAILuAY6eFdLNwmVQVVT9wbetOL7oFfN8
+meta-og:description: Learn how the Shai-Hulud npm worm compromised 100+ packages with data-stealing malware. See how it spreads, the risks, and steps to detect and mitigate.
+meta-og:image: https://www.datocms-assets.com/75231/1758030724-shai-hulud.png?fm=webp
+meta-og:locale: en-us
+meta-og:site_name: wiz.io
+meta-og:title: Shai-Hulud npm Supply Chain Attack | Wiz Blog
+meta-og:type: article
+meta-og:url: https://www.wiz.io/blog/shai-hulud-npm-supply-chain-attack
+meta-robots: index,follow
+meta-twitter:card: summary_large_image
+meta-twitter:site: @wiz_io
+meta-twitter:widgets:csp: on
+meta-viewport: width=device-width
+title: Shai-Hulud npm Supply Chain Attack | Wiz Blog
+---
+
+[Wiz![SVG Image](data:image/svg+xml;base64,PHN2ZyBhcmlhLWxhYmVsPSJXaXogTG9nbyIgY2xhc3M9InRleHQtcHJpbWFyeS1ibHVlIGRhcmstcmVzZWFyY2g6dGV4dC13aGl0ZSBoLTkgbWF4LXctWzUxcHhdIHRyYW5zbGF0ZS15LVstMi41cHhdIHRyYW5zaXRpb24tYWxsIGFjdGl2ZTpvcGFjaXR5LTUwIGxnOmhvdmVyOm9wYWNpdHktNzAgZGFyazp0ZXh0LXdoaXRlIj48dXNlIGhyZWY9Ii9pbWFnZXMvbG9nb19zcHJpdGUuc3ZnI3dpei1sb2dvIiAvPjwvc3ZnPg==)](/)
+
+![SVG Image](data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHN0cm9rZT0iY3VycmVudENvbG9yIiBhcmlhLWhpZGRlbj0idHJ1ZSIgd2lkdGg9IjI0IiBzdHJva2Utd2lkdGg9IjIiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiBmaWxsPSJub25lIiBjbGFzcz0ibHVjaWRlIGx1Y2lkZS1zZWFyY2ggc2l6ZS01Ij48cGF0aCBkPSJtMjEgMjEtNC4zNC00LjM0IiAvPjxjaXJjbGUgcj0iOCIgY3g9IjExIiBjeT0iMTEiIC8+PC9zdmc+)
+
+![SVG Image](data:image/svg+xml;base64,PHN2ZyBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLXdpZHRoPSIyIiBoZWlnaHQ9IjI0IiB3aWR0aD0iMjQiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIGFyaWEtaGlkZGVuPSJ0cnVlIiBjbGFzcz0ibHVjaWRlIGx1Y2lkZS1tZW51Ij48cGF0aCBkPSJNNCA1aDE2IiAvPjxwYXRoIGQ9Ik00IDEyaDE2IiAvPjxwYXRoIGQ9Ik00IDE5aDE2IiAvPjwvc3ZnPg==)
+
+![SVG Image](data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGZpbGw9Im5vbmUiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIgaGVpZ2h0PSIyNCIgYXJpYS1oaWRkZW49InRydWUiIHdpZHRoPSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZT0iY3VycmVudENvbG9yIiBjbGFzcz0ibHVjaWRlIGx1Y2lkZS1zZWFyY2ggc2l6ZS01Ij48cGF0aCBkPSJtMjEgMjEtNC4zNC00LjM0IiAvPjxjaXJjbGUgcj0iOCIgY3g9IjExIiBjeT0iMTEiIC8+PC9zdmc+)
+
+[Pricing](/pricing?cta_source=blog&cta_page=/blog/shai-hulud-npm-supply-chain-attack&cta_placement=nav)[Get a demo![SVG Image](data:image/svg+xml;base64,PHN2ZyBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIHN0cm9rZT0iY3VycmVudENvbG9yIiBzdHJva2Utd2lkdGg9IjIiIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiBhcmlhLWhpZGRlbj0idHJ1ZSIgdmlld0JveD0iMCAwIDI0IDI0IiBjbGFzcz0ibHVjaWRlIGx1Y2lkZS1jaGV2cm9uLXJpZ2h0IHRyYW5zaXRpb24tdHJhbnNmb3JtIHNpemUtMyBtbC0xIj48cGF0aCBkPSJtOSAxOCA2LTYtNi02IiAvPjwvc3ZnPg==)](/demo?cta_source=blog&cta_page=/blog/shai-hulud-npm-supply-chain-attack&cta_placement=nav)
+
+![SVG Image](data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHN0cm9rZS1saW5lam9pbj0icm91bmQiIHdpZHRoPSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBhcmlhLWhpZGRlbj0idHJ1ZSIgc3Ryb2tlLXdpZHRoPSIyIiBoZWlnaHQ9IjI0IiBmaWxsPSJub25lIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZT0iY3VycmVudENvbG9yIiBjbGFzcz0ibHVjaWRlIGx1Y2lkZS1zZWFyY2ggc2l6ZS01Ij48cGF0aCBkPSJtMjEgMjEtNC4zNC00LjM0IiAvPjxjaXJjbGUgcj0iOCIgY3g9IjExIiBjeT0iMTEiIC8+PC9zdmc+)
+
+![SVG Image](data:image/svg+xml;base64,PHN2ZyBzdHJva2Utd2lkdGg9IjIiIGFyaWEtaGlkZGVuPSJ0cnVlIiB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgc3Ryb2tlPSJjdXJyZW50Q29sb3IiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiBmaWxsPSJub25lIiBjbGFzcz0ibHVjaWRlIGx1Y2lkZS1tZW51Ij48cGF0aCBkPSJNNCA1aDE2IiAvPjxwYXRoIGQ9Ik00IDEyaDE2IiAvPjxwYXRoIGQ9Ik00IDE5aDE2IiAvPjwvc3ZnPg==)
+
+![SVG Image](data:image/svg+xml;base64,PHN2ZyBhcmlhLWhpZGRlbj0idHJ1ZSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBoZWlnaHQ9IjI0IiBmaWxsPSJub25lIiB2aWV3Qm94PSIwIDAgMjQgMjQiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjI0IiBzdHJva2UtbGluZWpvaW49InJvdW5kIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLXdpZHRoPSIyIiBjbGFzcz0ibHVjaWRlIGx1Y2lkZS1zZWFyY2ggc2l6ZS01Ij48cGF0aCBkPSJtMjEgMjEtNC4zNC00LjM0IiAvPjxjaXJjbGUgY3g9IjExIiBjeT0iMTEiIHI9IjgiIC8+PC9zdmc+)
+
+[Get a demo![SVG Image](data:image/svg+xml;base64,PHN2ZyBzdHJva2Utd2lkdGg9IjIiIHdpZHRoPSIyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJjdXJyZW50Q29sb3IiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIgdmlld0JveD0iMCAwIDI0IDI0IiBoZWlnaHQ9IjI0IiBhcmlhLWhpZGRlbj0idHJ1ZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiBjbGFzcz0ibHVjaWRlIGx1Y2lkZS1jaGV2cm9uLXJpZ2h0IHRyYW5zaXRpb24tdHJhbnNmb3JtIHNpemUtMyBtbC0xIj48cGF0aCBkPSJtOSAxOCA2LTYtNi02IiAvPjwvc3ZnPg==)](/demo?cta_source=blog&cta_page=/blog/shai-hulud-npm-supply-chain-attack&cta_placement=nav)
+
+[![SVG Image](data:image/svg+xml;base64,PHN2ZyBzdHJva2UtbGluZWpvaW49InJvdW5kIiB3aWR0aD0iMjQiIHN0cm9rZT0iY3VycmVudENvbG9yIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHN0cm9rZS13aWR0aD0iMiIgZmlsbD0ibm9uZSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBhcmlhLWhpZGRlbj0idHJ1ZSIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBjbGFzcz0ibHVjaWRlIGx1Y2lkZS1hcnJvdy1sZWZ0IHNpemUtNCI+PHBhdGggZD0ibTEyIDE5LTctNyA3LTciIC8+PHBhdGggZD0iTTE5IDEySDUiIC8+PC9zdmc+)Blog](/blog)
+
+# Shai-Hulud: Ongoing Package Supply Chain Worm Delivering Data-Stealing Malware
+
+Detect and mitigate a critical supply chain compromise affecting over 100+ packages, organizations should act urgently.
+
+[/authors/merav-bar](/authors/merav-bar)[/authors/rami-mccarthy](/authors/rami-mccarthy)[/authors/barak-sharoni](/authors/barak-sharoni)
+
+[Merav Bar](/authors/merav-bar), [Rami McCarthy](/authors/rami-mccarthy), [Barak Sharoni](/authors/barak-sharoni)
+
+![SVG Image](data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgNjQgNjQiIHdpZHRoPSIzMiIgaGVpZ2h0PSIzMiI+PGNpcmNsZSBjeT0iMzIiIGN4PSIzMiIgZmlsbD0iIzAwMDAwMCIgcj0iMzEiIC8+PHBhdGggZD0iTSA0MS4xMTYgMTguMzc1IGggNC45NjIgbCAtMTAuODQwNSAxMi4zOSBsIDEyLjc1MyAxNi44NiBIIDM4LjAwNSBsIC03LjgyMSAtMTAuMjI1NSBMIDIxLjIzNSA0Ny42MjUgSCAxNi4yNyBsIDExLjU5NSAtMTMuMjUyNSBMIDE1LjYzMSAxOC4zNzUgSCAyNS44NyBsIDcuMDY5NSA5LjM0NjUgeiBtIC0xLjc0MTUgMjYuMjggaCAyLjc0OTUgTCAyNC4zNzYgMjEuMTg5IEggMjEuNDI1NSB6IiBmaWxsPSJ3aGl0ZSIgLz48L3N2Zz4=)
+
+![SVG Image](data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCA2NCA2NCI+PGNpcmNsZSBjeT0iMzIiIGN4PSIzMiIgcj0iMzEiIGZpbGw9IiMwMDdmYjEiIC8+PHBhdGggZD0iTTIwLjQsNDRoNS40VjI2LjZoLTUuNFY0NHogTTIzLjEsMThjLTEuNywwLTMuMSwxLjQtMy4xLDMuMWMwLDEuNywxLjQsMy4xLDMuMSwzLjEgYzEuNywwLDMuMS0xLjQsMy4xLTMuMUMyNi4yLDE5LjQsMjQuOCwxOCwyMy4xLDE4eiBNMzkuNSwyNi4yYy0yLjYsMC00LjQsMS40LTUuMSwyLjhoLTAuMXYtMi40aC01LjJWNDRoNS40di04LjYgYzAtMi4zLDAuNC00LjUsMy4yLTQuNWMyLjgsMCwyLjgsMi42LDIuOCw0LjZWNDRINDZ2LTkuNUM0NiwyOS44LDQ1LDI2LjIsMzkuNSwyNi4yeiIgZmlsbD0id2hpdGUiIC8+PC9zdmc+)
+
+![SVG Image](data:image/svg+xml;base64,PHN2ZyBoZWlnaHQ9IjMyIiB2aWV3Qm94PSIwIDAgNjQgNjQiIHdpZHRoPSIzMiI+PGNpcmNsZSBjeD0iMzIiIGZpbGw9IiNmZjQ1MDAiIGN5PSIzMiIgcj0iMzEiIC8+PHBhdGggZD0ibSA1Mi44MTY1LDMxLjk0MjM2MiBjIDAsLTIuNDgwMyAtMi4wMjY0LC00LjQ5NjUgLTQuNTE2OSwtNC40OTY1IC0xLjIxNTUsMCAtMi4zMTcxLDAuNDg2MiAtMy4xMjgsMS4yNjgyIC0zLjA3NywtMi4wMjQ3IC03LjI0MDMsLTMuMzEzMyAtMTEuODUwNywtMy40NzgyIGwgMi41MjExLC03LjkzNzMgNi44MjcyLDEuNTk5NyAtMC4wMTAyLDAuMDk4NiBjIDAsMi4wMjgxIDEuNjU3NSwzLjY3NzEgMy42OTU4LDMuNjc3MSAyLjAzNjYsMCAzLjY5MjQsLTEuNjQ5IDMuNjkyNCwtMy42NzcxIDAsLTIuMDI4MSAtMS42NTc1LC0zLjY3ODggLTMuNjkyNCwtMy42Nzg4IC0xLjU2NCwwIC0yLjg5NjgsMC45NzU4IC0zLjQzNTcsMi4zNDQzIGwgLTcuMzU5MywtMS43MjU1IGMgLTAuMzIxMywtMC4wNzgyIC0wLjY0NzcsMC4xMDcxIC0wLjc0OCwwLjQyMzMgTCAzMiwyNS4yMTIwNjIgYyAtNC44MjQ2LDAuMDU3OCAtOS4xOTUzLDEuMzU2NiAtMTIuNDEsMy40NDI1IC0wLjgwNTgsLTAuNzQ0NiAtMS44NzUxLC0xLjIxMDQgLTMuMDU4MywtMS4yMTA0IC0yLjQ5MDUsMCAtNC41MTUyLDIuMDE3OSAtNC41MTUyLDQuNDk4MiAwLDEuNjQ5IDAuOTA2MSwzLjA3ODcgMi4yMzg5LDMuODYwNyAtMC4wODg0LDAuNDc5NCAtMC4xNDYyLDAuOTYzOSAtMC4xNDYyLDEuNDU2OSAwLDYuNjQ4NyA4LjE3MzYsMTIuMDU4MSAxOC4yMjIzLDEyLjA1ODEgMTAuMDQ4NywwIDE4LjIyNCwtNS40MDk0IDE4LjIyNCwtMTIuMDU4MSAwLC0wLjQ2NTggLTAuMDQ5MywtMC45MjQ4IC0wLjEyNzUsLTEuMzc3IDEuNDE0NCwtMC43NTk5IDIuMzg4NSwtMi4yMzA0IDIuMzg4NSwtMy45NDA2IHogbSAtMjkuMjgwOCwzLjA4NzIgYyAwLC0xLjQ3NTYgMS4yMDcsLTIuNjc3NSAyLjY4OTQsLTIuNjc3NSAxLjQ4MjQsMCAyLjY4NzcsMS4yMDE5IDIuNjg3NywyLjY3NzUgMCwxLjQ3NTYgLTEuMjA1MywyLjY3NTggLTIuNjg3NywyLjY3NTggLTEuNDgyNCwwIC0yLjY4OTQsLTEuMjAwMiAtMi42ODk0LC0yLjY3NTggeiBtIDE1LjQwMzcsNy45MzczIGMgLTEuMzU0OSwxLjM0ODEgLTMuNDgxNiwyLjAwNDMgLTYuNTAwOCwyLjAwNDMgbCAtMC4wMjIxLC0wLjAwNTEgLTAuMDIyMSwwLjAwNTEgYyAtMy4wMjA5LDAgLTUuMTQ3NiwtMC42NTYyIC02LjUwMDgsLTIuMDA0MyAtMC4yNDY1LC0wLjI0NDggLTAuMjQ2NSwtMC42NDQzIDAsLTAuODg5MSAwLjI0NjUsLTAuMjQ2NSAwLjY0NzcsLTAuMjQ2NSAwLjg5NDIsMCAxLjEwNSwxLjA5OTkgMi45MzkzLDEuNjMzNyA1LjYwNjYsMS42MzM3IGwgMC4wMjIxLDAuMDA1MSAwLjAyMjEsLTAuMDA1MSBjIDIuNjY3MywwIDQuNTAxNiwtMC41MzU1IDUuNjA2NiwtMS42MzU0IDAuMjQ2NSwtMC4yNDY1IDAuNjQ3NywtMC4yNDQ4IDAuODk0MiwwIDAuMjQ2NSwwLjI0NjUgMC4yNDY1LDAuNjQ0MyAwLDAuODkwOCB6IG0gLTAuMzIxMywtNS4yNjE1IGMgLTEuNDgyNCwwIC0yLjY4NzcsLTEuMjAwMiAtMi42ODc3LC0yLjY3NTggMCwtMS40NzU2IDEuMjA1MywtMi42Nzc1IDIuNjg3NywtMi42Nzc1IDEuNDgyNCwwIDIuNjg3NywxLjIwMTkgMi42ODc3LDIuNjc3NSAwLDEuNDc1NiAtMS4yMDUzLDIuNjc1OCAtMi42ODc3LDIuNjc1OCB6IiBmaWxsPSJ3aGl0ZSIgLz48L3N2Zz4=)
+
+September 16, 2025|
+
+![](data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4MDAwIiBoZWlnaHQ9IjQ1MDAiPjwvc3ZnPg==)![](data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAOCAIAAAC6mkspAAACKklEQVR42jWSW7LbOAxE8SJlS3Zy/2c1s//tzFgSH0AadKXcJiUWdNAAaP+8/922+j72n9+vn1/H+/V4bKbsPlu/r/s6W2tjzHAhNpYtuEy3u9Hnmv/9f0Ofs/U+rFQtRdcqVtWK4EGZJnNMngYkUTA4xMSMR2ykRqoQL5E7276XbSvP3Z57eT4NemyK7D5UWIIAyB2hvBDQcA6sk+uA8pWF7PXeAHod2/Gux7sc4FYRmqOryKIgrC9fMCRAsDqx8gzuzn2Kk4iJvX9tdYFeAL3qvuMNqWW0KaLpiLH7TNC3NAKCACLuIcPFeYH291Zr3Y/6fG3Poz7gyDJcVSN0ImGkC+QNWtWhUJcQHhF1Sp86SUXJ6gNDK1jro0KlFjMKx0+lCAbF6JUm4Vsa/qAoiRV87Da0uIEOT4UhNYgkJxFCERP5fWkSQR5rastU1ov2gY5Yw8BQKttA5lCsw7VDEw0mDL5NvgdBrafQo2SgLk0Q4ieyIQGSZifErp5tV5PS0hlCB4Y9qV103nTmGq3hpmSnQRFNO9O1zbwBw2M40oh9LrxjMvStLIJMw2Hkis8nPmdcJ7WW90i+MZbGZkgf3FLUgZsAnX9BaKAEmmy4qSMSdH5B0QGK1Rb7usYo0QS+O0AB1hhscI5qgTALNbQ0TLLX9x3XEgJ6S6c5Y89LxNkm7gOmqA8dI60YNmHqBUeRR6hugXoPnKzDFFoqa3A5Mco7NR0Sd8Tiusofphx5fSDU6x8AAAAASUVORK5CYII=)![](https://www.datocms-assets.com/75231/1758030724-shai-hulud.png?fm=webp)
+
+![](data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4MDAwIiBoZWlnaHQ9IjQ1MDAiPjwvc3ZnPg==)![](data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAOCAIAAAC6mkspAAACKklEQVR42jWSW7LbOAxE8SJlS3Zy/2c1s//tzFgSH0AadKXcJiUWdNAAaP+8/922+j72n9+vn1/H+/V4bKbsPlu/r/s6W2tjzHAhNpYtuEy3u9Hnmv/9f0Ofs/U+rFQtRdcqVtWK4EGZJnNMngYkUTA4xMSMR2ykRqoQL5E7276XbSvP3Z57eT4NemyK7D5UWIIAyB2hvBDQcA6sk+uA8pWF7PXeAHod2/Gux7sc4FYRmqOryKIgrC9fMCRAsDqx8gzuzn2Kk4iJvX9tdYFeAL3qvuMNqWW0KaLpiLH7TNC3NAKCACLuIcPFeYH291Zr3Y/6fG3Poz7gyDJcVSN0ImGkC+QNWtWhUJcQHhF1Sp86SUXJ6gNDK1jro0KlFjMKx0+lCAbF6JUm4Vsa/qAoiRV87Da0uIEOT4UhNYgkJxFCERP5fWkSQR5rastU1ov2gY5Yw8BQKttA5lCsw7VDEw0mDL5NvgdBrafQo2SgLk0Q4ieyIQGSZifErp5tV5PS0hlCB4Y9qV103nTmGq3hpmSnQRFNO9O1zbwBw2M40oh9LrxjMvStLIJMw2Hkis8nPmdcJ7WW90i+MZbGZkgf3FLUgZsAnX9BaKAEmmy4qSMSdH5B0QGK1Rb7usYo0QS+O0AB1hhscI5qgTALNbQ0TLLX9x3XEgJ6S6c5Y89LxNkm7gOmqA8dI60YNmHqBUeRR6hugXoPnKzDFFoqa3A5Mco7NR0Sd8Tiusofphx5fSDU6x8AAAAASUVORK5CYII=)![](https://www.datocms-assets.com/75231/1758030724-shai-hulud.png?fm=webp)
+
+November 24, 2025 update:
+
+This blog covers the first Shai-Hulud supply chain attack, for the second coming of Shai-Hulud visit our new blog: [Shai-Hulud 2.0: Ongoing Supply Chain Attack.](/blog/shai-hulud-2-0-ongoing-supply-chain-attack)
+
+On September 15, 2025, malicious versions of multiple popular packages were published to npm. They contained a post-install script that harvested sensitive data and exfiltrated it to attacker-created public GitHub repos named Shai-Hulud. Beyond data theft, the malware exhibits worm-like behaviour: when a compromised package encounters additional npm tokens in its environment, it will automatically publish malicious versions of any packages it can access - spreading across the npm ecosystem. Wiz Research assesses this campaign is directly downstream of the late-August 2025 [s1ngularity/Nx compromise](/blog/s1ngularity-supply-chain-attack) (initial GitHub token theft to npm token theft to mass package poisoning). As the first [successful](https://jamie.build/how-to-build-an-npm-worm) self-propagating attack in the npm ecosystem, this appears to be one of the most severe JavaScript supply-chain attacks observed to date.
+
+### Change log
+
+September 17, 2025 10AM UTC: payload analysis section was added.
+
+September 17, 2025 1PM UTC: additional packages and versions have been added to the appendix.
+
+September 17, 2025 2PM UTC: added IOCs section
+
+September 19, 2025 4:30PM UTC: created infographic
+
+![](data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAoHBwgHBgoIFA4TCw4ODhYNDgcRFhEJCggYFx8ZGCIVFiEaHysjGh0oHRUWJDUlKC0vMjIyGSI4PTcwPCsxMi8BCgsLDg0PHQsQHC8mFhwvLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vL//AABEIABIAGAMBIgACEQEDEQH/xAAZAAEBAAMBAAAAAAAAAAAAAAAABQIEBwH/xAAcEAACAgIDAAAAAAAAAAAAAAAAAQIDBBESEyH/xAAWAQEBAQAAAAAAAAAAAAAAAAADAgD/xAAZEQEBAAMBAAAAAAAAAAAAAAAAAgEDFBP/2gAMAwEAAhEDEQA/AOptRjPR5coRW9k22dzuQyZXcETW+sExplSqlCfgJmG7UA+m1eEt2aXahkpcUAa1yxx0AACP/9k=)![](https://www.datocms-assets.com/75231/1758292394-shai-hulud.png?fm=webp)
+
+Infographic summarizing key analysis of Shai-Hulud worm
+
+# **What happened?**
+
+Once a version of one of the malicious packages is installed, the included payload uses the TruffleHog secret scanning tool to identify secrets, in addition to harvesting environment variables and IMDS-exposed cloud keys when available.
+
+Additionally, the script validates collected credentials and, if it finds GitHub tokens, it abuses them in multiple ways:
+
+1. It creates a public repository named Shai-Hulud containing a dump of harvested secrets
+
+2. It pushes a new GitHub Actions workflow to all accessible repositories. This action exfiltrates each repo’s secrets to [`https://webhook[.]site/bb8ca5f6-4175-45d2-b042-fc9ebb8170b7`](about:blank). It migrates private organizational repositories to public personal repositories under the attacker-controlled user (private org/repo → public user/repo) with the description “Shai-Hulud Migration”, and a `-migration` suffix added to the name.
+
+This attack is a self-propagating worm. When a compromised package encounters additional npm tokens in a victim environment, it will automatically publish malicious versions of any packages it can access. See further discussion of the malicious code in [Socket's initial analysis](https://socket.dev/blog/tinycolor-supply-chain-attack-affects-40-packages).
+
+Based on victimology, Wiz Research assesses this activity is tied to the recent [s1ngularity / Nx supply chain attack](https://test.wiz.io/boards/threat-center/wiz-adv-2025-084), where initial GitHub token theft enabled the broader chain of compromise and leaking of formerly private repositories. The initial npm packages that started this chain reaction included multiple known-compromised victims of the s1ngularity attack.
+
+### Payload analysis
+
+The worm deploys a "workflow script" to `/tmp/processor.sh`, executing it to trigger automated branch creation, triggering GitHub workflows to exfiltrate its secrets. Similarly, it drops a "migration script" at `/tmp/migrate-repos.sh`, which, once executed, forces private repositories to be cloned and republished as public repositories with the `-migration` suffix.
+
+During this process, the malware appears to use `/tmp/github-migration` as a temporary working directory for cloning and related operations - though this is not fully confirmed due to some obfuscation and irregularities in the code. Importantly, the migration routine first creates the repository as private and then immediately flips its visibility to public. This results in two observable GitHub events in quick succession: a `CreateEvent` followed by a `PublicEvent`.
+
+Another observation, one of the payloads appears to be AI-generated, another variant lacks that same stylistic pattern, suggesting it may have been copied from an external source that we have not yet identified.
+
+# **What was the impact?**
+
+The attacker exfiltrated data using `webhook[.]site` within a malicious GitHub Action. However, under the free plan used, the webhook can only receive a total of 100 callbacks. We observed that the webhook had been deactivated by the platform for excessive activity. This renders the webhook based exfiltration non-functional. However, secrets will still be exposed in the workflow log on GitHub.
+
+![](data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAoHBwgHBgoICAgFCgoFBQwFBQUFBREJCgUMFxMZGBYTFhUaHysjGh0oHRUWJDUlKC0vMjIyGSI4PTcwPCsxMi8BCgsLBQUFEAUFEC8cFhwvLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vL//AABEIAAgAGAMBIgACEQEDEQH/xAAVAAEBAAAAAAAAAAAAAAAAAAAAB//EABQQAQAAAAAAAAAAAAAAAAAAAAD/xAAVAQEBAAAAAAAAAAAAAAAAAAACAP/EABQRAQAAAAAAAAAAAAAAAAAAAAD/2gAMAwEAAhEDEQA/AK2AQgCT/9k=)![](https://www.datocms-assets.com/75231/1758034995-image-23.png?fm=webp)
+
+Wiz Research initially observed 36 GitHub users with secrets exposed in the “Shai-Hulud” repo (`data.json`, double–base64 encoded) and 8 users whose private repositories were force-migrated to public with the label “Shai-Hulud Migration.”
+
+Tracking down repositories with the malicious workflow proved challenging, since GitHub doesn't index deleted branches, commits, or file contents. Still, we were able to uncover 64 additional repositories where a `shai-hulud` branch had been created, and in most of them, we found a commit containing the malicious workflow. In many cases, the workflow logs exposed sensitive secrets like GitHub tokens, NPM credentials, Atlassian keys, and Datadog API keys. These are still accessible as of writing this blog.
+
+**Despite the clear propagation of the worm to additional npm packages, we have not currently observed the creation of further repositories.**
+
+![](data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAoHBwgHBhYICAgLCgoSFQ4VDg0NGiYdEBEYFx8ZGBYTIhYaHzcvGh0oHSEWJDUlKC0vMjIyGSI4PTcwPCsxMi8BCgsLDg0OEBAOGDUdFhwvLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vL//AABEIAAUAGAMBIgACEQEDEQH/xAAWAAEBAQAAAAAAAAAAAAAAAAAAAQf/xAAeEAABAgcBAAAAAAAAAAAAAAAAAQMCERQhMlFxBP/EABYBAAMAAAAAAAAAAAAAAAAAAAABAv/EABQRAQAAAAAAAAAAAAAAAAAAAAD/2gAMAwEAAhEDEQA/ANWqI2obX6VPc5LFABpStcXSAAA//9k=)![](https://www.datocms-assets.com/75231/1758030962-screenshot-2025-09-16-153344.png?fm=webp)
+
+Example of successful compromise during the first wave of the attack
+
+![](data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAoHBwgHBgoQCAgLChIVDhgODgsQDhYNEQwNFxMZGBYVFhUaHysjGh0oHSEWJDUlKC0vMjIyGSI4PTcwPCsxMi8BCgsLDw0PHA0NHDsoFig7LzsvLy8vOy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vL//AABEIAAsAGAMBIgACEQEDEQH/xAAXAAEAAwAAAAAAAAAAAAAAAAADAAUH/8QAHRAAAQQDAQEAAAAAAAAAAAAAAQACAxIRIjEhE//EABUBAQEAAAAAAAAAAAAAAAAAAAIB/8QAFhEBAQEAAAAAAAAAAAAAAAAAABEC/9oADAMBAAIRAxEAPwDR3Gb6DUq1he8QjISSMbYahLgV4jBzmCs6vFEuPFFYb//Z)![](https://www.datocms-assets.com/75231/1758030985-image-22.png?fm=webp)
+
+Example of a successful compromise during the second wave of the attack
+
+# **Which actions should security teams take?**
+
+### **Immediate Remediation**
+
+1. Remove malicious versions (`rm -rf node_modules && npm cache clean --force`). See **Appendix: Impacted Packages** for a point-in-time list of known malicious packages from this attack
+
+2. Upgrade to a clean release (many of the malicious versions have been removed from npm, but as this is still unfolding it is advised to stay vigilant).
+
+### **Audit & Detection**
+
+1. Check for any evidence of GitHub repos created within your organization’s developers private accounts and user accounts, named Shai-Hulud, or private repositories with the suffix -migration and the description Shai-Hulud Migration.
+
+2. Use the following [Github Query](https://github.com/search?q=Shai-Hulud+org%3APLACEHOLDER&type=repositories&s=updated&o=desc)to search for public repositories named Shai-Hulud that were impacted from the first wave of the attack, specifying your org name. Successful compromise would exfiltrate double encoded base64 payload under `data.json` file path with secrets from the affected machine.
+
+3. Use the following [Github Query](https://github.com/search?q=%22Shai-Hulud+Migration%22+org%3APLACEHOLDER&type=repositories&s=updated&o=desc)to search for public repositories with the description Shai-Hulud Migration, specifying your org name, that were impacted from the second wave of the attack, successful compromise will result in publication of private repositories publicly, named with a `-mitigation` suffix.
+
+4. Review GitHub audit logs for anomalous API usage.
+
+5. Monitor developer endpoints and CI/CD pipelines for suspicious API calls and unexpected child processes.
+
+### **Credential Rotation**
+
+Revoke and regenerate all GitHub tokens, npm tokens, SSH keys, API keys, and environment variable secrets that may have been leaked in these repositories.
+
+# **How can Wiz help?**
+
+1. While Wiz Threat Research are still reviewing impact, Wiz customers can use the pre-built query and advisory in the [Wiz Threat Center](https://app.wiz.io/boards/threat-center/wiz-adv-2025-090) to assess the risk in their environment.
+
+2. Wiz customers can use the [SBOM page](https://app.wiz.io/inventory/sbom#~%28filters~%28name~%28equalsAny~%28~%27*40ahmedhfarag*2fngx-perfect-scrollbar~%27*40ahmedhfarag*2fngx-virtual-scroller~%27*40art-ws*2fcommon~%27*40art-ws*2fconfig-eslint~%27*40art-ws*2fconfig-ts~%27*40art-ws*2fdb-context~%27*40art-ws*2fdi~%27*40art-ws*2fdi-node~%27*40art-ws*2feslint~%27*40art-ws*2ffastify-http-server~%27*40art-ws*2fhttp-server~%27*40art-ws*2fopenapi~%27*40art-ws*2fpackage-base~%27*40art-ws*2fprettier~%27*40art-ws*2fslf~%27*40art-ws*2fssl-info~%27*40art-ws*2fweb-app~%27*40crowdstrike*2fcommitlint~%27*40crowdstrike*2ffalcon-shoelace~%27*40crowdstrike*2ffoundry-js~%27*40crowdstrike*2fglide-core~%27*40crowdstrike*2flogscale-dashboard~%27*40crowdstrike*2flogscale-file-editor~%27*40crowdstrike*2flogscale-parser-edit~%27*40crowdstrike*2flogscale-search~%27*40crowdstrike*2ftailwind-toucan-base~%27*40ctrl*2fdeluge~%27*40ctrl*2fgolang-template~%27*40ctrl*2fmagnet-link~%27*40ctrl*2fngx-codemirror~%27*40ctrl*2fngx-csv~%27*40ctrl*2fngx-emoji-mart~%27*40ctrl*2fngx-rightclick~%27*40ctrl*2fqbittorrent~%27*40ctrl*2freact-adsense~%27*40ctrl*2fshared-torrent~%27*40ctrl*2ftinycolor~%27*40ctrl*2ftorrent-file~%27*40ctrl*2ftransmission~%27*40ctrl*2fts-base32~%27*40hestjs*2fcore~%27*40hestjs*2fcqrs~%27*40hestjs*2fdemo~%27*40hestjs*2feslint-config~%27*40hestjs*2flogger~%27*40hestjs*2fscalar~%27*40hestjs*2fvalidation~%27*40nstudio*2fweb~%27*40nstudio*2fweb-angular~%27*40nstudio*2fxplat~%27*40nstudio*2fxplat-utils~%27*40operato*2fboard~%27*40operato*2fdata-grist~%27*40operato*2fgraphql~%27*40operato*2fheadroom~%27*40operato*2fhelp~%27*40operato*2fi18n~%27*40operato*2finput~%27*40operato*2flayout~%27*40operato*2fpopup~%27*40operato*2fpull-to-refresh~%27*40operato*2fshell~%27*40operato*2fstyles~%27*40operato*2futils~%27*40teselagen*2fbounce-loader~%27*40teselagen*2fliquibase-tools~%27*40teselagen*2frange-utils~%27*40teselagen*2freact-list~%27*40teselagen*2freact-table~%27*40thangved*2fcallback-window~%27*40things-factory*2fattachment-base~%27*40things-factory*2fauth-base~%27*40things-factory*2femail-base~%27*40things-factory*2fenv~%27*40things-factory*2fintegration-base~%27*40things-factory*2fintegration-marketplace~%27*40things-factory*2fshell~%27*40tnf-dev*2fapi~%27*40tnf-dev*2fcore~%27*40tnf-dev*2fjs~%27*40tnf-dev*2fmui~%27*40tnf-dev*2freact~%27*40ui-ux-gang*2fdevextreme-angular-rpk~%27*40yoobic*2fdesign-system~%27*40yoobic*2fjpeg-camera-es6~%27*40yoobic*2fyobi~%27airchief~%27airpilot~%27angulartics2~%27browser-webdriver-downloader~%27capacitor-notificationhandler~%27capacitor-plugin-healthapp~%27capacitor-plugin-ihealth~%27capacitor-plugin-vonage~%27capacitorandroidpermissions~%27config-cordova~%27cordova-plugin-voxeet2~%27cordova-voxeet~%27create-hest-app~%27db-evo~%27devextreme-angular-rpk~%27ember-browser-services~%27ember-headless-form~%27ember-headless-form-yup~%27ember-headless-table~%27ember-url-hash-polyfill~%27ember-velcro~%27encounter-playground~%27eslint-config-crowdstrike~%27eslint-config-crowdstrike-node~%27eslint-config-teselagen~%27globalize-rpk~%27graphql-sequelize-teselagen~%27html-to-base64-image~%27json-rules-engine-simplified~%27jumpgate~%27koa2-swagger-ui~%27mcfly-semantic-release~%27mcp-knowledge-base~%27mcp-knowledge-graph~%27mobioffice-cli~%27monorepo-next~%27mstate-angular~%27mstate-cli~%27mstate-dev-react~%27mstate-react~%27ng2-file-upload~%27ngx-bootstrap~%27ngx-color~%27ngx-toastr~%27ngx-trend~%27ngx-ws~%27oradm-to-gql~%27oradm-to-sqlz~%27ove-auto-annotate~%27pm2-gelf-json~%27printjs-rpk~%27react-complaint-image~%27react-jsonschema-form-conditionals~%27remark-preset-lint-crowdstrike~%27rxnt-authentication~%27rxnt-healthchecks-nestjs~%27rxnt-kue~%27swc-plugin-component-annotate~%27tbssnch~%27teselagen-interval-tree~%27tg-client-query-builder~%27tg-redbird~%27tg-seq-gen~%27thangved-react-grid~%27ts-gaussian~%27ts-imports~%27tvi-cli~%27ve-bamreader~%27ve-editor~%27verror-extra~%27voip-callkit~%27wdio-web-reporter~%27yargs-help-output~%27yoo-styles~%27*40nativescript-community*2farraybuffers~%27*40nativescript-community*2fgesturehandler~%27*40nativescript-community*2fperms~%27*40nativescript-community*2fsqlite~%27*40nativescript-community*2ftext~%27*40nativescript-community*2ftypeorm~%27*40nativescript-community*2fui-collectionview~%27*40nativescript-community*2fui-document-picker~%27*40nativescript-community*2fui-drawer~%27*40nativescript-community*2fui-image~%27*40nativescript-community*2fui-label~%27*40nativescript-community*2fui-material-bottom-navigation~%27*40nativescript-community*2fui-material-bottomsheet~%27*40nativescript-community*2fui-material-core~%27*40nativescript-community*2fui-material-core-tabs~%27*40nativescript-community*2fui-material-ripple~%27*40nativescript-community*2fui-material-tabs~%27*40nativescript-community*2fui-pager~%27*40nativescript-community*2fui-pulltorefresh~%27*40nexe*2fconfig-manager~%27*40nexe*2feslint-config~%27*40nexe*2flogger~%27*40nstudio*2fangular~%27*40nstudio*2ffocus~%27*40nstudio*2fnativescript-checkbox~%27*40nstudio*2fnativescript-loading-indicator~%27*40nstudio*2fui-collectionview%29%29%29%29) to identify malicious versions and packages in their environment.
+
+3. Wiz Threat Research added [YARA-based detection](https://app.wiz.io/explorer/graph#~%28query~%28relationships~%28~%28type~%28~%28type~%27INFECTS%29%29~with~%28select~true~type~%28~%27VIRTUAL_MACHINE~%27CONTAINER_IMAGE~%27BUCKET~%27SERVERLESS~%27CONTAINER~%27REPOSITORY_BRANCH%29~where~%28userMetadata_isIgnored~%28EQUALS~false%29%29%29%29~%28type~%28~%28type~%27INSTANCE_OF%29%29~with~%28select~true~type~%28~%27MALWARE%29%29%29%29~select~true~type~%28~%27MALWARE_INSTANCE%29~where~%28_or~%28~%28sha256~%28EQUALS~%28~%2746faab8ab153fae6e80e7cca38eab363075bb524edd79e42269217a083628f09%29%29%29~%28familyName~%28EQUALS~%28~%27JS-Script.InfoStealer.ShaiHulud%29%29%29%29%29%29~view~%27table%29) to identify instances of the malicious script in customer environments, which should be treated as evidence of potential compromise of the host
+
+4. Wiz Defend customers can use [Threat Detection rules](https://app.wiz.io/threats#~%28filters~%28status~%28equals~%28~%27OPEN~%27IN_PROGRESS%29%29~sourceRule~%28equals~%28~%27cer-correlation-id-201~%27cer-correlation-id-203~%27cer-azure-control-apiCallsUsingOffensiveTool~%27cer-azure-data-apiCallByKnownOffensiveTool~%27cer-gcp-control-apiCallsUsingOffensiveTool~%27cer-sen-id-1092%29%29~createdAt~%28dateRange~%28past~%28amount~14~unit~%27day%29%29%29%29%29) to identify the malicious behaviors from this attack in their environments.
+
+### **Investigate emerging threats with Mika AI / Wiz MCP Threat Intel investigation tool**
+
+Mika AI, Wiz's AI assistant, can investigate new threat center items, analyze your environment for impact, and create recommendation plan to minimize impact, turning hours of manual analysis into minutes of AI-powered insights.
+
+Simply ask Mika AI, *"How do I know if I'm affected by the latest Shai-Hulud NPM Supply Chain Attack?",* and get comprehensive analysis, based on all Wiz capabilities of affected resources, exposure level, real-time threats and risk, and receive step-by-step remediation recommendations.
+
+Investigate emerging threats with Mika AI:
+
+Investigate emerging threats with Wiz MCP:
+
+# Indicators of compromise
+
+- `/tmp/processor.sh` - Creates `shai-hulud` branch and uploads the workflow payload
+
+- `/tmp/migrate-repos.sh`- Migrates private repos to public
+
+- `46faab8ab153fae6e80e7cca38eab363075bb524edd79e42269217a083628f09` - Malicious JS file hash (SHA256)
+
+- `webhook[.]site/bb8ca5f6-4175-45d2-b042-fc9ebb8170b7` - Webhook
+
+# **Appendix: Impacted Packages**
+
+- @ctrl/deluge (7.2.2, 7.2.1)
+
+- @ctrl/golang-template (1.4.3, 1.4.2)
+
+- @ctrl/magnet-link (4.0.4, 4.0.3)
+
+- @ctrl/ngx-codemirror (7.0.2, 7.0.1)
+
+- @ctrl/ngx-csv (6.0.2, 6.0.1)
+
+- @ctrl/ngx-emoji-mart (9.2.2, 9.2.1)
+
+- @ctrl/ngx-rightclick (4.0.2, 4.0.1)
+
+- @ctrl/qbittorrent (9.7.2, 9.7.1)
+
+- @ctrl/react-adsense (2.0.2, 2.0.1)
+
+- @ctrl/shared-torrent (6.3.2, 6.3.1)
+
+- @ctrl/tinycolor@4.1.1, (4.1.2)
+
+- @ctrl/torrent-file (4.1.2, 4.1.1)
+
+- @ctrl/transmission (7.3.1)
+
+- @ctrl/ts-base32 (4.0.2, 4.0.1)
+
+- @nativescript-community/gesturehandler (2.0.35)
+
+- @nativescript-community/sentry (4.6.43)
+
+- @nativescript-community/text (1.6.13, 1.6.10, 1.6.11, 1.6.12, 1.6.9)
+
+- @nativescript-community/ui-collectionview (6.0.6)
+
+- @nativescript-community/ui-drawer (0.1.30)
+
+- @nativescript-community/ui-image (4.5.6)
+
+- @nativescript-community/ui-material-bottomsheet (7.2.72)
+
+- @nativescript-community/ui-material-core (7.2.76, 7.2.72, 7.2.73, 7.2.74, 7.2.75)
+
+- @nativescript-community/ui-material-core-tabs (7.2.76, 7.2.72, 7.2.73, 7.2.74, 7.2.75)
+
+- @teselagen/bio-parsers (0.4.29, 0.4.30)
+
+- @teselagen/bounce-loader (0.3.16, 0.3.17)
+
+- @teselagen/file-utils (0.3.21, 0.3.22)
+
+- @teselagen/liquibase-tools (0.4.1)
+
+- @teselagen/ove (0.7.39, 0.7.40)
+
+- @teselagen/range-utils (0.3.14, 0.3.15)
+
+- @teselagen/react-list (0.8.19, 0.8.20)
+
+- @teselagen/react-table (6.10.21, 6.10.19, 6.10.20, 6.10.22)
+
+- @teselagen/sequence-utils (0.3.33, 0.3.34)
+
+- @teselagen/ui (0.9.9, 0.9.10)
+
+- angulartics2 (14.1.2, 14.1.1)
+
+- encounter-playground (0.0.4, 0.0.5, 0.0.2, 0.0.3)
+
+- eslint-config-teselagen (6.1.7, 6.1.8)
+
+- graphql-sequelize-teselagen (5.3.8, 5.3.9)
+
+- json-rules-engine-simplified (0.2.3, 0.2.4, 0.2.1)
+
+- koa2-swagger-ui (5.11.2, 5.11.1)
+
+- ng2-file-upload (8.0.3, 7.0.2, 7.0.3, 8.0.1, 8.0.2, 9.0.1)
+
+- ngx-bootstrap (18.1.4, 19.0.3, 20.0.4, 20.0.5, 20.0.6, 19.0.4, 20.0.3)
+
+- ngx-color (10.0.2, 10.0.1)
+
+- ngx-toastr (19.0.2, 19.0.1)
+
+- ngx-trend (8.0.1)
+
+- oradm-to-gql (35.0.14, 35.0.15)
+
+- oradm-to-sqlz (1.1.4, 1.1.2)
+
+- ove-auto-annotate (0.0.9, 0.0.10)
+
+- react-complaint-image (0.0.34, 0.0.35, 0.0.32)
+
+- react-jsonschema-form-conditionals (0.3.20, 0.3.21, 0.3.18)
+
+- react-jsonschema-form-extras (1.0.3, 1.0.4)
+
+- react-jsonschema-rxnt-extras (0.4.8, 0.4.9)
+
+- rxnt-authentication (0.0.5, 0.0.6, 0.0.3, 0.0.4)
+
+- rxnt-healthchecks-nestjs (1.0.4, 1.0.5, 1.0.2, 1.0.3)
+
+- rxnt-kue (1.0.6, 1.0.7, 1.0.4, 1.0.5)
+
+- swc-plugin-component-annotate (1.9.2, 1.9.1)
+
+- tg-client-query-builder (2.14.4, 2.14.5)
+
+- tg-redbird (1.3.1, 1.3.2)
+
+- tg-seq-gen (1.0.9, 1.0.10)
+
+- ts-gaussian (3.0.6, 3.0.5)
+
+- ve-bamreader (0.2.6, 0.2.7)
+
+- ve-editor (1.0.1, 1.0.2)
+
+- @ahmedhfarag/ngx-perfect-scrollbar (20.0.20)
+
+- @ahmedhfarag/ngx-virtual-scroller (4.0.4)
+
+- @art-ws/common (2.0.28)
+
+- @art-ws/config-eslint (2.0.4, 2.0.5)
+
+- @art-ws/config-ts (2.0.7, 2.0.8)
+
+- @art-ws/db-context (2.0.24)
+
+- @art-ws/di-node (2.0.13)
+
+- @art-ws/di (2.0.28, 2.0.32)
+
+- @art-ws/eslint (1.0.5, 1.0.6)
+
+- @art-ws/fastify-http-server (2.0.24, 2.0.27)
+
+- @art-ws/http-server (2.0.21, 2.0.25)
+
+- @art-ws/openapi (0.1.12, 0.1.9)
+
+- @art-ws/package-base (1.0.5, 1.0.6)
+
+- @art-ws/prettier (1.0.5, 1.0.6)
+
+- @art-ws/slf (2.0.15, 2.0.22)
+
+- @art-ws/ssl-info (1.0.10, 1.0.9)
+
+- @art-ws/web-app (1.0.3, 1.0.4)
+
+- @crowdstrike/commitlint (8.1.1, 8.1.2)
+
+- @crowdstrike/falcon-shoelace (0.4.1, 0.4.2)
+
+- @crowdstrike/foundry-js (0.19.1, 0.19.2)
+
+- @crowdstrike/glide-core (0.34.2, 0.34.3)
+
+- @crowdstrike/logscale-dashboard (1.205.1, 1.205.2)
+
+- @crowdstrike/logscale-file-editor (1.205.1, 1.205.2)
+
+- @crowdstrike/logscale-parser-edit (1.205.1, 1.205.2)
+
+- @crowdstrike/logscale-search (1.205.1, 1.205.2)
+
+- @crowdstrike/tailwind-toucan-base (5.0.1, 5.0.2)
+
+- @ctrl/tinycolor (4.1.1, 4.1.2)
+
+- @hestjs/core (0.2.1)
+
+- @hestjs/cqrs (0.1.6)
+
+- @hestjs/demo (0.1.2)
+
+- @hestjs/eslint-config (0.1.2)
+
+- @hestjs/logger (0.1.6)
+
+- @hestjs/scalar (0.1.7)
+
+- @hestjs/validation (0.1.6)
+
+- @nativescript-community/arraybuffers (1.1.6, 1.1.7, 1.1.8)
+
+- @nativescript-community/perms (3.0.5, 3.0.6, 3.0.7, 3.0.8, 3.0.9)
+
+- @nativescript-community/sqlite (3.5.2, 3.5.3, 3.5.4, 3.5.5)
+
+- @nativescript-community/typeorm (0.2.30, 0.2.31, 0.2.32, 0.2.33)
+
+- @nativescript-community/ui-document-picker (1.1.27, 1.1.28, 13.0.32)
+
+- @nativescript-community/ui-label (1.3.35, 1.3.36, 1.3.37)
+
+- @nativescript-community/ui-material-bottom-navigation (7.2.72, 7.2.73, 7.2.74, 7.2.75)
+
+- @nativescript-community/ui-material-ripple (7.2.72, 7.2.73, 7.2.74, 7.2.75)
+
+- @nativescript-community/ui-material-tabs (7.2.72, 7.2.73, 7.2.74, 7.2.75)
+
+- @nativescript-community/ui-pager (14.1.36, 14.1.37, 14.1.38)
+
+- @nativescript-community/ui-pulltorefresh (2.5.4, 2.5.5, 2.5.6, 2.5.7)
+
+- @nexe/config-manager (0.1.1)
+
+- @nexe/eslint-config (0.1.1)
+
+- @nexe/logger (0.1.3)
+
+- @nstudio/angular (20.0.4, 20.0.5, 20.0.6)
+
+- @nstudio/focus (20.0.4, 20.0.5, 20.0.6)
+
+- @nstudio/nativescript-checkbox (2.0.6, 2.0.7, 2.0.8, 2.0.9)
+
+- @nstudio/nativescript-loading-indicator (5.0.1, 5.0.2, 5.0.3, 5.0.4)
+
+- @nstudio/ui-collectionview (5.1.11, 5.1.12, 5.1.13, 5.1.14)
+
+- @nstudio/web-angular (20.0.4)
+
+- @nstudio/web (20.0.4)
+
+- @nstudio/xplat-utils (20.0.5, 20.0.6, 20.0.7)
+
+- @nstudio/xplat (20.0.5, 20.0.6, 20.0.7)
+
+- @operato/board (9.0.36, 9.0.37, 9.0.38, 9.0.39, 9.0.40, 9.0.41, 9.0.42, 9.0.43, 9.0.44, 9.0.45, 9.0.46)
+
+- @operato/data-grist (9.0.29, 9.0.35, 9.0.36, 9.0.37)
+
+- @operato/graphql (9.0.22, 9.0.35, 9.0.36, 9.0.37, 9.0.38, 9.0.39, 9.0.40, 9.0.41, 9.0.42, 9.0.43, 9.0.44, 9.0.45, 9.0.46)
+
+- @operato/headroom (9.0.2, 9.0.35, 9.0.36, 9.0.37)
+
+- @operato/help (9.0.35, 9.0.36, 9.0.37, 9.0.38, 9.0.39, 9.0.40, 9.0.41, 9.0.42, 9.0.43, 9.0.44, 9.0.45, 9.0.46)
+
+- @operato/i18n (9.0.35, 9.0.36, 9.0.37)
+
+- @operato/input (9.0.27, 9.0.35, 9.0.36, 9.0.37, 9.0.38, 9.0.39, 9.0.40, 9.0.41, 9.0.42, 9.0.43, 9.0.44, 9.0.45, 9.0.46, 9.0.47, 9.0.48)
+
+- @operato/layout (9.0.35, 9.0.36, 9.0.37)
+
+- @operato/popup (9.0.22, 9.0.35, 9.0.36, 9.0.37, 9.0.38, 9.0.39, 9.0.40, 9.0.41, 9.0.42, 9.0.43, 9.0.44, 9.0.45, 9.0.46, 9.0.49)
+
+- @operato/pull-to-refresh (9.0.36, 9.0.37, 9.0.38, 9.0.39, 9.0.40, 9.0.41, 9.0.42)
+
+- @operato/shell (9.0.22, 9.0.35, 9.0.36, 9.0.37, 9.0.38, 9.0.39)
+
+- @operato/styles (9.0.2, 9.0.35, 9.0.36, 9.0.37)
+
+- @operato/utils (9.0.22, 9.0.35, 9.0.36, 9.0.37, 9.0.38, 9.0.39, 9.0.40, 9.0.41, 9.0.42, 9.0.43, 9.0.44, 9.0.45, 9.0.46, 9.0.49)
+
+- @thangved/callback-window (1.1.4)
+
+- @things-factory/attachment-base (9.0.42, 9.0.43, 9.0.44, 9.0.45, 9.0.46, 9.0.47, 9.0.48, 9.0.49, 9.0.50, 9.0.51, 9.0.52, 9.0.53, 9.0.54, 9.0.55)
+
+- @things-factory/auth-base (9.0.42, 9.0.43, 9.0.44, 9.0.45)
+
+- @things-factory/email-base (9.0.42, 9.0.43, 9.0.44, 9.0.45, 9.0.46, 9.0.47, 9.0.48, 9.0.49, 9.0.50, 9.0.51, 9.0.52, 9.0.53, 9.0.54, 9.0.55, 9.0.56, 9.0.57, 9.0.58, 9.0.59)
+
+- @things-factory/env (9.0.42, 9.0.43, 9.0.44, 9.0.45)
+
+- @things-factory/integration-base (9.0.42, 9.0.43, 9.0.44, 9.0.45)
+
+- @things-factory/integration-marketplace (9.0.42, 9.0.43, 9.0.44, 9.0.45)
+
+- @things-factory/shell (9.0.42, 9.0.43, 9.0.44, 9.0.45)
+
+- @tnf-dev/api (1.0.8)
+
+- @tnf-dev/core (1.0.8)
+
+- @tnf-dev/js (1.0.8)
+
+- @tnf-dev/mui (1.0.8)
+
+- @tnf-dev/react (1.0.8)
+
+- @ui-ux-gang/devextreme-angular-rpk (24.1.7)
+
+- @yoobic/design-system (6.5.17)
+
+- @yoobic/jpeg-camera-es6 (1.0.13)
+
+- @yoobic/yobi (8.7.53)
+
+- airchief (0.3.1)
+
+- airpilot (0.8.8)
+
+- browser-webdriver-downloader (3.0.8)
+
+- capacitor-notificationhandler (0.0.2, 0.0.3)
+
+- capacitor-plugin-healthapp (0.0.2, 0.0.3)
+
+- capacitor-plugin-ihealth (1.1.8, 1.1.9)
+
+- capacitor-plugin-vonage (1.0.2, 1.0.3)
+
+- capacitorandroidpermissions (0.0.4, 0.0.5)
+
+- config-cordova (0.8.5)
+
+- cordova-plugin-voxeet2 (1.0.24)
+
+- cordova-voxeet (1.0.32)
+
+- create-hest-app (0.1.9)
+
+- db-evo (1.1.4, 1.1.5)
+
+- devextreme-angular-rpk (21.2.8)
+
+- ember-browser-services (5.0.2, 5.0.3)
+
+- ember-headless-form-yup (1.0.1)
+
+- ember-headless-form (1.1.2, 1.1.3)
+
+- ember-headless-table (2.1.5, 2.1.6)
+
+- ember-url-hash-polyfill (1.0.12, 1.0.13)
+
+- ember-velcro (2.2.1, 2.2.2)
+
+- eslint-config-crowdstrike-node (4.0.3, 4.0.4)
+
+- eslint-config-crowdstrike (11.0.2, 11.0.3)
+
+- globalize-rpk (1.7.4)
+
+- html-to-base64-image (1.0.2)
+
+- jumpgate (0.0.2)
+
+- mcfly-semantic-release (1.3.1)
+
+- mcp-knowledge-base (0.0.2)
+
+- mcp-knowledge-graph (1.2.1)
+
+- mobioffice-cli (1.0.3)
+
+- monorepo-next (13.0.1, 13.0.2)
+
+- mstate-angular (0.4.4)
+
+- mstate-cli (0.4.7)
+
+- mstate-dev-react (1.1.1)
+
+- mstate-react (1.6.5)
+
+- ngx-ws (1.1.5, 1.1.6)
+
+- pm2-gelf-json (1.0.4, 1.0.5)
+
+- printjs-rpk (1.6.1)
+
+- remark-preset-lint-crowdstrike (4.0.1, 4.0.2)
+
+- tbssnch (1.0.2)
+
+- teselagen-interval-tree (1.1.2)
+
+- thangved-react-grid (1.0.3)
+
+- ts-imports (1.0.1, 1.0.2)
+
+- tvi-cli (0.1.5)
+
+- verror-extra (6.0.1)
+
+- voip-callkit (1.0.2, 1.0.3)
+
+- wdio-web-reporter (0.1.3)
+
+- yargs-help-output (5.0.3)
+
+- yoo-styles (6.0.326)
+
+- devextreme-rpk (21.2.8)
+
+- @basic-ui-components-stc/basic-ui-components (1.0.5)
+
+# **References**
+
+- [Socket blogpost](https://socket.dev/blog/tinycolor-supply-chain-attack-affects-40-packages)
+
+- [ReversingLabs tweet](https://x.com/ReversingLabs/status/1967576549873381431)
+
+- [NGX Bootstrap issue](https://github.com/valor-software/ngx-bootstrap/issues/6776)
+
+- [NGX Bootstrap advisory](https://github.com/advisories/GHSA-6m4g-vm7c-f8w6)
+
+- [Daniel Pereira LinkedIn post](https://www.linkedin.com/feed/update/urn:li:activity:7373489836437114880/)
+
+- [The Hacker News article](https://thehackernews.com/2025/09/40-npm-packages-compromised-in-supply.html)
+
+- [Aikido developer advocate Mackenzie Jackson post](https://www.linkedin.com/posts/advocatemack_crowdstrike-has-had-its-npm-packages-compromised-activity-7373625746822696960-w8xz?utm_source=share&utm_medium=member_desktop&rcm=ACoAACzR6wYBhL7V5NomFDXjxooQFyCMC5oQHzU)
+
+![SVG Image](data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIHZpZXdCb3g9IjAgMCA2NCA2NCIgaGVpZ2h0PSIzMiI+PGNpcmNsZSBjeT0iMzIiIGN4PSIzMiIgZmlsbD0iIzAwMDAwMCIgcj0iMzEiIC8+PHBhdGggZD0iTSA0MS4xMTYgMTguMzc1IGggNC45NjIgbCAtMTAuODQwNSAxMi4zOSBsIDEyLjc1MyAxNi44NiBIIDM4LjAwNSBsIC03LjgyMSAtMTAuMjI1NSBMIDIxLjIzNSA0Ny42MjUgSCAxNi4yNyBsIDExLjU5NSAtMTMuMjUyNSBMIDE1LjYzMSAxOC4zNzUgSCAyNS44NyBsIDcuMDY5NSA5LjM0NjUgeiBtIC0xLjc0MTUgMjYuMjggaCAyLjc0OTUgTCAyNC4zNzYgMjEuMTg5IEggMjEuNDI1NSB6IiBmaWxsPSJ3aGl0ZSIgLz48L3N2Zz4=)
+
+![SVG Image](data:image/svg+xml;base64,PHN2ZyBoZWlnaHQ9IjMyIiB3aWR0aD0iMzIiIHZpZXdCb3g9IjAgMCA2NCA2NCI+PGNpcmNsZSBjeT0iMzIiIGN4PSIzMiIgZmlsbD0iIzAwN2ZiMSIgcj0iMzEiIC8+PHBhdGggZD0iTTIwLjQsNDRoNS40VjI2LjZoLTUuNFY0NHogTTIzLjEsMThjLTEuNywwLTMuMSwxLjQtMy4xLDMuMWMwLDEuNywxLjQsMy4xLDMuMSwzLjEgYzEuNywwLDMuMS0xLjQsMy4xLTMuMUMyNi4yLDE5LjQsMjQuOCwxOCwyMy4xLDE4eiBNMzkuNSwyNi4yYy0yLjYsMC00LjQsMS40LTUuMSwyLjhoLTAuMXYtMi40aC01LjJWNDRoNS40di04LjYgYzAtMi4zLDAuNC00LjUsMy4yLTQuNWMyLjgsMCwyLjgsMi42LDIuOCw0LjZWNDRINDZ2LTkuNUM0NiwyOS44LDQ1LDI2LjIsMzkuNSwyNi4yeiIgZmlsbD0id2hpdGUiIC8+PC9zdmc+)
+
+![SVG Image](data:image/svg+xml;base64,PHN2ZyBoZWlnaHQ9IjMyIiB3aWR0aD0iMzIiIHZpZXdCb3g9IjAgMCA2NCA2NCI+PGNpcmNsZSBjeD0iMzIiIGN5PSIzMiIgZmlsbD0iI2ZmNDUwMCIgcj0iMzEiIC8+PHBhdGggZD0ibSA1Mi44MTY1LDMxLjk0MjM2MiBjIDAsLTIuNDgwMyAtMi4wMjY0LC00LjQ5NjUgLTQuNTE2OSwtNC40OTY1IC0xLjIxNTUsMCAtMi4zMTcxLDAuNDg2MiAtMy4xMjgsMS4yNjgyIC0zLjA3NywtMi4wMjQ3IC03LjI0MDMsLTMuMzEzMyAtMTEuODUwNywtMy40NzgyIGwgMi41MjExLC03LjkzNzMgNi44MjcyLDEuNTk5NyAtMC4wMTAyLDAuMDk4NiBjIDAsMi4wMjgxIDEuNjU3NSwzLjY3NzEgMy42OTU4LDMuNjc3MSAyLjAzNjYsMCAzLjY5MjQsLTEuNjQ5IDMuNjkyNCwtMy42NzcxIDAsLTIuMDI4MSAtMS42NTc1LC0zLjY3ODggLTMuNjkyNCwtMy42Nzg4IC0xLjU2NCwwIC0yLjg5NjgsMC45NzU4IC0zLjQzNTcsMi4zNDQzIGwgLTcuMzU5MywtMS43MjU1IGMgLTAuMzIxMywtMC4wNzgyIC0wLjY0NzcsMC4xMDcxIC0wLjc0OCwwLjQyMzMgTCAzMiwyNS4yMTIwNjIgYyAtNC44MjQ2LDAuMDU3OCAtOS4xOTUzLDEuMzU2NiAtMTIuNDEsMy40NDI1IC0wLjgwNTgsLTAuNzQ0NiAtMS44NzUxLC0xLjIxMDQgLTMuMDU4MywtMS4yMTA0IC0yLjQ5MDUsMCAtNC41MTUyLDIuMDE3OSAtNC41MTUyLDQuNDk4MiAwLDEuNjQ5IDAuOTA2MSwzLjA3ODcgMi4yMzg5LDMuODYwNyAtMC4wODg0LDAuNDc5NCAtMC4xNDYyLDAuOTYzOSAtMC4xNDYyLDEuNDU2OSAwLDYuNjQ4NyA4LjE3MzYsMTIuMDU4MSAxOC4yMjIzLDEyLjA1ODEgMTAuMDQ4NywwIDE4LjIyNCwtNS40MDk0IDE4LjIyNCwtMTIuMDU4MSAwLC0wLjQ2NTggLTAuMDQ5MywtMC45MjQ4IC0wLjEyNzUsLTEuMzc3IDEuNDE0NCwtMC43NTk5IDIuMzg4NSwtMi4yMzA0IDIuMzg4NSwtMy45NDA2IHogbSAtMjkuMjgwOCwzLjA4NzIgYyAwLC0xLjQ3NTYgMS4yMDcsLTIuNjc3NSAyLjY4OTQsLTIuNjc3NSAxLjQ4MjQsMCAyLjY4NzcsMS4yMDE5IDIuNjg3NywyLjY3NzUgMCwxLjQ3NTYgLTEuMjA1MywyLjY3NTggLTIuNjg3NywyLjY3NTggLTEuNDgyNCwwIC0yLjY4OTQsLTEuMjAwMiAtMi42ODk0LC0yLjY3NTggeiBtIDE1LjQwMzcsNy45MzczIGMgLTEuMzU0OSwxLjM0ODEgLTMuNDgxNiwyLjAwNDMgLTYuNTAwOCwyLjAwNDMgbCAtMC4wMjIxLC0wLjAwNTEgLTAuMDIyMSwwLjAwNTEgYyAtMy4wMjA5LDAgLTUuMTQ3NiwtMC42NTYyIC02LjUwMDgsLTIuMDA0MyAtMC4yNDY1LC0wLjI0NDggLTAuMjQ2NSwtMC42NDQzIDAsLTAuODg5MSAwLjI0NjUsLTAuMjQ2NSAwLjY0NzcsLTAuMjQ2NSAwLjg5NDIsMCAxLjEwNSwxLjA5OTkgMi45MzkzLDEuNjMzNyA1LjYwNjYsMS42MzM3IGwgMC4wMjIxLDAuMDA1MSAwLjAyMjEsLTAuMDA1MSBjIDIuNjY3MywwIDQuNTAxNiwtMC41MzU1IDUuNjA2NiwtMS42MzU0IDAuMjQ2NSwtMC4yNDY1IDAuNjQ3NywtMC4yNDQ4IDAuODk0MiwwIDAuMjQ2NSwwLjI0NjUgMC4yNDY1LDAuNjQ0MyAwLDAuODkwOCB6IG0gLTAuMzIxMywtNS4yNjE1IGMgLTEuNDgyNCwwIC0yLjY4NzcsLTEuMjAwMiAtMi42ODc3LC0yLjY3NTggMCwtMS40NzU2IDEuMjA1MywtMi42Nzc1IDIuNjg3NywtMi42Nzc1IDEuNDgyNCwwIDIuNjg3NywxLjIwMTkgMi42ODc3LDIuNjc3NSAwLDEuNDc1NiAtMS4yMDUzLDIuNjc1OCAtMi42ODc3LDIuNjc1OCB6IiBmaWxsPSJ3aGl0ZSIgLz48L3N2Zz4=)
+
+Tags
+
+[#Research](/blog/tag/research)[#Security](/blog/tag/security)[#Threat Intel](/blog/tag/threat-intel)
+
+Table of contents
+
+- [Change log](#change-log-3)
+- [What happened?](#what-happened-9)
+
+  - [Payload analysis](#payload-analysis-15)
+
+- [What was the impact?](#what-was-the-impact-19)
+- [Which actions should security teams take?](#which-actions-should-security-teams-take-27)
+
+  - [Immediate Remediation](#immediate-remediation-28)
+  - [Audit & Detection](#audit--detection-30)
+  - [Credential Rotation](#credential-rotation-32)
+
+- [How can Wiz help?](#how-can-wiz-help-34)
+
+  - [Investigate emerging threats with Mika AI / Wiz MCP Threat Intel in...](#investigate-emerging-threats-with-mika-ai--wiz-mcp-threat-intel-investigation-tool-36)
+
+- [Indicators of compromise](#indicators-of-compromise-43)
+- [Appendix: Impacted Packages](#appendix-impacted-packages-45)
+- [References](#references-47)
+
+###### Watch 12-min demo
+
+See how Wiz protects your cloud from code to runtime
+
+[Watch now](https://www.wiz.io/recorded-demo/cloud?cta_source=blog&cta_page=/blog/shai-hulud-npm-supply-chain-attack&cta_placement=sidebar)
+
+## Continue reading
+
+[/blog/dora-compliance-in-the-cloud-era-insights-from-deloitte-and-wiz](/blog/dora-compliance-in-the-cloud-era-insights-from-deloitte-and-wiz)
+
+### [DORA Compliance in the Cloud Era: Insights from Deloitte and Wiz](/blog/dora-compliance-in-the-cloud-era-insights-from-deloitte-and-wiz)
+
+[/authors/zlatko-unger](/authors/zlatko-unger)[/authors/ida-stanar](/authors/ida-stanar)[/authors/robbert-van-der-pol](/authors/robbert-van-der-pol)[/authors/nathalie-steenvoorden](/authors/nathalie-steenvoorden)
+
+[Zlatko Unger](/authors/zlatko-unger), [Ida Stanar](/authors/ida-stanar), [Robbert Van Der Pol](/authors/robbert-van-der-pol), [Nathalie Steenvoorden](/authors/nathalie-steenvoorden)
+
+September 12, 2025
+
+How to address DORA compliance challenges with Wiz and Deloitte.
+
+[/blog/wiz-customers-on-how-ai-is-changing-security](/blog/wiz-customers-on-how-ai-is-changing-security)
+
+### [How Wiz Customers like Brex and FICO See AI Changing Security](/blog/wiz-customers-on-how-ai-is-changing-security)
+
+[/authors/snegha](/authors/snegha)
+
+[Snegha Ramnarayanan](/authors/snegha)
+
+September 11, 2025
+
+Executives from Brex and FICO share how AI is reshaping security strategies.
+
+[/blog/wiz-named-aspm-leader-by-idc](/blog/wiz-named-aspm-leader-by-idc)
+
+### [Wiz Recognized as a Leader in the 2025 IDC MarketScape for ASPM](/blog/wiz-named-aspm-leader-by-idc)
+
+[/authors/jiong-liu](/authors/jiong-liu)
+
+[Jiong Liu](/authors/jiong-liu)
+
+September 9, 2025
+
+We believe recognition in the IDC MarketScape for ASPM reflects our commitment to redefining how modern/cloud and AI-native applications are built and secured.
+
+Get a personalized demo
+
+## Ready to see Wiz in action?
+> "Best User Experience I have ever seen, provides full visibility to cloud workloads."
+
+![SVG Image](data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0NTQgODguOCIgaWQ9IkFydCI+PHBhdGggZmlsbD0iI2ZmZmZmZiIgZD0iTTQzNCA4OC44YzExIDAgMTkuOS04LjkgMTkuOS0xOS45di00OUM0NTQgOC45IDQ0NSAwIDQzNCAwSDE5LjlDOC45IDAgMCA4LjkgMCAyMHY0OC45YzAgMTEgOC45IDE5LjkgMTkuOSAxOS45SDQzNHoiIC8+PHBhdGggZD0iTTEwMS44IDgxLjhjLTcuMiAwLTEzLTUuOC0xMy0xM1YxOS45YzAtNy4yIDUuOC0xMyAxMy0xM0g0MzRjNy4yIDAgMTMgNS44IDEzIDEzdjQ4LjljMCA3LjItNS44IDEzLTEzIDEzSDEwMS44eiIgZmlsbD0iI2FiMjMxOCIgLz48cGF0aCBkPSJNMjAgODEuOWMtNy4yIDAtMTMtNS44LTEzLTEzVjIwYzAtNy4yIDUuOC0xMyAxMy0xM2g0OC44YzcuMiAwIDEzIDUuOCAxMyAxM3Y0OC45YzAgNy4yLTUuOCAxMy0xMyAxM0gyMHoiIGZpbGw9IiM0NTE1MDAiIC8+PHBhdGggZmlsbD0iI2ZmZmZmZiIgZD0iTTU5LjEgMTUuM2MuNS4xIDIuNy44IDIuNy44czIuMSAzLjEgMi43IDMuOGMuNS43LjMgMS4xLjMgMS4xbC0xIDMuOHMuNC4zIDAgMC0zLjItLjEtMy45IDBjLS43LjEuNi0uOC45LTEuMS4zLS4zIDEuNS0xLjIgMS40LTEuNi0uMS0uNS0yLTQtMi00cy0zLjIgMC00LjcuMi00LjcgMy40LTQuNyAzLjRsLTEuMiA0LjZzLjUuOCAxLjEgMS40Yy43LjUgMi42LjQgMy4zLjMuNy0uMS40LjgtLjIgMS4zLS42LjUtMi44LjUtMi44LjVsLjkuM2MxIC45IDIuOCA1LjYgMy45IDYuNyAxLjEgMS4xIDAgNi41LTEuNiA4LjEtMS42IDEuNi0yLjMgNC45LTMuMiA1LjgtLjkuOS0xLjkuNi0uOSAxLjYgMSAxIC41IDIuMi43IDMgLjEuNi4zIDEuNi43IDIgLjUuNSA3LjcgNS41IDEwLjUgNS43LjUgMCAuNSAyLjYtMi40IDUuNyAwIDAtLjUgMS44LTUuNSAyLTUuNC4yLTEwLjctLjctMTEuOS0uNy0xLjIgMC00LjgtMi00LjgtMi0uNyAwLTExLjItMTUuNi0xMS4yLTE2LjcgMC0xLjEtLjgtNC0uOC01LjEgMC0xLjEgMS4zLTExIDEuMS0xMi4yLS4yLS45LjMtMS4yIDEuNC0yLjIgMS4xLTEuMSAzLTIuOSAzLjgtMy43LjMtLjMgMi45LS4zIDYuMS0uOWwuNS0uMi0uNi0uM3MtMS0xLjMtMi42LTEuMmMtMS42LjEtMi4yLjItMS4zLS4yLjgtLjQgMi40LTEuNSAyLjQtMS41bDMuNiAxLjZoMS45bDMuNC0yLjggNy43LTYuMiA2LjMtMS4xTTM1LjMgMzVjLS45LjItMi40LS4xLTMuMSAxLjJMMzEgNDEuOXMuMSA1LjcuMyA2LjhjLjEgMS4xIDEuNiA0LjggMi40IDUuNi43LjcgMS40IDMuMSAyLjcgNC40LjMuMyAxLjEuNSAxLjMuOS41LjcgMSAuMiAwLTEuMi0zLjUtNS4yLTQuMy05LjctNC40LTEwLjQtLjQtMS43LS4xLTUuNiAwLTcuMi4xLS44LjYtMi43IDEuMi0zLjEuMy0uMiAyLjctLjUgMy4xLS42LjgtLjIgMS44LS4yIDIuNS0uMyAyLjItLjUgNS41LjcgNS44LjggMy4zIDEuNSAyIDIuMSAyLjEgMi4yLjEuMi00LjYgOS41LTQuNiAxMHMuMiA1LjEuNiA2LjRjLjEuNCAxLjYgMy45IDEuOSA0LjYgMS4yIDIuOC0yLjUtLjUtMi43LS42cy00LjMtOC40LTUtMTAuMmMtLjUtMS4yLS4zLTMtLjItMy4zLjEtLjUtLjItNC41LjUtNS4xLjUtLjQgMi0uNiAzLjEtLjEgMSAuNCAxLjUgMS41IDEuNCAxLjgtLjEuMi0xLjYgNS4zLTEuOSA0LjktLjEtLjEtLjEtMS43LS4zLTEuOS0uMy0uMy0uNy0uNS0uOC0uMy0uMS4yLS40IDEuOS0uMyAyLjUuNyAyLjggMS42IDEuOSAxLjkgMS40LjUtLjggMi43LTcgMi42LTcuNC0uMS0uOS0uOC0yLjUtMi4yLTMtLjktLjMtMy44LS4xLTQuOS40LTEuNi44LTEuNSA4LTEuMiA5IC4zIDEgNC41IDkuNCA0LjcgMTAgLjUgMS4zIDMuNSA0LjIgMy45IDQuNS4yLjEgNC4zIDEuNyA0LjguOS4yLS40LjEtMS4zLS45LTItMS0uNi0zLjMtNy41LTMuMy04cy0uNi00LjMtLjItNS4xYy44LTEuNSA2LjQtOS45IDUuOC0xMC42LS44LS45LTMuMy01LjEtNC41LTMuNS0xLjEgMS40LTUuMyAwLTYuNi0xIDAgLjEtMi45LjctNC4zLjl6bTE2LjIgMzIuM2MxLjYgMCA2LjEtMi40IDQuNS0zLjUtMS4xLS43LTIuMy0xLjYtNC42LTMuNC0xLS44LTEuNS0uNi0xLjgtLjYtLjkgMCAuNi0xLjUuMS0yLjgtLjYtMS4zLS45LTMuNC0xLjMtMy45LS41LS41LS4zLTMgLjctNCAxLjEtMS4xIDIuNi00LjIgMy41LTUuNCAxLTEuNCAxLjctNC42IDEuMy01LS40LS40LTIuMy00LjMtMy4xLTUuMS0uNS0uNS0xLjQtMS44LTIuMi0yLjlsLS4yLS4zLS45LjVjLS45LjUtMiAxLjUtMiAxLjVzLS44LjItMi41LS4xYy0uOS0uMi0xLjMtLjgtMS4zLTEuNnMtLjUtLjYtLjUtLjYtOCAuNC04LjcuOGMtLjYuNC0zLjQgNC4yLTMuNCA0LjJzLTEuNSAxNC42LS4zIDE1LjhjMS40IDEuNCA3LjggMTIuNyA5LjEgMTQgMS40IDIgMTIgMi40IDEzLjYgMi40em0xMTIuMS0xNy44Yy0uNiAwLTEuMS41LTEuMSAxLjF2MTEuOWMwIC42LS41IDEuMS0xLjEgMS4xaC00LjdjLS42IDAtMS4xLS41LTEuMS0xLjFWMjUuNGMwLS42LjUtMS4xIDEuMS0xLjFoNC43Yy42IDAgMS4xLjUgMS4xIDEuMVY0MmMwIC42LjUgMS4xIDEuMSAxLjFoMTguMmMuNiAwIDEuMS0uNSAxLjEtMS4xVjI1LjRjMC0uNi41LTEuMSAxLjEtMS4xaDQuN2MuNiAwIDEuMS41IDEuMSAxLjF2MzcuMWMwIC42LS41IDEuMS0xLjEgMS4xSDE4NGMtLjYgMC0xLjEtLjUtMS4xLTEuMVY1MC42YzAtLjYtLjUtMS4xLTEuMS0xLjFoLTE4LjJ6TTIxMiAyNC4zYy42IDAgMS4xLjUgMS4xIDEuMXYzNy4xYzAgLjYtLjUgMS4xLTEuMSAxLjFoLTQuN2MtLjYgMC0xLjEtLjUtMS4xLTEuMVYyNS40YzAtLjYuNS0xLjEgMS4xLTEuMWg0Ljd6bTc3LjEgNDBjLTEyLjEgMC0yMC41LTkuMi0yMC41LTIwLjNzOC41LTIwLjQgMjAuNi0yMC40YzEyLjEgMCAyMC41IDkuMiAyMC41IDIwLjMgMCAxMS4xLTguNSAyMC40LTIwLjYgMjAuNHptMC0zNC4zYy03LjggMC0xMy4zIDYuMi0xMy4zIDEzLjlzNS42IDE0IDEzLjQgMTRjNy44IDAgMTMuMy02LjIgMTMuMy0xMy45cy01LjYtMTQtMTMuNC0xNHptNDYuOCAzMi41YzAgLjYtLjUgMS4xLTEuMSAxLjFoLTQuN2MtLjYgMC0xLjEtLjUtMS4xLTEuMVYzMS44YzAtLjYtLjUtMS4xLTEuMS0xLjFoLTEwLjJjLS42IDAtMS4xLS41LTEuMS0xLjF2LTQuMmMwLS42LjUtMS4xIDEuMS0xLjFoMjkuN2MuNiAwIDEuMS41IDEuMSAxLjF2NC4yYzAgLjYtLjUgMS4xLTEuMSAxLjFoLTEwLjJjLS42IDAtMS4xLjUtMS4xIDEuMWwtLjIgMzAuN3ptMjQuNS0zNy4xYzAtLjYuNS0xLjEgMS4xLTEuMWg0LjdjLjYgMCAxLjEuNSAxLjEgMS4xdjMwLjhjMCAuNi41IDEuMSAxLjEgMS4xaDE4LjRjLjYgMCAxLjEuNSAxLjEgMS4xdjQuMWMwIC42LS41IDEuMS0xLjEgMS4xaC0yNS4zYy0uNiAwLTEuMS0uNS0xLjEtMS4xVjI1LjR6bTY2LjUgNGMwIC42LS41IDEuMS0xLjEgMS4xaC0yMGMtLjYgMC0xLjEuNS0xLjEgMS4xdjEwLjVjMCAuNi41IDEuMSAxLjEgMS4xaDE1Yy42IDAgMS4xLjUgMS4xIDEuMXYzLjljMCAuNi0uNSAxLjEtMS4xIDEuMWgtMTVjLS42IDAtMS4xLjUtMS4xIDEuMXY1LjhjMCAuNi41IDEuMSAxLjEgMS4xaDIwLjNjLjYgMCAxLjEuNSAxLjEgMS4xdjMuOWMwIC42LS41IDEuMS0xLjEgMS4xaC0yNy4yYy0uNiAwLTEuMS0uNS0xLjEtMS4xVjI1LjRjMC0uNi41LTEuMSAxLjEtMS4xaDI2LjljLjYgMCAxLjEuNSAxLjEgMS4xdjR6bS0xNjggOC4xYzAtOC01LjgtMTMuMi0xNC45LTEzLjJoLTE0LjRjLS42IDAtMS4xLjUtMS4xIDEuMXYzNy4xYzAgLjYuNSAxLjEgMS4xIDEuMWg0LjdjLjYgMCAxLjEtLjUgMS4xLTEuMVY1Mi4xYzAtLjYuNS0xLjEgMS4xLTEuMWg2LjdjOC43IDAgMTUuNy00LjYgMTUuNy0xMy41em0tMjIuNCA3LjJjLS42IDAtMS4xLS41LTEuMS0xLjFWMzEuN2MwLS42LjUtMS4xIDEuMS0xLjFoNi45YzUuMiAwIDguNSAyLjQgOC41IDcuMSAwIDQuMi0zLjMgNy4xLTguNSA3LjFoLTYuOXpNMTI2LjIgMzBjNC4xIDAgNy4zIDEuNyAxMC4yIDQuMi41LjQgMS4yLjQgMS42LS4xbDMtMy41Yy40LS41LjMtMS4yLS4xLTEuNi0zLjUtMy4xLTcuOS01LjQtMTQuNi01LjQtMTEuOSAwLTIwLjMgOS4yLTIwLjMgMjAuNHYtLjJjMCAxMS4yIDguNCAyMC40IDIwLjMgMjAuNCA2LjYgMCAxMS0yLjIgMTQuNi01LjQuNS0uNC41LTEuMS4xLTEuNmwtMy0zLjVjLS40LS41LTEuMS0uNS0xLjYtLjEtMi45IDIuNS02LjEgNC4yLTEwLjIgNC4yLTcuNSAwLTEzLTYuMi0xMy0xMy45LjEtNy43IDUuNS0xMy45IDEzLTEzLjl6IiAvPjwvc3ZnPg==)
+
+David EstlickCISO
+> "Wiz provides a single pane of glass to see what is going on in our cloud environments."
+
+![SVG Image](data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NSAyNiIgZmlsbD0ibm9uZSI+PHBhdGggZmlsbD0iIzAwMCIgZD0iTTUuODQgMTcuNDZ2LTMuNDU3cy40OS0uMTYuODMtLjE2YzEuMTQyIDAgMS44MDYuODE2IDEuODA2IDEuODAyIDAgMS4zMTUtLjY2NCAxLjgxNS0xLjgwNiAxLjgxNWgtLjgzWk01Ljg0IDIwLjc1MXYtMi45N2guODNjMS4zMDIgMCAyLjYyMi40OTUgMi42MjIgMS44MSAwIDEuMzItLjY1IDIuMTQxLTEuOTcgMi4xNDEtLjk5MSAwLTEuNDgyLS4xNi0xLjQ4Mi0uOTgxWk0xNS44NyAyMC40MTJjMC0uODIuOTc2LTEuMTU1IDEuOTY3LTEuMTU1djEuODE1Yy0uMTYuMTYtLjQ4Ni4zMi0uOTkuMzItLjQ4NyAwLS45NzctLjQ4LS45NzctLjk4Wk00NC40NiAxNi42MzVjMS4xNDEgMCAxLjgwNiAxLjE0NiAxLjgwNiAyLjYyMiAwIDEuMzItLjUgMi40NzUtMS42NDEgMi40NzUtMS4xNiAwLTEuNjQ2LTEuMTU1LTEuNjQ2LTIuNjM2IDAtMS4zMTUuNDg2LTIuNDYxIDEuNDgtMi40NjFaTTU5LjA4MiAxOC4yNzZoLTIuNjRjMC0uODE2LjQ5LTEuNjQxIDEuMzItMS42NDEuODE2IDAgMS4zMi44MjUgMS4zMiAxLjY0WiIgLz48cGF0aCBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik02NC4wMDIgMjUuNjlILjA5NnYtMjVoNjMuOTA2djI1Wk05Ljc3OCAxNS40OGMwLTEuNDc2LTEuNDYyLTEuOTc2LTIuOTQ3LTEuOTc2SDMuMzc5di4zNGwuNjU1LjE2Yy40OSAwIC40OSAwIC40OS40OTV2Ni41NzNjMCAuNSAwIC41LS40OS42NkgzLjM4di4zMmg0LjI2OGMxLjY0NSAwIDIuOTYtLjgyIDIuOTYtMi40NiAwLTEuMzE2LTEuMzE1LTEuOTcyLTIuNjM1LTIuMTMyLjY3LS4xNjUgMS44MDYtLjgyNSAxLjgwNi0xLjk4Wm0zLjQ1MiA1LjU5MnYtOC4wNWMtLjY1MS4xNjEtMS40OC4zMjItMi4yOTcuMzIydi4zMmguNDljLjUwNSAwIC42NjUuMTguNjY1LjY2djYuNzQ4YzAgLjUgMCAuNS0uNS42NmgtLjMyNXYuMzJoMi45NjF2LS4zMmgtLjQ5YTQuNTc1IDQuNTc1IDAgMCAwLS4xMjEtLjA1NWMtLjI1OC0uMTEzLS4zODMtLjE2OS0uMzgzLS42MDVabTIuOTY1Ljk4Yy42NTEgMCAxLjE1Ni0uMzIgMS42NDItLjY2LjE2NS4zNC4zMy42Ni44MTYuNjYuNjY5IDAgMS4xNTUtLjMyIDEuNjQ1LS44MmwtLjE2NS0uMTZhLjU4OS41ODkgMCAwIDAtLjIxMi4wNiAxLjA4NCAxLjA4NCAwIDAgMS0uNDM5LjFjLS4zMjUgMC0uNTA0LS4xNi0uNTA0LS40ODF2LTMuMTNjMC0uOTg2LS40ODYtMS4zMi0xLjgwNi0xLjMyLS44MTIgMC0yLjEzMi40OTktMi4xMzIgMS4xNTkgMCAuMTYuMTY1LjMyLjUuMzIuMzMgMCAuNDktLjE2LjY1NS0uNjYuMTY1LS4zMi4zMjYtLjQ4NS44MTYtLjQ4NS41MDUgMCAuODI2LjMyNS44MjYuODI1djEuNDc2Yy0xLjQ3Ny4xNi0yLjk2Mi40OTUtMi45NjIgMS44MTUgMCAuNjQyLjQ5IDEuMzAyIDEuMzIgMS4zMDJabTguNTUtNC40MzJjLjMyIDAgLjQ4NS0uMTYuNDg1LS41IDAtLjQ4NS0uODMtLjgyLTEuODA2LS44Mi0xLjgxIDAtMi44IDEuMzItMi44IDIuOTU3IDAgMS40OTQuOTkgMi43OTYgMi40NzUgMi43OTYuODE2IDAgMS42NDUtLjMyMSAyLjI5Ni0xLjE0MmwtLjE2NS0uMTZjLS4zMjUuMzItLjgzLjQ4MS0xLjQ4LjQ4MS0xLjMyIDAtMi4xMzYtLjk4LTIuMTM2LTIuNDU3IDAtMS4zMTUuNjU1LTIuMTQgMS42NDUtMi4xNC4zMjYgMCAuNjU2LjE2NS44MTYuNDg2LjAzNy4wMzguMDczLjA4NC4xMS4xMzEuMTM1LjE3LjI5MS4zNjguNTYuMzY4Wm0zLjEwNyAzLjQ1MnYtMS44MTVjLjEwMSAwIC4yNjcuMTg2LjUyOC40OC4xNjcuMTg3LjM3NC40Mi42MjguNjc1bC44MTUuOThjLjE4LjE4LjE4LjM0IDAgLjM0aC0uNDg2di4zMmgyLjc5N3YtLjMyYy0uNSAwLS42NjUtLjE2LS45OS0uNWwtMi4yOTctMi40NTcgMS44MDYtMS42NTQuMDA0LS4wMDRjLjMyMy0uMzE4LjQ4OS0uNDgyIDEuMTUxLS40ODJWMTYuM2gtMi40N3YuMzM1aC40ODVjLjE4LjE2NS4zNC4zMjUuMTguNDg2bC0yLjE1IDEuOTc1di02LjA3M2MtLjY1Mi4xNi0xLjQ2OC4zMi0yLjI5Ny4zMnYuMzIxaC40OWMuNTA1IDAgLjY2NS4xOC42NjUuNjZ2Ni43NDhjMCAuNSAwIC41LS41MDQuNjZoLS40ODZ2LjMyaDMuMTI2di0uMzJoLS40OWE0Ljg4OCA0Ljg4OCAwIDAgMC0uMTIyLS4wNTVjLS4yNTctLjExMy0uMzgzLS4xNjktLjM4My0uNjA1Wm01LjA5OC45OGMuMTYtLjE2LjMyNS0uMTYuMzI1LS4xNi4xNDIgMCAuMjgzLjAyOS40NDYuMDYxLjIyNi4wNDYuNDk2LjEuODc0LjEgMS4xNTUgMCAyLjEzMi0uNDgxIDIuMTMyLTEuODAyIDAtLjgyLS42NTEtMS4xNTUtMS42NDYtMS42NS0uOTc2LS4zMjUtMS4zMDItLjQ4Ni0xLjMwMi0xLjE0MSAwLS41LjQ4Ni0uODI1IDEuMTQyLS44MjUuODMgMCAxLjE1NS40ODYgMS4zMTUgMS40OGguMzI2VjE2LjNoLS4xNmwtLjMyNi4xNmMtLjA1NSAwLS4xMjgtLjAxNy0uMjI1LS4wNGEzLjYwMiAzLjYwMiAwIDAgMC0uOTMtLjEyYy0uOTc3IDAtMS45NzEuNS0xLjk3MSAxLjY1NSAwIC45OC42NjQgMS40NzYgMS40OCAxLjgwMSAxLjE1NS4zMzUgMS4zMi42NTYgMS4zMiAxLjE1NSAwIC40ODItLjMzLjgyMS0xLjE1NS44MjEtLjgxNiAwLTEuMzItLjUtMS42NDUtMS42NDFoLS4xNnYxLjk2MmguMTZabTUuMjU3LTUuMDkydjMuOTUxYzAgLjY2LjQ5IDEuMTQyIDEuMzIgMS4xNDIuNjUxIDAgMS4xNDItLjE2IDEuNjQ2LS44MnYtLjE2MWMtLjUwNC4zMi0uNjcuMzItLjk5NS4zMi0uNDkgMC0uODE2LS4xNi0uODE2LS44MTVWMTYuOTZoMS44MTF2LS41aC0xLjgxdi0xLjQ3NmgtLjE2NmMtLjUuODM1LS45OSAxLjMxNi0xLjY0IDEuODE2di4xNmguNjVabTYuNDE4LS42NmMtMS40ODUgMC0yLjk2NiAxLjE2LTIuOTY2IDIuOTU3IDAgMS44MTUgMS40OCAyLjc5NiAyLjk2NiAyLjc5NiAxLjQ2MiAwIDIuOTQ3LTEuMTQyIDIuOTQ3LTIuNzk2IDAtMS43OTctMS40ODUtMi45NTctMi45NDctMi45NTdabTcuMDY0LjY2Yy42NSAwIC45NzYuNS45NzYgMS4zMTZ2Mi43OTZjMCAuMjQ4IDAgLjM3Mi0uMDYuNDU1LS4wNi4wODQtLjE4LjEyNC0uNDI2LjIwNWgtLjMzdi4zMmgyLjk1MnYtLjMyaC0uMzNjLS4yNDUtLjA4LS4zNjYtLjEyMS0uNDI3LS4yMDUtLjA1OS0uMDgzLS4wNTktLjIwNy0uMDU5LS40NTV2LTMuMTE3YzAtLjk5NS0uNjctMS42NTUtMS42NDUtMS42NTUtLjgzIDAtMS40ODEuMzM1LTIuMTMyLjgydi0uOThjLS42Ny4zMi0xLjMyLjQ5NS0yLjEzNi40OTV2LjMyNWguMzI1Yy40OSAwIC42NTYuMzM1LjY1Ni45OTV2My4xMTdjMCAuNSAwIC41LS40OS42NmgtLjQ5MXYuMzJoMy4xMTJ2LS4zMmgtLjQ5YTQuMzc4IDQuMzc4IDAgMCAwLS4xMi0uMDU3Yy0uMjQyLS4xMTItLjM2Ni0uMTctLjM2Ni0uNjAzVjE3LjQ2Yy4wNjgtLjAzNS4xMzYtLjA3Ni4yMDgtLjEyLjI3NS0uMTcuNjE2LS4zOCAxLjI3My0uMzhabTYuMjM0LS42NmMtMS42NDEgMC0yLjYzNiAxLjQ4LTIuNjM2IDIuOTU3IDAgMS40OTQuOTk1IDIuNzk2IDIuNDc1IDIuNzk2Ljk3NyAwIDEuODA2LS40ODEgMi40NTctMS4xNDJsLS4xNi0uMTZjLS4xNjUuMTYtLjgxNi40ODEtMS42NDYuNDgxLTEuNDggMC0yLjEzMS0xLjE0MS0yLjEzMS0yLjYzaDMuOTM3Yy0uMTYtMS4zMDctLjk3Ni0yLjMwMi0yLjI5Ni0yLjMwMloiIGZpbGwtcnVsZT0iZXZlbm9kZCIgZmlsbD0iIzAwMCIgLz48L3N2Zz4=)
+
+Adam FletcherChief Security Officer
+> "We know that if Wiz identifies something as critical, it actually is."
+
+![SVG Image](data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9Ii0wLjgxOCAtMC44MTggOTguMDk4IDI4Ljg4NSI+PHBhdGggZD0iTTM4LjM5Ni4wNWMtLjQ1IDAtLjY1LjI2OC0uODE4LjY1Mi0xMC41MjggMjQuMTgtMTEuNDEyIDI2LjA5LTExLjQxMiAyNi4wOWg1Ljk2N2wxLjI0MS0zLjAzM2g4Ljk4OWwxLjI0NiAzLjAzNGg3LjAxN3MtLjYtMS4yNDItMTEuNDExLTI2LjA5MWMtLjE2OC0uMzg0LS4zNjgtLjY1MS0uODE5LS42NTFtLTMuMTI1IDE5LjA4MiAyLjU5LTYuMzMgMi42IDYuMzNoLTUuMTl6TTY4LjIgMTQuNjQ1YzIuMDUtMS4yMTkgMy42MDQtMy4zNDcgMy42MDQtNi4zOTkgMC0yLjM5Ni0uOTYzLTQuMzcyLTIuNjM3LTUuNzA3QzY3LjQ3IDEuMTgyIDY1LjUwNi40NDggNjEuNDk0LjQ0OGgtOC41ODV2MjYuMzQ1aDYuMzQzdi05LjgwN2gxLjk2N2MyLjE0IDAgMy4yMTguODA4IDQuMTE1IDIuOTQ2Ljc1OCAxLjgxIDEuMjkzIDMuOTU3IDEuOTkgNi44Nmg3LjA3NGEzMDAuNDM3IDMwMC40MzcgMCAwIDAtMi4yNi02LjUwNWMtMS4wMzMtMi44OC0yLjI4NC00LjY1NC0zLjkzOS01LjY0Mm0tNC4wNTUtMy4yMzJjLS43NjcuNTg3LTEuNzU4Ljc3MS0zLjUzOS43NzFoLTEuMzUzcy0uMDE0LTcuMDIyIDAtNy4wMjJoMS4zNTNjMS44NiAwIDIuNzg2LjIwMyAzLjUzNC43NjYuODU2LjY0NyAxLjIzNyAxLjYxNiAxLjIzNyAyLjczOCAwIDEuMjI0LS40MjcgMi4xMjQtMS4yMzIgMi43NDdtLTUyLjIwNy4xOTlMMS4xNjMuOTA5Qy44MzYuNTkxLjUxLjM2NSAwIC4zNjV2MjYuNDI4aDUuNTM4VjE0LjE1Nmw2LjM5OSA2LjM1MyA2LjQwMy02LjM1M3YxMi42MzdoNS41MzhWLjM2NWMtLjUxMSAwLS44MzcuMjI2LTEuMTYyLjU0NGwtMTAuNzggMTAuNzAzWm04Mi4yMSAyLjAzNmMtMi44MjctMi42NjktNy45NTctMy4xMjYtOS45ODQtNC42OTUtLjc5NS0uNjE1LTEuMDc5LTEuNTItLjgxOC0yLjM4My4zMi0xLjA3MSAxLjM5NS0xLjc3MyAyLjk3MS0xLjc3MyAyLjE3MiAwIDQuMTIuOTg0IDUuNDY5IDIuNTc2bDMuNjIyLTMuNzYzQzkzLjI3MyAxLjM1NyA4OS44NjQgMCA4Ni4yNzQgMGMtNC4xODUgMC03LjM0MiAyLjAwOC04Ljc1MSA1LjIxMy0xLjA5MyAyLjQ4OC0uNzE3IDUuMDgzLjYyNyA2Ljk0OCAyLjYgMy42MSA4LjA4NyAzLjcyMiAxMC40NjMgNS41NzMuODQ2LjY2IDEuMzIgMS43MjcuODE0IDIuODc3LS40MzcgMS4wMDYtMS41NCAxLjY5LTMuMzQ0IDEuNzM2LTIuNTAxLjA2LTQuNzMzLTEuMTA0LTYuMzc1LTMuMTRsLTMuNjI3IDMuNzY4YzIuNCAyLjg4NSA1Ljk3IDQuMjc1IDEwLjI4NiA0LjI3NSA0LjE5NSAwIDcuODc3LTEuNjIgOS4zOC01LjA3NCAxLjMxNS0zLjAyLjg0MS02LjIyOS0xLjYtOC41MjgiIHN0eWxlPSJmaWxsOiMwMDAwYTA7ZmlsbC1vcGFjaXR5OjE7ZmlsbC1ydWxlOmV2ZW5vZGQ7c3Ryb2tlOm5vbmUiIC8+PC9zdmc+)
+
+Greg PoniatowskiHead of Threat and Vulnerability Management
+
+[Get a demo![SVG Image](data:image/svg+xml;base64,PHN2ZyBzdHJva2UtbGluZWpvaW49InJvdW5kIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLXdpZHRoPSIyIiBhcmlhLWhpZGRlbj0idHJ1ZSIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiB3aWR0aD0iMjQiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBmaWxsPSJub25lIiBjbGFzcz0ibHVjaWRlIGx1Y2lkZS1jaGV2cm9uLXJpZ2h0IG1sLTIgc2l6ZS00Ij48cGF0aCBkPSJtOSAxOCA2LTYtNi02IiAvPjwvc3ZnPg==)](/demo)
+
+## Footer
+
+[![SVG Image](data:image/svg+xml;base64,PHN2ZyBhcmlhLWxhYmVsPSJXaXogU3RhciBMb2dvIiBjbGFzcz0idGV4dC1ncmF5LWxpZ2h0IGhvdmVyOnRleHQtcHJpbWFyeS1ibHVlIC1tdC0xIHNpemUtOSI+PHVzZSBocmVmPSIvaW1hZ2VzL2xvZ29fc3ByaXRlLnN2ZyN3aXotc3RhciIgLz48L3N2Zz4=)](/)
+
+### Platform
+
+- [Cloud & AI Security](/platform)
+- [Wiz Code](/platform/wiz-code)
+- [Wiz Cloud](/platform/wiz-cloud)
+- [Wiz Defend](/platform/wiz-defend)
+- [Integrations](/integrations)
+- [Environments](/environments)
+- [Documentation](https://docs.wiz.io)
+
+### Learn
+
+- [Customer Stories](/customers)
+- [Cloud Security Courses](/courses)
+- [Blog](/blog)
+- [CloudSec Academy](/academy)
+- [Resources Center](/resources)
+- [Cloud Threat Landscape](/cloud-threat-landscape)
+- [Cloud Security Assessment](/cloud-security-assessment)
+- [Vulnerability Database](/vulnerability-database)
+
+### Company
+
+- [About Wiz](/about)
+- [Join the Team](/careers)
+- [Newsroom](/newsroom)
+- [Events](/events)
+- [Contact Us](/contact)
+- [Trust Center](/trust-center)
+- [Wiz Partner Alliance](/partner-alliance)
+
+[X![SVG Image](data:image/svg+xml;base64,PHN2ZyBhcmlhLWhpZGRlbj0idHJ1ZSIgY2xhc3M9ImhvdmVyOmZpbGwtZ3JheS1saWdodCBtdC0xIHNpemUtNSBzaHJpbmstMCBmaWxsLXdoaXRlIj48dXNlIGhyZWY9Ii9pbWFnZXMvbG9nb19zcHJpdGUuc3ZnI3giIC8+PC9zdmc+)](https://x.com/intent/user?screen_name=wiz_io)[LinkedIn![SVG Image](data:image/svg+xml;base64,PHN2ZyBhcmlhLWhpZGRlbj0idHJ1ZSIgY2xhc3M9ImhvdmVyOmZpbGwtZ3JheS1saWdodCBtdC0xIHNpemUtNSBzaHJpbmstMCBmaWxsLXdoaXRlIj48dXNlIGhyZWY9Ii9pbWFnZXMvbG9nb19zcHJpdGUuc3ZnI2xpbmtlZGluIiAvPjwvc3ZnPg==)](https://linkedin.com/company/wizsecurity)[RSS![SVG Image](data:image/svg+xml;base64,PHN2ZyBhcmlhLWhpZGRlbj0idHJ1ZSIgY2xhc3M9ImhvdmVyOmZpbGwtZ3JheS1saWdodCBtdC0xIHNpemUtNSBzaHJpbmstMCBmaWxsLXdoaXRlIj48dXNlIGhyZWY9Ii9pbWFnZXMvbG9nb19zcHJpdGUuc3ZnI3JzcyIgLz48L3N2Zz4=)](/feed/rss.xml)
+
+© 2026 Wiz, Inc.
+
+[Status](https://status.wiz.io)[Privacy Policy](https://cloud.google.com/terms/cloud-acquisitions-privacy-notice?hl=en&e=0)[Terms of Use](https://legal.wiz.io/legal#terms-of-use)[Modern Slavery Statement](https://legal.wiz.io/legal#modern-slavery)Cookie Settings
+
+![SVG Image](data:image/svg+xml;base64,PHN2ZyBmaWxsPSJub25lIiB3aWR0aD0iMjQiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgaGVpZ2h0PSIyNCIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIgdmlld0JveD0iMCAwIDI0IDI0IiBzdHJva2UtbGluZWNhcD0icm91bmQiIGFyaWEtaGlkZGVuPSJ0cnVlIiBjbGFzcz0ibHVjaWRlIGx1Y2lkZS1nbG9iZSBzaXplLTUiPjxjaXJjbGUgY3g9IjEyIiBjeT0iMTIiIHI9IjEwIiAvPjxwYXRoIGQ9Ik0xMiAyYTE0LjUgMTQuNSAwIDAgMCAwIDIwIDE0LjUgMTQuNSAwIDAgMCAwLTIwIiAvPjxwYXRoIGQ9Ik0yIDEyaDIwIiAvPjwvc3ZnPg==)![SVG Image](data:image/svg+xml;base64,PHN2ZyBhcmlhLWhpZGRlbj0idHJ1ZSIgc3Ryb2tlLXdpZHRoPSIyIiBoZWlnaHQ9IjI0IiBzdHJva2U9ImN1cnJlbnRDb2xvciIgdmlld0JveD0iMCAwIDI0IDI0IiB3aWR0aD0iMjQiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgZmlsbD0ibm9uZSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiBjbGFzcz0ibHVjaWRlIGx1Y2lkZS1jaGV2cm9uLWRvd24gcmVsYXRpdmUgc2l6ZS0zIHRyYW5zaXRpb24gZHVyYXRpb24tMzAwIj48cGF0aCBkPSJtNiA5IDYgNiA2LTYiIC8+PC9zdmc+)
+
+![SVG Image](data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBoZWlnaHQ9IjI0IiBzdHJva2UtbGluZWpvaW49InJvdW5kIiBmaWxsPSJub25lIiBzdHJva2Utd2lkdGg9IjIiIGFyaWEtaGlkZGVuPSJ0cnVlIiB2aWV3Qm94PSIwIDAgMjQgMjQiIHN0cm9rZT0iY3VycmVudENvbG9yIiBjbGFzcz0ibHVjaWRlIGx1Y2lkZS1nbG9iZSBzaXplLTUiPjxjaXJjbGUgcj0iMTAiIGN5PSIxMiIgY3g9IjEyIiAvPjxwYXRoIGQ9Ik0xMiAyYTE0LjUgMTQuNSAwIDAgMCAwIDIwIDE0LjUgMTQuNSAwIDAgMCAwLTIwIiAvPjxwYXRoIGQ9Ik0yIDEyaDIwIiAvPjwvc3ZnPg==)English (US)![SVG Image](data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgMjQgMjQiIGhlaWdodD0iMjQiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGFyaWEtaGlkZGVuPSJ0cnVlIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgd2lkdGg9IjI0IiBmaWxsPSJub25lIiBjbGFzcz0ibHVjaWRlIGx1Y2lkZS1jaGV2cm9uLWRvd24gcmVsYXRpdmUgc2l6ZS0zIHRyYW5zaXRpb24gZHVyYXRpb24tMzAwIj48cGF0aCBkPSJtNiA5IDYgNiA2LTYiIC8+PC9zdmc+)

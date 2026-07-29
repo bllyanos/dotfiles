@@ -1,0 +1,222 @@
+diff --git a/IAA_V2.4_PLAN.md b/IAA_V2.4_PLAN.md
+deleted file mode 100644
+index 7c1cef3229..0000000000
+--- a/IAA_V2.4_PLAN.md
++++ /dev/null
+@@ -1,146 +0,0 @@
+-# IAA v2.4 — Skip Labeler-Labeler Above Threshold (+ on-demand recalc)
+-
+-Issue #34798. Cap IAA pair count so very large projects stay within the max job
+-duration; when capped, let users compute specific labeler-labeler pairs on demand.
+-
+-## Background
+-
+-Even after #37594, labeler-labeler IAA has no upper bound on documents/assignments.
+-Very large projects still exceed reasonable processing time.
+-
+-**Already shipped (v2.3):**
+-- Single-pass pipeline — `IAAService.calculateIAA` builds pair records once, both
+-  Cohen + Krippendorff reuse them. (`iaa.service.ts:18`)
+-- Assignment filter — unassigned labeler docs skipped, REVIEW gold kept (Option B).
+-  (`iaa-pair-record.builder.ts`)
+-- Single calculate job, not two per method. (`calculate-iaa.listener.ts:42`)
+-
+-**v2.4 = two parts:** (1) bound the pair count, (2) when bounded, surface it in the
+-UI and allow on-demand labeler-labeler calculation for user-selected pairs.
+-
+-## Pair model (confirmed in code)
+-
+-- Docs grouped by `originId`. Per origin: `comparableDocuments` = REVIEW gold doc(s)
+-  + assigned labeler docs.
+-- `createPairs` → all `C(N,2)` document pairs. (`helpers/createPairs.ts`)
+-- **Reviewer-labeler pair** = one side is `DocumentType.REVIEW`.
+-  **Labeler-labeler** = both non-REVIEW.
+-- Total project pairs = `Σ_origin C(N_o, 2)`.
+-- Heavy work = `createLabelPairRecordFromDocuments`, called per pair. Filter pairs
+-  **before** this call to save time.
+-
+-Skipping L-L drops a group of R + k labelers from `k(k+1)/2` pairs → `k` pairs. O(k²)→O(k).
+-
+-## PM decisions (locked)
+-
+-1. **Threshold = f(max job duration).** Benchmark predicts pairs-per-unit-time;
+-   threshold = throughput × max job duration × safety margin (shave for caution).
+-2. **No silent hide** — UI must communicate when L-L was skipped.
+-3. **Fallback = on-demand calc** — user selects which labeler-labeler pair(s) to
+-   compute; system runs them and keeps track of computed vs pending.
+-5. **Backfill = new-ish projects only** (active within ~1 year); no mass recompute.
+-
+-## Core design — "selected pairs" set as source of truth
+-
+-A persistent per-project set of labeler pairs the user opted into.
+-
+-- **Skip mode computes:** all R-L pairs **+** L-L pairs **only for selected annotator
+-  pairs**. (Non-skip mode unchanged — all pairs.)
+-- **Manual select:** add pair to the set → enqueue recalc.
+-- **Why:** auto-recalc (on relabel) recomputes R-L + the whole selected set each run,
+-  so manual results never go stale, and the existing **overwrite-by-project**
+-  persistence stays valid — the set (not existing rows) decides which L-L to include.
+-  No fragile row-merging.
+-
+-## Plan
+-
+-### Phase 1 — Threshold mechanism (code) ✅ DONE
+-
+-- Config `IAA_MAX_PAIRS` (default 0 = disabled). (`config.ts`, `.env.example`)
+-- `iaa-pair-record.builder.ts`: pre-pass sums `totalPairs`; over threshold →
+-  emit only reviewer-labeler pairs; filter before the heavy loader.
+-- `[IAA]` logs on skip + on origin groups with no reviewer.
+-- Tests in `iaa-pair-record.builder.spec.ts` + `createPairs.spec.ts`.
+-- Commits: `a52f19c` (config), `54304af` (skip logic).
+-
+-### Phase 2 — Persist skip metadata + selected-pairs model (backend)
+-
+-**a. Selected-pairs entity** — new table `iaa_selected_labeler_pair`:
+-`{ projectId, teamMemberId1, teamMemberId2 }` (normalize order; index on projectId).
+-Migration + entity + repository.
+-
+-**b. Skip metadata** — per-project IAA status persisted at calc time:
+-`{ projectId, labelerLabelerSkipped, totalPairs, threshold, calculatedAt }`.
+-Set inside the builder/service run so the UI can read it without recomputing.
+-(New small table or column set; reuse existing IAA info read path.)
+-
+-**c. Builder filter generalized** — `isReviewerLabelerPair` → `shouldEmitPair`:
+-emit if (one side REVIEW) **OR** (both annotators form a selected pair).
+-Load the selected set once per run, pass into the builder.
+-
+-**d. Guard** — cap number of selectable pairs per project (config, e.g.
+-`IAA_MAX_SELECTED_PAIRS`) so manual calc can't blow the same budget the cap protects.
+-
+-### Phase 3 — On-demand labeler-pair calculation (backend)
+-
+-**a. Mutation** `calculateLabelerPairIAA(projectId, teamMemberId1, teamMemberId2)`
+-(or a list): validates the pair, inserts into selected set, enqueues recalc.
+-Reuses the existing `CALCULATE_IAA` job + pipeline (full overwrite of R-L + selected L-L).
+-
+-**b. Status query** — per selected pair, derive status:
+-- `computed` — rows exist for the annotator pair.
+-- `pending` — recalc job in flight.
+-- `no_overlap` — selected but annotators never co-labeled an origin (no rows ever).
+-- not-selected pairs → omitted / shown as available to select.
+-
+-**c. Permissions** — gate behind existing IAA project permission handler.
+-
+-### Phase 4 — UI surfacing + manual selection (frontend) ⏳ interim DONE
+-
+-> **Interim — waiting on design team.** Ship a minimal, easy-to-revert placeholder
+-> UI now; swap for the real design once delivered. Keep it isolated (one component /
+-> feature flag) so removal is a clean revert, no entanglement with shared components.
+->
+-> **Feature flag:** `ENABLE_IAA_LABELER_PAIR_PICKER` (`frontendConfig.enableIAALabelerPairPicker`,
+-> default `false`). Gate the whole placeholder on it — flip on per env, revert = flip off.
+-> Backend config added (`config.ts`, `.env.example`); regen frontend config types so
+-> `enableIAALabelerPairPicker` is readable client-side.
+-
+-**Interim placeholder (DONE):**
+-- `IAALabelerPairPickerPlaceholder.tsx` — self-contained, gated on
+-  `enableIAALabelerPairPicker`, mounted above `IAAProjectTable` in `ProjectIAAWidget`.
+-  Renders nothing unless flag on AND `labelerLabelerSkipped`.
+-- Hooks: `useGetIAALabelerLabelerStatusQuery` (status query),
+-  `useCalculateLabelerPairIAAMutation` (on-demand calc) + their `.gql` docs.
+-- Plain text banner, selected-pairs list with computed/pending text status, two
+-  member-id inputs + Calculate button. No bespoke styling — clean revert later.
+-- TODO when design lands: pair matrix from project members (drop raw id inputs),
+-  proper status badges incl. no-overlap, multi-select + budget, poll pending.
+-
+-**Final (after design delivered):**
+-- Banner + labeler-pair picker (list/matrix) with proper status badges, styled per
+-  design spec. Replaces the placeholder wholesale.
+-
+-### Phase 5 — Benchmark (ops, after Phase 1–3 deploy)
+-
+-1. Query prod projects, order by assignment count + text-doc count desc;
+-   filter `updatedAt` within ~1 year.
+-2. Trigger `calculateIAA` top-down, record wall-clock (`[IAA]` start/end markers).
+-3. Collect `(time, documents, assignments, totalPairs)`.
+-4. Derive throughput → **threshold = throughput × max job duration × safety margin.**
+-
+-### Phase 6 — Roll out
+-
+-- Set `IAA_MAX_PAIRS` (and `IAA_MAX_SELECTED_PAIRS`) in prod.
+-- Recalc new-ish projects only (active within ~1 year).
+-
+-## Decisions / open items
+-
+-- **No-reviewer group over threshold** → 0 pairs for that group unless its labeler
+-  pair is manually selected. Logged, not silent.
+-- **Manual recalc** reuses full-overwrite pipeline (heavier than a delta merge).
+-  Acceptable — R-L is the bounded part; selected L-L adds a little. Delta-merge =
+-  later optimization if needed.
+-- **Selectable-pair cap** value — TBD (config); set conservatively vs job budget.
+-- **Skip-state staleness** — metadata refreshed every calc run, so it tracks the
+-  latest calculation; no separate invalidation needed.
+diff --git a/vulcan-frontend/src/modules/IAA/components/IAASummaryTable/IAASummaryContent.tsx b/vulcan-frontend/src/modules/IAA/components/IAASummaryTable/IAASummaryContent.tsx
+index 7a2f15bf6d..e8cc373680 100644
+--- a/vulcan-frontend/src/modules/IAA/components/IAASummaryTable/IAASummaryContent.tsx
++++ b/vulcan-frontend/src/modules/IAA/components/IAASummaryTable/IAASummaryContent.tsx
+@@ -1,52 +1,62 @@
+ import { DataTable } from '@vulcan-ai/vulcan-ui/lib/components/DataTable';
++import { styled } from '@vulcan-ai/vulcan-ui/lib/theme';
+ import React from 'react';
++import { FormattedMessage } from 'react-intl';
+ import { CabinetContributor } from 'src/apps/common/__generated__/types';
+ import { HeaderCell } from '../IAATable/IAATableCommon';
+ import { MemberCell } from '../IAATable/MemberCell';
+ import { ValueCell } from '../IAATable/ValueCell';
+ 
+ interface Props {
+   memberIds: (string | null)[];
+   memberRecord: Record<string, string>;
+   indexedRecord: Record<string, number>;
+   contributorMap?: Map<string, CabinetContributor>;
+   labelingAgentMemberIds: Set<string | null>;
+ }
+ 
+ export function IAASummaryContent({
+   memberIds,
+   memberRecord,
+   indexedRecord,
+   contributorMap,
+   labelingAgentMemberIds,
+ }: Props) {
+   return (
+     <>
+       <DataTable.Head>
+         <DataTable.Head.Row />
+         <DataTable.Head.Row>
+-          <HeaderCell stickyTop stickyLeft width={175} />
++          <HeaderCell stickyTop stickyLeft width={175}>
++            <b>
++              <FormattedMessage id="common.member" />
++            </b>
++          </HeaderCell>
+           {memberIds.map((memberId) => (
+             <MemberCell
+               key={memberId}
+               variant="header"
+               memberId={memberId}
+               memberRecord={memberRecord}
+               stickyTop
+               contributorMap={contributorMap}
+               isLabelingAgent={labelingAgentMemberIds.has(memberId)}
+             />
+           ))}
+         </DataTable.Head.Row>
+       </DataTable.Head>
+ 
+-      <DataTable.Body.Row>
++      <Row>
+         <MemberCell variant="body" memberId={null} memberRecord={memberRecord} contributorMap={contributorMap} />
+         {memberIds.map((verticalMemberId) => {
+           const key2 = [':', verticalMemberId].join('-');
+           return <ValueCell key={verticalMemberId} value={indexedRecord[key2]} />;
+         })}
+-      </DataTable.Body.Row>
++      </Row>
+     </>
+   );
+ }
++
++const Row = styled(DataTable.Body.Row, { name: 'IAASummaryContent-Row' })(({ theme }) => ({
++  borderBottom: `1px solid ${theme.palette.lightGrey2}`,
++}));

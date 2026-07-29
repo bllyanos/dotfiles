@@ -1,0 +1,29 @@
+┌  Creating a new TanStack app in the current directory...
+│
+◒  Installing dependencies via bun◐  Installing dependencies via bun◓  Installing dependencies via bun◑  Installing dependencies via bun◒  Installing dependencies via bun◐  Installing dependencies via bun◓  Installing dependencies via bun◑  Installing dependencies via bun◒  Installing dependencies via bun.◐  Installing dependencies via bun.◓  Installing dependencies via bun.◑  Installing dependencies via bun.◒  Installing dependencies via bun.◐  Installing dependencies via bun.◓  Installing dependencies via bun.◑  Installing dependencies via bun.◒  Installing dependencies via bun..◐  Installing dependencies via bun..◓  Installing dependencies via bun..◑  Installing dependencies via bun..◒  Installing dependencies via bun..◐  Installing dependencies via bun..◓  Installing dependencies via bun..◑  Installing dependencies via bun..◒  Installing dependencies via bun...◐  Installing dependencies via bun...◓  Installing dependencies via bun...◑  Installing dependencies via bun...◒  Installing dependencies via bun...◐  Installing dependencies via bun...◓  Installing dependencies via bun...◑  Installing dependencies via bun...◒  Installing dependencies via bun...◐  Installing dependencies via bun◓  Installing dependencies via bun◑  Installing dependencies via bun◒  Installing dependencies via bun◐  Installing dependencies via bun◓  Installing dependencies via bun◑  Installing dependencies via bun◒  Installing dependencies via bun◐  Installing dependencies via bun.◓  Installing dependencies via bun.◑  Installing dependencies via bun.◒  Installing dependencies via bun.◐  Installing dependencies via bun.◓  Installing dependencies via bun.◑  Installing dependencies via bun.◒  Installing dependencies via bun.◐  Installing dependencies via bun..◓  Installing dependencies via bun..◑  Installing dependencies via bun..◒  Installing dependencies via bun..◐  Installing dependencies via bun..◓  Installing dependencies via bun..◑  Installing dependencies via bun..◒  Installing dependencies via bun..◐  Installing dependencies via bun...◓  Installing dependencies via bun...◑  Installing dependencies via bun...◒  Installing dependencies via bun...◐  Installing dependencies via bun...◓  Installing dependencies via bun...◑  Installing dependencies via bun...◒  Installing dependencies via bun...◐  Installing dependencies via bun...◓  Installing dependencies via bun◑  Installing dependencies via bun◒  Installing dependencies via bun◐  Installing dependencies via bun◓  Installing dependencies via bun◑  Installing dependencies via bun◒  Installing dependencies via bun◐  Installing dependencies via bun◓  Installing dependencies via bun.◑  Installing dependencies via bun.◒  Installing dependencies via bun.◐  Installing dependencies via bun.◓  Installing dependencies via bun.◑  Installing dependencies via bun.◒  Installing dependencies via bun.◐  Installing dependencies via bun.◓  Installing dependencies via bun..◑  Installing dependencies via bun..◒  Installing dependencies via bun..◐  Installing dependencies via bun..◓  Installing dependencies via bun..◑  Installing dependencies via bun..◒  Installing dependencies via bun..◐  Installing dependencies via bun..◓  Installing dependencies via bun...◑  Installing dependencies via bun...◒  Installing dependencies via bun...◐  Installing dependencies via bun...◓  Installing dependencies via bun...◑  Installing dependencies via bun...◒  Installing dependencies via bun...◐  Installing dependencies via bun...◓  Installing dependencies via bun...◑  Installing dependencies via bun◒  Installing dependencies via bun◐  Installing dependencies via bun◓  Installing dependencies via bun◑  Installing dependencies via bun◒  Installing dependencies via bun◐  Installing dependencies via bun◓  Installing dependencies via bun◑  Installing dependencies via bun.◒  Installing dependencies via bun.◐  Installing dependencies via bun.◓  Installing dependencies via bun.◑  Installing dependencies via bun.◒  Installing dependencies via bun.◐  Installing dependencies via bun.◓  Installing dependencies via bun.◑  Installing dependencies via bun..◒  Installing dependencies via bun..◐  Installing dependencies via bun..◓  Installing dependencies via bun..◑  Installing dependencies via bun..◒  Installing dependencies via bun..◇  Installed dependencies
+│
+◇  TanStack Intent configured
+│
+$ tsr generate
+◒  Generating route tree◐  Generating route tree◓  Generating route tree◑  Generating route tree◒  Generating route tree◇  Route tree generated
+│
+└  Your TanStack app is ready.
+
+Use the following commands to start your app:
+% bun --bun run dev
+
+Next steps:
+
+Working with an AI agent? Your agent config (AGENTS.md / CLAUDE.md) was wired up by TanStack Intent
+with explicit skill mappings for the libraries you installed. Try asking your agent:
+  • "migrate this Next.js page to TanStack Start"
+  • "add a protected /dashboard route"
+  • "show me how to use TanStack Router search params"
+
+Please read the README.md file for information on testing, styling, adding routes, etc.
+
+Errors were encountered during the creation of your app:
+
+Command "bunx --bun @tanstack/intent install --map" did not run successfully. Please run this manually in your project.
+
+[raw output: artifact://4]
